@@ -108,6 +108,21 @@
 .spring { background: #6db33f; }
 .arrow { color: #98A2B3; }
 
+.claims {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+
+.claims ul {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+  font-size: 13px;
+}
+
 .sys ul {
   list-style: none;
   display: flex;

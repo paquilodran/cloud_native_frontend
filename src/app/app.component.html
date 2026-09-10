@@ -17,7 +17,7 @@
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-5v-6H10v6H5a1 1 0 0 1-1-1v-9.5Z" stroke="currentColor" stroke-width="1.7"/></svg>
           Inicio
         </a>
-        <a routerLink="/demo" routerLinkActive="active">
+        <a routerLink="/pedidos" routerLinkActive="active">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
           Pedidos
         </a>
@@ -65,9 +65,14 @@
             <span class="avatar">{{ inicial }}</span>
             <div>
               <strong>{{ usuario }}</strong>
-              <small>{{ autenticado ? 'Microsoft · JWT activo' : 'Sesión local' }}</small>
+              <small>{{ autenticado ? 'Microsoft · JWT activo' : 'Sin sesión' }}</small>
             </div>
           </div>
+          @if (autenticado) {
+            <button type="button" class="btn btn-secondary" (click)="logout()">Cerrar sesión</button>
+          } @else {
+            <a routerLink="/login" class="btn btn-primary">Iniciar sesión</a>
+          }
         </div>
       </header>
       <main class="content">

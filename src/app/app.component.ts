@@ -48,7 +48,7 @@ export class AppComponent implements OnInit {
   }
 
   buscar(): void {
-    this.router.navigate(['/demo']);
+    this.router.navigate(['/pedidos']);
   }
 
   get inicial(): string {

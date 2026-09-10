@@ -82,12 +82,24 @@
         <li><i class="dot dot-ok"></i> Base de datos</li>
       </ul>
     </div>
+    @if (claims) {
+      <div class="claims">
+        <p class="tiny">Claims del access token</p>
+        <ul>
+          <li><strong>Usuario:</strong> {{ claims.preferredUsername }}</li>
+          <li><strong>Scope:</strong> {{ claims.scopes }}</li>
+          <li><strong>Roles:</strong> {{ claims.roles }}</li>
+          <li><strong>Audience:</strong> {{ claims.audience }}</li>
+          <li><strong>Expira:</strong> {{ claims.expires }}</li>
+        </ul>
+      </div>
+    }
   </article>
 
   <article class="card pad">
     <div class="card-head">
       <h2 class="section-title">Últimos pedidos</h2>
-      <a routerLink="/demo" class="btn btn-ghost">Ver todos →</a>
+      <a routerLink="/pedidos" class="btn btn-ghost">Ver todos →</a>
     </div>
     <table class="table">
       <thead>
@@ -117,7 +129,7 @@
     <p class="tiny">CLOUD NATIVE</p>
     <h2>Más que pedidos,<br>es tu flujo de trabajo.</h2>
     <p>Pedidos360 integra Angular, Microsoft Entra ID y Spring Boot para autenticar, emitir JWT y gestionar pedidos en un flujo Cloud Native.</p>
-    <a routerLink="/demo" class="btn btn-primary">Ver pedidos →</a>
+    <a routerLink="/pedidos" class="btn btn-primary">Ver pedidos →</a>
     <div class="promo-deco" aria-hidden="true"></div>
   </article>
 

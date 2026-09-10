@@ -7,10 +7,7 @@
 </section>
 
 <div class="status-row">
-  @if (modoDemo) {
-    <span class="badge badge-warning">Interfaz demo</span>
-    <span class="tiny">La ruta protegida con JWT es /pedidos</span>
-  } @else if (error() === '401 Unauthorized') {
+  @if (error() === '401 Unauthorized') {
     <span class="badge badge-danger">Autenticación requerida</span>
     <span class="tiny">401 Unauthorized</span>
   } @else if (!error()) {
