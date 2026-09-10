@@ -1,0 +1,78 @@
+@if (esLogin) {
+  <router-outlet />
+} @else {
+  <div class="app" [class.nav-open]="menuAbierto">
+    <aside class="sidebar">
+      <a routerLink="/" class="logo">
+        <span class="logo-mark" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+            <path d="M7 17a5 5 0 0 1-.7-9.95A6 6 0 0 1 17.8 10H18a4 4 0 0 1 0 8H7Z" stroke="#2563EB" stroke-width="1.8"/>
+          </svg>
+        </span>
+        Pedidos360
+      </a>
+
+      <nav class="menu">
+        <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 10.5 12 4l8 6.5V20a1 1 0 0 1-1 1h-5v-6H10v6H5a1 1 0 0 1-1-1v-9.5Z" stroke="currentColor" stroke-width="1.7"/></svg>
+          Inicio
+        </a>
+        <a routerLink="/demo" routerLinkActive="active">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+          Pedidos
+        </a>
+      </nav>
+
+      <p class="nav-label">Tecnologías</p>
+      <ul class="tech">
+        <li>
+          <span class="tech-ico angular">A</span>
+          Angular
+        </li>
+        <li>
+          <span class="tech-ico spring">S</span>
+          Spring Boot
+        </li>
+        <li>
+          <span class="tech-ico azure">Az</span>
+          Azure AD
+        </li>
+      </ul>
+
+      <div class="sidebar-foot">
+        <strong>Cloud Native</strong>
+        <span>Modern · Secure · Scalable</span>
+      </div>
+    </aside>
+
+    <div class="workspace">
+      <header class="header">
+        <button class="icon-btn burger" type="button" (click)="menuAbierto = !menuAbierto" aria-label="Menú">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </button>
+        <label class="search">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#667085" stroke-width="1.7"/><path d="m20 20-3.2-3.2" stroke="#667085" stroke-width="1.7" stroke-linecap="round"/></svg>
+          <input class="input" [(ngModel)]="busqueda" (keyup.enter)="buscar()" placeholder="Buscar pedidos, ID, cliente...">
+        </label>
+        <div class="header-right">
+          <button class="icon-btn" type="button" aria-label="Notificaciones">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 17h12l-1.2-2.2V11a4.8 4.8 0 1 0-9.6 0v3.8L6 17Z" stroke="currentColor" stroke-width="1.7"/><path d="M10 18a2 2 0 0 0 4 0" stroke="currentColor" stroke-width="1.7"/></svg>
+          </button>
+          <a routerLink="/login" class="ms-mark" title="Microsoft Entra ID">
+            <span class="sq s1"></span><span class="sq s2"></span><span class="sq s3"></span><span class="sq s4"></span>
+          </a>
+          <div class="user">
+            <span class="avatar">{{ inicial }}</span>
+            <div>
+              <strong>{{ usuario }}</strong>
+              <small>{{ autenticado ? 'Microsoft · JWT activo' : 'Sesión local' }}</small>
+            </div>
+          </div>
+        </div>
+      </header>
+      <main class="content">
+        <router-outlet />
+      </main>
+    </div>
+  </div>
+}

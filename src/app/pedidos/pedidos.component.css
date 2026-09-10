@@ -1,0 +1,139 @@
+.page-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.page-head h1 {
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.status-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.token {
+  margin-left: auto;
+}
+
+.table-card {
+  overflow: hidden;
+}
+
+.toolbar {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+}
+
+.search { max-width: 360px; }
+.select { max-width: 200px; }
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th,
+.table td {
+  text-align: left;
+  padding: 14px 16px;
+  border-top: 1px solid #F2F4F7;
+  font-size: 14px;
+}
+
+.table th {
+  color: var(--muted);
+  font-weight: 500;
+  font-size: 12px;
+}
+
+.table tbody tr:hover { background: #F9FAFB; }
+
+.empty {
+  text-align: center;
+  color: var(--muted);
+  padding: 32px !important;
+}
+
+.actions {
+  display: flex;
+  gap: 4px;
+}
+
+.pager {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  border-top: 1px solid #F2F4F7;
+}
+
+.page-n { margin: 0 8px; }
+
+.locked {
+  padding: 48px 24px;
+  text-align: center;
+}
+
+.error {
+  padding: 0 16px 12px;
+  color: var(--danger);
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(17, 24, 39, 0.28);
+  display: flex;
+  justify-content: flex-end;
+  z-index: 30;
+}
+
+.drawer {
+  width: min(420px, 100%);
+  height: 100%;
+  border-radius: 0;
+  padding: 32px;
+  display: grid;
+  align-content: start;
+  gap: 16px;
+}
+
+.drawer h2 {
+  font-size: 22px;
+  font-weight: 600;
+}
+
+.drawer label {
+  display: grid;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.drawer-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+@media (max-width: 800px) {
+  .toolbar,
+  .pager {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .search,
+  .select { max-width: none; }
+  .table { display: block; overflow-x: auto; }
+}

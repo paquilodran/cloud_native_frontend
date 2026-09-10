@@ -1,0 +1,118 @@
+<section class="page-head">
+  <div>
+    <h1>Pedidos</h1>
+    <p class="muted">Gestiona y crea nuevos pedidos</p>
+  </div>
+  <button type="button" class="btn btn-primary" (click)="abrirModal()">+ Nuevo pedido</button>
+</section>
+
+<div class="status-row">
+  @if (modoDemo) {
+    <span class="badge badge-warning">Interfaz demo</span>
+    <span class="tiny">La ruta protegida con JWT es /pedidos</span>
+  } @else if (error() === '401 Unauthorized') {
+    <span class="badge badge-danger">Autenticación requerida</span>
+    <span class="tiny">401 Unauthorized</span>
+  } @else if (!error()) {
+    <span class="badge badge-success">Autenticación activa</span>
+    <span class="tiny">Microsoft Entra ID · JWT activo</span>
+  }
+  <span class="tiny token">{{ tokenPreview() }}</span>
+</div>
+
+<section class="card table-card">
+  <div class="toolbar">
+    <input class="input search" [(ngModel)]="busqueda" (ngModelChange)="pagina = 1" placeholder="Buscar por ID, cliente o producto">
+    <select class="select" [(ngModel)]="filtro" (ngModelChange)="pagina = 1">
+      <option value="">Todos los estados</option>
+      <option value="CREADO">Pendiente</option>
+      <option value="EN_PREPARACION">En proceso</option>
+      <option value="ENTREGADO">Entregado</option>
+      <option value="CANCELADO">Cancelado</option>
+    </select>
+  </div>
+
+  @if (error() && error() !== '401 Unauthorized') {
+    <p class="error">{{ error() }}</p>
+  }
+
+  @if (error() === '401 Unauthorized') {
+    <div class="locked">
+      <p>Autenticación requerida</p>
+      <p class="tiny">401 Unauthorized — el contenido protegido queda bloqueado hasta un JWT válido.</p>
+    </div>
+  } @else {
+    <table class="table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Cliente</th>
+          <th>Producto</th>
+          <th>Total</th>
+          <th>Estado</th>
+          <th>Fecha</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (cargando()) {
+          <tr><td colspan="7" class="empty">Cargando…</td></tr>
+        } @else if (paginaItems.length === 0) {
+          <tr><td colspan="7" class="empty">No hay pedidos</td></tr>
+        } @else {
+          @for (pedido of paginaItems; track pedido.id) {
+            <tr>
+              <td>#{{ pedido.id }}</td>
+              <td>{{ pedido.cliente }}</td>
+              <td>{{ pedido.nombre }}</td>
+              <td>{{ pedido.total }}</td>
+              <td><span [class]="claseEstado(pedido.estado)">{{ etiquetaEstado(pedido.estado) }}</span></td>
+              <td>{{ pedido.fecha | date:'short' }}</td>
+              <td class="actions">
+                <button class="icon-btn" type="button" title="Ver">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12Z" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.6"/></svg>
+                </button>
+                <button class="icon-btn" type="button" title="Más">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="6" cy="12" r="1.4" fill="currentColor"/><circle cx="12" cy="12" r="1.4" fill="currentColor"/><circle cx="18" cy="12" r="1.4" fill="currentColor"/></svg>
+                </button>
+              </td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+
+    <div class="pager">
+      <span class="tiny">{{ filtrados.length }} resultados</span>
+      <div>
+        <button class="btn btn-secondary" type="button" [disabled]="pagina === 1" (click)="pagina = pagina - 1">Anterior</button>
+        <span class="tiny page-n">{{ pagina }} / {{ totalPaginas }}</span>
+        <button class="btn btn-secondary" type="button" [disabled]="pagina === totalPaginas" (click)="pagina = pagina + 1">Siguiente</button>
+      </div>
+    </div>
+  }
+</section>
+
+@if (modalAbierto) {
+  <div class="overlay" (click)="cerrarModal()">
+    <form class="drawer card" (click)="$event.stopPropagation()" (ngSubmit)="crear()">
+      <h2>Nuevo pedido</h2>
+      <label>Cliente
+        <input class="input" [(ngModel)]="nuevo.cliente" name="cliente" required>
+      </label>
+      <label>Producto
+        <input class="input" [(ngModel)]="nuevo.nombre" name="nombre" required>
+      </label>
+      <label>Cantidad
+        <input class="input" type="number" min="1" [(ngModel)]="cantidad" name="cantidad">
+      </label>
+      <label>Total estimado
+        <input class="input" type="number" min="1" [(ngModel)]="nuevo.total" name="total" required>
+      </label>
+      <div class="drawer-actions">
+        <button class="btn btn-secondary" type="button" (click)="cerrarModal()">Cancelar</button>
+        <button class="btn btn-primary" type="submit">Crear pedido</button>
+      </div>
+    </form>
+  </div>
+}

@@ -1,0 +1,142 @@
+<section class="page-head">
+  <div>
+    <h1>Bienvenido, Patricio</h1>
+    <p class="muted">Panel de control de Pedidos360</p>
+  </div>
+  <span class="env-chip">Entorno local</span>
+</section>
+
+<section class="kpis">
+  <article class="card kpi">
+    <div class="kpi-ico">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 7h16v12H4zM8 7V5h8v2" stroke="#2563EB" stroke-width="1.7"/></svg>
+    </div>
+    <p class="tiny">Pedidos totales</p>
+    <strong>{{ pedidos.length }}</strong>
+    <span class="trend up">↑ seed inicial</span>
+  </article>
+  <article class="card kpi">
+    <div class="kpi-ico">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="4" y="5" width="16" height="16" rx="2" stroke="#2563EB" stroke-width="1.7"/><path d="M8 3v4M16 3v4M4 11h16" stroke="#2563EB" stroke-width="1.7"/></svg>
+    </div>
+    <p class="tiny">Creados hoy</p>
+    <strong>{{ creadosHoy }}</strong>
+    <span class="trend up">↑ actividad del día</span>
+  </article>
+  <article class="card kpi">
+    <div class="kpi-ico">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 16c4-8 12-8 16 0" stroke="#2563EB" stroke-width="1.7"/><circle cx="12" cy="16" r="2" fill="#2563EB"/></svg>
+    </div>
+    <p class="tiny">Estado API</p>
+    <strong>Demo</strong>
+    <span class="tiny">GET / POST /api/pedidos</span>
+  </article>
+  <article class="card kpi">
+    <div class="kpi-ico">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 3 4 7v6c0 5 3.5 7.5 8 9 4.5-1.5 8-4 8-9V7l-8-4Z" stroke="#2563EB" stroke-width="1.7"/></svg>
+    </div>
+    <p class="tiny">Autenticación</p>
+    <strong>Microsoft Entra ID</strong>
+    @if (autenticado) {
+      <span class="auth-ok"><i class="dot dot-ok"></i> JWT activo</span>
+    } @else {
+      <span class="auth-wait"><i class="dot dot-warn"></i> Autenticación requerida</span>
+    }
+  </article>
+</section>
+
+<section class="grid-main">
+  <article class="card pad">
+    <h2 class="section-title">Flujo de autenticación y arquitectura</h2>
+    <div class="flow">
+      <div class="node">
+        <span class="mark angular">A</span>
+        <strong>Angular</strong>
+        <small>Frontend</small>
+      </div>
+      <span class="arrow">→</span>
+      <div class="node">
+        <span class="mark azure">Az</span>
+        <strong>Azure AD</strong>
+        <small>Identity Provider</small>
+      </div>
+      <span class="arrow">→</span>
+      <div class="node">
+        <span class="mark jwt">J</span>
+        <strong>JWT</strong>
+        <small>Token</small>
+      </div>
+      <span class="arrow">→</span>
+      <div class="node">
+        <span class="mark spring">S</span>
+        <strong>Spring Boot</strong>
+        <small>API Backend</small>
+      </div>
+    </div>
+    <div class="sys">
+      <p class="tiny">Estado del sistema</p>
+      <ul>
+        <li><i class="dot dot-ok"></i> Frontend (Angular)</li>
+        <li><i class="dot" [class.dot-ok]="autenticado" [class.dot-warn]="!autenticado"></i> Azure AD</li>
+        <li><i class="dot dot-ok"></i> API (Spring Boot)</li>
+        <li><i class="dot dot-ok"></i> Base de datos</li>
+      </ul>
+    </div>
+  </article>
+
+  <article class="card pad">
+    <div class="card-head">
+      <h2 class="section-title">Últimos pedidos</h2>
+      <a routerLink="/demo" class="btn btn-ghost">Ver todos →</a>
+    </div>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Cliente</th>
+          <th>Estado</th>
+          <th>Fecha</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (pedido of pedidos; track pedido.id) {
+          <tr>
+            <td>#{{ pedido.id }}</td>
+            <td>{{ pedido.cliente }}</td>
+            <td><span [class]="claseEstado(pedido.estado)">{{ etiquetaEstado(pedido.estado) }}</span></td>
+            <td>{{ pedido.fecha | date:'shortTime' }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </article>
+</section>
+
+<section class="grid-bottom">
+  <article class="promo">
+    <p class="tiny">CLOUD NATIVE</p>
+    <h2>Más que pedidos,<br>es tu flujo de trabajo.</h2>
+    <p>Pedidos360 integra Angular, Microsoft Entra ID y Spring Boot para autenticar, emitir JWT y gestionar pedidos en un flujo Cloud Native.</p>
+    <a routerLink="/demo" class="btn btn-primary">Ver pedidos →</a>
+    <div class="promo-deco" aria-hidden="true"></div>
+  </article>
+
+  <article class="card pad">
+    <div class="card-head">
+      <h2 class="section-title">Resumen de actividad</h2>
+      <span class="tiny">Últimos 7 meses</span>
+    </div>
+    <svg class="chart" viewBox="0 0 520 168" role="img" aria-label="Pedidos por mes">
+      <line x1="24" y1="36" x2="500" y2="36" stroke="#F2F4F7"/>
+      <line x1="24" y1="84" x2="500" y2="84" stroke="#F2F4F7"/>
+      <line x1="24" y1="132" x2="500" y2="132" stroke="#E5E7EB"/>
+      <polyline [attr.points]="chartPoints" fill="none" stroke="#2563EB" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>
+      @for (punto of actividad; track punto.mes; let i = $index) {
+        <circle [attr.cx]="28 + i * 72" [attr.cy]="132 - (punto.valor / 4) * 96" r="3.5" fill="#2563EB">
+          <title>{{ punto.mes }}: {{ punto.valor }} pedidos</title>
+        </circle>
+        <text [attr.x]="28 + i * 72" y="154" text-anchor="middle" fill="#667085" font-size="11">{{ punto.mes }}</text>
+      }
+    </svg>
+  </article>
+</section>

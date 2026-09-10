@@ -1,0 +1,31 @@
+<main class="login">
+  <section class="panel">
+    <div class="logo">
+      <span class="mark">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+          <path d="M7 17a5 5 0 0 1-.7-9.95A6 6 0 0 1 17.8 10H18a4 4 0 0 1 0 8H7Z" stroke="#2563EB" stroke-width="1.8"/>
+        </svg>
+      </span>
+      Pedidos360
+    </div>
+    <h1>Gestión de pedidos</h1>
+    <p class="muted">Cloud Native</p>
+
+    @if (yaAutenticado) {
+      <p class="auth-ok"><i class="dot dot-ok"></i> Autenticación activa · JWT activo</p>
+      <button type="button" class="btn btn-primary big" (click)="irAPedidos()">Ir a pedidos</button>
+    } @else {
+      <button type="button" class="btn btn-primary big" (click)="login()" [disabled]="!configurado">
+        <span class="ms">
+          <span class="sq s1"></span><span class="sq s2"></span><span class="sq s3"></span><span class="sq s4"></span>
+        </span>
+        Continuar con Microsoft
+      </button>
+      <p class="tiny">Autenticación segura con Microsoft Entra ID</p>
+    }
+
+    @if (!configurado) {
+      <p class="warn tiny">Falta Tenant ID y Client IDs en environment.ts</p>
+    }
+  </section>
+</main>
