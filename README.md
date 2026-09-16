@@ -91,6 +91,18 @@ npm run build
 # dist/pedidos360-frontend/browser
 ```
 
+### Ejecución con Docker
+
+```bash
+docker build -t pedidos360-frontend .
+docker run -p 4200:80 pedidos360-frontend
+```
+
+O levantar la solución completa desde la raíz con:
+```bash
+docker compose up --build
+```
+
 ---
 
 ## 6. Evidencias de este repositorio
