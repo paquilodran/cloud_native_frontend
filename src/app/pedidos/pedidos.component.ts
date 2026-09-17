@@ -22,7 +22,9 @@ export class PedidosComponent implements OnInit {
 
   readonly pedidos = signal<Pedido[]>([]);
   readonly cargando = signal(false);
+  readonly guardando = signal(false);
   readonly error = signal('');
+  readonly errorModal = signal('');
   readonly tokenPreview = signal('');
   readonly usuario = signal('Invitado');
   readonly etiquetaEstado = etiquetaEstado;
@@ -123,17 +125,28 @@ export class PedidosComponent implements OnInit {
   }
 
   abrirModal(): void {
+    this.errorModal.set('');
+    this.guardando.set(false);
     this.modalAbierto = true;
   }
 
   cerrarModal(): void {
     this.modalAbierto = false;
+    this.guardando.set(false);
   }
 
   crear(): void {
+    if (this.guardando()) return;
+    this.errorModal.set('');
+
+    const payload: Pedido = {
+      ...this.nuevo,
+      total: Number(this.nuevo.total)
+    };
+
     if (this.modoDemo) {
       const creado: Pedido = {
-        ...this.nuevo,
+        ...payload,
         id: this.pedidos().length + 1,
         fecha: new Date().toISOString()
       };
@@ -143,13 +156,21 @@ export class PedidosComponent implements OnInit {
       return;
     }
 
-    this.pedidosService.crear(this.nuevo).subscribe({
+    this.guardando.set(true);
+    this.pedidosService.crear(payload).subscribe({
       next: () => {
+        this.guardando.set(false);
         this.resetForm();
         this.cerrarModal();
         this.cargar();
       },
-      error: (err) => this.error.set(`No se pudo crear el pedido (${err.status})`)
+      error: (err) => {
+        console.error('[DEBUG Crear Pedido] Error completo:', err);
+        this.guardando.set(false);
+        const detalle = err.error?.message || (err.status === 404 ? 'Ruta POST no encontrada en API Gateway (falta ruta ANY o POST)' : `Error ${err.status}`);
+        this.errorModal.set(`No se pudo crear: ${detalle}`);
+        this.error.set(`Error al crear pedido (${err.status})`);
+      }
     });
   }
 

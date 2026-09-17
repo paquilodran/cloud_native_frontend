@@ -94,21 +94,28 @@
   <div class="overlay" (click)="cerrarModal()">
     <form class="drawer card" (click)="$event.stopPropagation()" (ngSubmit)="crear()">
       <h2>Nuevo pedido</h2>
+      @if (errorModal()) {
+        <p style="color: #b91c1c; background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 10px 14px; font-size: 0.85rem; margin-bottom: 14px;">
+          {{ errorModal() }}
+        </p>
+      }
       <label>Cliente
-        <input class="input" [(ngModel)]="nuevo.cliente" name="cliente" required>
+        <input class="input" [(ngModel)]="nuevo.cliente" name="cliente" required [disabled]="guardando()">
       </label>
       <label>Producto
-        <input class="input" [(ngModel)]="nuevo.nombre" name="nombre" required>
+        <input class="input" [(ngModel)]="nuevo.nombre" name="nombre" required [disabled]="guardando()">
       </label>
       <label>Cantidad
-        <input class="input" type="number" min="1" [(ngModel)]="cantidad" name="cantidad">
+        <input class="input" type="number" min="1" [(ngModel)]="cantidad" name="cantidad" [disabled]="guardando()">
       </label>
       <label>Total estimado
-        <input class="input" type="number" min="1" [(ngModel)]="nuevo.total" name="total" required>
+        <input class="input" type="number" min="1" [(ngModel)]="nuevo.total" name="total" required [disabled]="guardando()">
       </label>
       <div class="drawer-actions">
-        <button class="btn btn-secondary" type="button" (click)="cerrarModal()">Cancelar</button>
-        <button class="btn btn-primary" type="submit">Crear pedido</button>
+        <button class="btn btn-secondary" type="button" (click)="cerrarModal()" [disabled]="guardando()">Cancelar</button>
+        <button class="btn btn-primary" type="submit" [disabled]="guardando()">
+          {{ guardando() ? 'Creando...' : 'Crear pedido' }}
+        </button>
       </div>
     </form>
   </div>
