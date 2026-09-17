@@ -7,9 +7,9 @@
 </section>
 
 <div class="status-row">
-  @if (error() === '401 Unauthorized') {
+  @if (error().startsWith('401 Unauthorized')) {
     <span class="badge badge-danger">Autenticación requerida</span>
-    <span class="tiny">401 Unauthorized</span>
+    <span class="tiny">{{ error() }}</span>
   } @else if (!error()) {
     <span class="badge badge-success">Autenticación activa</span>
     <span class="tiny">Microsoft Entra ID · JWT activo</span>
@@ -29,14 +29,14 @@
     </select>
   </div>
 
-  @if (error() && error() !== '401 Unauthorized') {
+  @if (error() && !error().startsWith('401 Unauthorized')) {
     <p class="error">{{ error() }}</p>
   }
 
-  @if (error() === '401 Unauthorized') {
+  @if (error().startsWith('401 Unauthorized')) {
     <div class="locked">
       <p>Autenticación requerida</p>
-      <p class="tiny">401 Unauthorized — el contenido protegido queda bloqueado hasta un JWT válido.</p>
+      <p class="tiny">{{ error() }}</p>
     </div>
   } @else {
     <table class="table">

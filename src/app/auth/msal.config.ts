@@ -42,6 +42,7 @@ export function MSALGuardConfigFactory(): MsalGuardConfiguration {
 export function MSALInterceptorConfigFactory(): MsalInterceptorConfiguration {
   const protectedResourceMap = new Map<string, Array<string>>();
   protectedResourceMap.set(environment.apiUrl, environment.azure.apiScopes);
+  protectedResourceMap.set(`${environment.apiUrl}/*`, environment.azure.apiScopes);
   protectedResourceMap.set(`${environment.apiUrl}/pedidos`, environment.azure.apiScopes);
   return {
     interactionType: InteractionType.Redirect,

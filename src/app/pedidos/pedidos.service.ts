@@ -1,12 +1,14 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { MsalService } from '@azure/msal-angular';
+import { Observable, catchError, from, map, of, switchMap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { Pedido } from './pedido.model';
 
 @Injectable({ providedIn: 'root' })
 export class PedidosService {
   private readonly http = inject(HttpClient);
+  private readonly msal = inject(MsalService);
   private readonly url = `${environment.apiUrl}/pedidos`;
 
   readonly demo: Pedido[] = [
@@ -15,12 +17,33 @@ export class PedidosService {
     { id: 3, nombre: 'Pedido mayorista', cliente: 'Cliente Este', estado: 'ENTREGADO', total: 43100, fecha: '2026-09-08T18:45:00Z' }
   ];
 
+  private getAuthHeaders(): Observable<HttpHeaders> {
+    const account = this.msal.instance.getActiveAccount() ?? this.msal.instance.getAllAccounts()[0];
+    if (!account) {
+      return of(new HttpHeaders());
+    }
+    return from(this.msal.instance.acquireTokenSilent({
+      scopes: environment.azure.apiScopes,
+      account
+    })).pipe(
+      map((res) => new HttpHeaders({ Authorization: `Bearer ${res.accessToken}` })),
+      catchError((err) => {
+        console.warn('[PedidosService] No se pudo obtener token silencioso:', err);
+        return of(new HttpHeaders());
+      })
+    );
+  }
+
   listar(): Observable<Pedido[]> {
-    return this.http.get<Pedido[]>(this.url);
+    return this.getAuthHeaders().pipe(
+      switchMap((headers) => this.http.get<Pedido[]>(this.url, { headers }))
+    );
   }
 
   crear(pedido: Pedido): Observable<Pedido> {
-    return this.http.post<Pedido>(this.url, pedido);
+    return this.getAuthHeaders().pipe(
+      switchMap((headers) => this.http.post<Pedido>(this.url, pedido, { headers }))
+    );
   }
 
   listarDemo(): Observable<Pedido[]> {
