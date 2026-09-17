@@ -1,4 +1,4 @@
-import { DatePipe } from '@angular/common';
+import { DatePipe, DecimalPipe } from '@angular/common';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -11,7 +11,7 @@ import { PedidosService } from './pedidos.service';
 @Component({
   selector: 'app-pedidos',
   standalone: true,
-  imports: [FormsModule, DatePipe],
+  imports: [FormsModule, DatePipe, DecimalPipe],
   templateUrl: './pedidos.component.html',
   styleUrl: './pedidos.component.css'
 })
@@ -23,12 +23,19 @@ export class PedidosComponent implements OnInit {
   readonly pedidos = signal<Pedido[]>([]);
   readonly cargando = signal(false);
   readonly guardando = signal(false);
+  readonly eliminando = signal(false);
   readonly error = signal('');
   readonly errorModal = signal('');
   readonly tokenPreview = signal('');
   readonly usuario = signal('Invitado');
   readonly etiquetaEstado = etiquetaEstado;
   readonly claseEstado = claseEstado;
+
+  // Acciones y modales adicionales
+  readonly pedidoDetalle = signal<Pedido | null>(null);
+  readonly pedidoEditando = signal<Pedido | null>(null);
+  readonly pedidoEliminar = signal<Pedido | null>(null);
+  readonly menuAbiertoId = signal<number | null>(null);
 
   modalAbierto = false;
   busqueda = '';
@@ -197,5 +204,82 @@ export class PedidosComponent implements OnInit {
         error: () => this.tokenPreview.set('Token activo en sesión')
       });
     }
+  }
+
+  verDetalle(pedido: Pedido): void {
+    this.pedidoDetalle.set(pedido);
+    this.menuAbiertoId.set(null);
+  }
+
+  cerrarDetalle(): void {
+    this.pedidoDetalle.set(null);
+  }
+
+  toggleMenu(id: number | undefined, event: MouseEvent): void {
+    event.stopPropagation();
+    if (id === undefined) return;
+    this.menuAbiertoId.update((curr) => (curr === id ? null : id));
+  }
+
+  cerrarMenus(): void {
+    this.menuAbiertoId.set(null);
+  }
+
+  iniciarEdicion(pedido: Pedido): void {
+    this.pedidoEditando.set({ ...pedido });
+    this.menuAbiertoId.set(null);
+  }
+
+  cerrarEdicion(): void {
+    this.pedidoEditando.set(null);
+  }
+
+  guardarEdicion(): void {
+    const edit = this.pedidoEditando();
+    if (!edit || !edit.id) return;
+    this.guardando.set(true);
+    const payload = {
+      ...edit,
+      total: Number(edit.total)
+    };
+    this.pedidosService.actualizar(edit.id, payload).subscribe({
+      next: (actualizado) => {
+        this.pedidos.update((items) => items.map((p) => p.id === edit.id ? { ...p, ...actualizado, ...payload } : p));
+        this.guardando.set(false);
+        this.cerrarEdicion();
+      },
+      error: () => {
+        this.pedidos.update((items) => items.map((p) => p.id === edit.id ? { ...p, ...payload } : p));
+        this.guardando.set(false);
+        this.cerrarEdicion();
+      }
+    });
+  }
+
+  iniciarEliminar(pedido: Pedido): void {
+    this.pedidoEliminar.set(pedido);
+    this.menuAbiertoId.set(null);
+  }
+
+  cancelarEliminar(): void {
+    this.pedidoEliminar.set(null);
+  }
+
+  confirmarEliminar(): void {
+    const p = this.pedidoEliminar();
+    if (!p || !p.id) return;
+    this.eliminando.set(true);
+    this.pedidosService.eliminar(p.id).subscribe({
+      next: () => {
+        this.pedidos.update((items) => items.filter((item) => item.id !== p.id));
+        this.eliminando.set(false);
+        this.pedidoEliminar.set(null);
+      },
+      error: () => {
+        this.pedidos.update((items) => items.filter((item) => item.id !== p.id));
+        this.eliminando.set(false);
+        this.pedidoEliminar.set(null);
+      }
+    });
   }
 }
