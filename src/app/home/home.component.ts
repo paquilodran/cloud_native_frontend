@@ -1,23 +1,31 @@
 import { DatePipe } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { MsalService } from '@azure/msal-angular';
 import { environment } from '../../environments/environment';
 import { Pedido } from '../pedidos/pedido.model';
 import { PedidosService } from '../pedidos/pedidos.service';
 import { claseEstado, etiquetaEstado } from '../shared/estado-visual';
+import { RabbitMQService } from '../shared/rabbitmq.service';
 import { TokenClaims, toTokenClaims } from '../shared/token-claims';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [RouterLink, DatePipe],
+  imports: [RouterLink, DatePipe, FormsModule],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css'
 })
 export class HomeComponent implements OnInit {
   private readonly msal = inject(MsalService);
   private readonly pedidosService = inject(PedidosService);
+  private readonly rabbitMQService = inject(RabbitMQService);
+
+  mensajeRabbit = 'Pedido confirmado listo para encolar en RabbitMQ';
+  enviandoRabbit = false;
+  ultimoEnvioRabbit: string | null = null;
+  errorRabbit: string | null = null;
 
   pedidos: Pedido[] = [];
   claims: TokenClaims | null = null;
@@ -79,5 +87,49 @@ export class HomeComponent implements OnInit {
     }).catch(() => {
       this.claims = null;
     });
+  }
+
+  enviarARabbitMQ(): void {
+    const texto = this.mensajeRabbit.trim();
+    if (!texto) return;
+
+    this.enviandoRabbit = true;
+    this.errorRabbit = null;
+
+    this.rabbitMQService.enviarMensaje(texto).subscribe({
+      next: (resp) => {
+        this.enviandoRabbit = false;
+        this.ultimoEnvioRabbit = `✓ Mensaje enviado a la cola 'hello' a las ${new Date().toLocaleTimeString()}: "${texto}"`;
+      },
+      error: (err) => {
+        this.enviandoRabbit = false;
+        this.errorRabbit = `No se pudo conectar con RabbitMQ (localhost:8080). Asegúrate de tener la app corriendo.`;
+      }
+    });
+  }
+
+  async enviarLoteRabbit(cantidad: number = 5): Promise<void> {
+    this.enviandoRabbit = true;
+    this.errorRabbit = null;
+    let enviados = 0;
+
+    for (let i = 1; i <= cantidad; i++) {
+      const msg = `Pedido #${100 + i} generado automáticamente - ${new Date().toLocaleTimeString()}`;
+      try {
+        await new Promise((resolve, reject) => {
+          this.rabbitMQService.enviarMensaje(msg).subscribe({
+            next: resolve,
+            error: reject
+          });
+        });
+        enviados++;
+        this.ultimoEnvioRabbit = `✓ Lote en progreso: ${enviados}/${cantidad} enviados a la cola 'hello'`;
+        await new Promise((r) => setTimeout(r, 300));
+      } catch (e) {
+        this.errorRabbit = `Fallo al enviar mensaje del lote #${i}`;
+        break;
+      }
+    }
+    this.enviandoRabbit = false;
   }
 }

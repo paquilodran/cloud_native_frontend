@@ -17,7 +17,7 @@
   <span class="tiny token">{{ tokenPreview() }}</span>
 </div>
 
-<section class="card table-card">
+<section class="card table-card" (click)="cerrarMenus()">
   <div class="toolbar">
     <input class="input search" [(ngModel)]="busqueda" (ngModelChange)="pagina = 1" placeholder="Buscar por ID, cliente o producto">
     <select class="select" [(ngModel)]="filtro" (ngModelChange)="pagina = 1">
@@ -66,12 +66,30 @@
               <td><span [class]="claseEstado(pedido.estado)">{{ etiquetaEstado(pedido.estado) }}</span></td>
               <td>{{ pedido.fecha | date:'short' }}</td>
               <td class="actions">
-                <button class="icon-btn" type="button" title="Ver">
+                <button class="icon-btn" type="button" title="Ver detalle" (click)="verDetalle(pedido)">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12Z" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.6"/></svg>
                 </button>
-                <button class="icon-btn" type="button" title="Más">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="6" cy="12" r="1.4" fill="currentColor"/><circle cx="12" cy="12" r="1.4" fill="currentColor"/><circle cx="18" cy="12" r="1.4" fill="currentColor"/></svg>
-                </button>
+                <div class="menu-wrap">
+                  <button class="icon-btn" type="button" title="Opciones" (click)="toggleMenu(pedido.id, $event)">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="6" cy="12" r="1.4" fill="currentColor"/><circle cx="12" cy="12" r="1.4" fill="currentColor"/><circle cx="18" cy="12" r="1.4" fill="currentColor"/></svg>
+                  </button>
+                  @if (menuAbiertoId() === pedido.id) {
+                    <div class="dropdown-menu card" (click)="$event.stopPropagation()">
+                      <button type="button" class="menu-item" (click)="verDetalle(pedido)">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12Z" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.6"/></svg>
+                        Ver detalle
+                      </button>
+                      <button type="button" class="menu-item" (click)="iniciarEdicion(pedido)">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="currentColor" stroke-width="1.6"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" stroke-width="1.6"/></svg>
+                        Editar
+                      </button>
+                      <button type="button" class="menu-item danger" (click)="iniciarEliminar(pedido)">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" stroke="currentColor" stroke-width="1.6"/></svg>
+                        Eliminar
+                      </button>
+                    </div>
+                  }
+                </div>
               </td>
             </tr>
           }
@@ -90,26 +108,123 @@
   }
 </section>
 
+<!-- MODAL CREAR PEDIDO -->
 @if (modalAbierto) {
   <div class="overlay" (click)="cerrarModal()">
     <form class="drawer card" (click)="$event.stopPropagation()" (ngSubmit)="crear()">
       <h2>Nuevo pedido</h2>
+      @if (errorModal()) {
+        <p style="color: #b91c1c; background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 10px 14px; font-size: 0.85rem; margin-bottom: 14px;">
+          {{ errorModal() }}
+        </p>
+      }
       <label>Cliente
-        <input class="input" [(ngModel)]="nuevo.cliente" name="cliente" required>
+        <input class="input" [(ngModel)]="nuevo.cliente" name="cliente" required [disabled]="guardando()">
       </label>
       <label>Producto
-        <input class="input" [(ngModel)]="nuevo.nombre" name="nombre" required>
+        <input class="input" [(ngModel)]="nuevo.nombre" name="nombre" required [disabled]="guardando()">
       </label>
       <label>Cantidad
-        <input class="input" type="number" min="1" [(ngModel)]="cantidad" name="cantidad">
+        <input class="input" type="number" min="1" [(ngModel)]="cantidad" name="cantidad" [disabled]="guardando()">
       </label>
       <label>Total estimado
-        <input class="input" type="number" min="1" [(ngModel)]="nuevo.total" name="total" required>
+        <input class="input" type="number" min="1" [(ngModel)]="nuevo.total" name="total" required [disabled]="guardando()">
       </label>
       <div class="drawer-actions">
-        <button class="btn btn-secondary" type="button" (click)="cerrarModal()">Cancelar</button>
-        <button class="btn btn-primary" type="submit">Crear pedido</button>
+        <button class="btn btn-secondary" type="button" (click)="cerrarModal()" [disabled]="guardando()">Cancelar</button>
+        <button class="btn btn-primary" type="submit" [disabled]="guardando()">
+          {{ guardando() ? 'Creando...' : 'Crear pedido' }}
+        </button>
       </div>
     </form>
+  </div>
+}
+
+<!-- MODAL DETALLE PEDIDO -->
+@if (pedidoDetalle(); as detalle) {
+  <div class="overlay" (click)="cerrarDetalle()">
+    <div class="drawer card" (click)="$event.stopPropagation()">
+      <h2>Detalle del Pedido #{{ detalle.id }}</h2>
+      <div class="detail-list">
+        <div class="detail-row">
+          <span class="muted">Cliente:</span>
+          <strong>{{ detalle.cliente }}</strong>
+        </div>
+        <div class="detail-row">
+          <span class="muted">Producto:</span>
+          <strong>{{ detalle.nombre }}</strong>
+        </div>
+        <div class="detail-row">
+          <span class="muted">Total:</span>
+          <strong>${{ detalle.total | number }}</strong>
+        </div>
+        <div class="detail-row">
+          <span class="muted">Estado:</span>
+          <span [class]="claseEstado(detalle.estado)">{{ etiquetaEstado(detalle.estado) }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="muted">Fecha:</span>
+          <span>{{ detalle.fecha | date:'medium' }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="muted">Seguridad:</span>
+          <span class="badge badge-success">JWT Microsoft Entra ID</span>
+        </div>
+      </div>
+      <div class="drawer-actions" style="margin-top: 24px;">
+        <button class="btn btn-secondary" type="button" (click)="iniciarEdicion(detalle); cerrarDetalle()">Editar</button>
+        <button class="btn btn-primary" type="button" (click)="cerrarDetalle()">Cerrar</button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- MODAL EDITAR PEDIDO -->
+@if (pedidoEditando(); as editando) {
+  <div class="overlay" (click)="cerrarEdicion()">
+    <form class="drawer card" (click)="$event.stopPropagation()" (ngSubmit)="guardarEdicion()">
+      <h2>Editar Pedido #{{ editando.id }}</h2>
+      <label>Cliente
+        <input class="input" [(ngModel)]="editando.cliente" name="editCliente" required [disabled]="guardando()">
+      </label>
+      <label>Producto
+        <input class="input" [(ngModel)]="editando.nombre" name="editNombre" required [disabled]="guardando()">
+      </label>
+      <label>Estado
+        <select class="select" [(ngModel)]="editando.estado" name="editEstado" [disabled]="guardando()">
+          <option value="CREADO">Pendiente</option>
+          <option value="EN_PREPARACION">En proceso</option>
+          <option value="ENTREGADO">Entregado</option>
+          <option value="CANCELADO">Cancelado</option>
+        </select>
+      </label>
+      <label>Total
+        <input class="input" type="number" min="1" [(ngModel)]="editando.total" name="editTotal" required [disabled]="guardando()">
+      </label>
+      <div class="drawer-actions">
+        <button class="btn btn-secondary" type="button" (click)="cerrarEdicion()" [disabled]="guardando()">Cancelar</button>
+        <button class="btn btn-primary" type="submit" [disabled]="guardando()">
+          {{ guardando() ? 'Guardando...' : 'Guardar cambios' }}
+        </button>
+      </div>
+    </form>
+  </div>
+}
+
+<!-- MODAL CONFIRMAR ELIMINAR -->
+@if (pedidoEliminar(); as eliminar) {
+  <div class="overlay center-modal" (click)="cancelarEliminar()">
+    <div class="modal-box card" (click)="$event.stopPropagation()">
+      <h3 style="font-size: 18px; font-weight: 600;">¿Eliminar pedido?</h3>
+      <p style="color: var(--muted); margin: 10px 0 24px; font-size: 14px;">
+        ¿Estás seguro de que deseas eliminar el pedido <strong>#{{ eliminar.id }} ({{ eliminar.cliente }})</strong>?
+      </p>
+      <div class="drawer-actions">
+        <button class="btn btn-secondary" type="button" (click)="cancelarEliminar()" [disabled]="eliminando()">Cancelar</button>
+        <button class="btn btn-danger" type="button" (click)="confirmarEliminar()" [disabled]="eliminando()">
+          {{ eliminando() ? 'Eliminando...' : 'Eliminar' }}
+        </button>
+      </div>
+    </div>
   </div>
 }

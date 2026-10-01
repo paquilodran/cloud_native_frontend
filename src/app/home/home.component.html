@@ -45,6 +45,48 @@
   </article>
 </section>
 
+<!-- Panel Interactivo RabbitMQ -->
+<section class="card pad" style="margin-bottom: 20px; border-left: 4px solid #f97316;">
+  <div class="card-head" style="margin-bottom: 8px;">
+    <div style="display:flex; align-items:center; gap:12px;">
+      <span class="mark rabbit" style="width:38px; height:38px; font-size:16px;">R</span>
+      <div>
+        <h2 class="section-title" style="margin:0;">Mensajería Asíncrona — RabbitMQ</h2>
+        <p class="tiny" style="color:var(--muted); margin:0;">Dispara eventos y mensajes en tiempo real hacia la cola <code>hello</code> (puerto 5672 / REST 8080)</p>
+      </div>
+    </div>
+    <a href="http://localhost:15672" target="_blank" class="btn btn-ghost" style="color:#f97316; font-weight:600; text-decoration:none;">
+      📊 Dashboard RabbitMQ (15672) ↗
+    </a>
+  </div>
+
+  <div style="display:flex; gap:10px; margin-top:14px; flex-wrap:wrap;">
+    <input type="text" [(ngModel)]="mensajeRabbit" class="input" style="flex:1; min-width:280px; padding:10px 14px; border:1px solid #d0d5dd; border-radius:8px;" placeholder="Escribe un mensaje para encolar en RabbitMQ...">
+    <button type="button" class="btn btn-primary" (click)="enviarARabbitMQ()" [disabled]="enviandoRabbit" style="background:#f97316; border-color:#f97316; padding:10px 18px; color:#fff; border-radius:8px; font-weight:600; cursor:pointer;">
+      @if (enviandoRabbit) {
+        <span>Enviando...</span>
+      } @else {
+        <span>📤 Enviar Mensaje a RabbitMQ</span>
+      }
+    </button>
+    <button type="button" class="btn btn-ghost" (click)="enviarLoteRabbit(5)" [disabled]="enviandoRabbit" style="border:1px solid #d0d5dd; border-radius:8px; padding:10px 14px; cursor:pointer;">
+      ⚡ Enviar Lote (5)
+    </button>
+  </div>
+
+  @if (ultimoEnvioRabbit) {
+    <div style="margin-top:12px; padding:10px 14px; border-radius:8px; background:#f0fdf4; color:#166534; font-size:13px; font-weight:500; display:flex; align-items:center; gap:8px;">
+      <span>{{ ultimoEnvioRabbit }}</span>
+    </div>
+  }
+
+  @if (errorRabbit) {
+    <div style="margin-top:12px; padding:10px 14px; border-radius:8px; background:#fef2f2; color:#991b1b; font-size:13px; font-weight:500; display:flex; align-items:center; gap:8px;">
+      <span>⚠️ {{ errorRabbit }}</span>
+    </div>
+  }
+</section>
+
 <section class="grid-main">
   <article class="card pad">
     <h2 class="section-title">Flujo de autenticación y arquitectura</h2>
@@ -72,6 +114,12 @@
         <strong>Spring Boot</strong>
         <small>API Backend</small>
       </div>
+      <span class="arrow">→</span>
+      <div class="node">
+        <span class="mark rabbit">R</span>
+        <strong>RabbitMQ</strong>
+        <small>Broker AMQP</small>
+      </div>
     </div>
     <div class="sys">
       <p class="tiny">Estado del sistema</p>
@@ -79,7 +127,7 @@
         <li><i class="dot dot-ok"></i> Frontend (Angular)</li>
         <li><i class="dot" [class.dot-ok]="autenticado" [class.dot-warn]="!autenticado"></i> Azure AD</li>
         <li><i class="dot dot-ok"></i> API (Spring Boot)</li>
-        <li><i class="dot dot-ok"></i> Base de datos</li>
+        <li><i class="dot dot-ok"></i> Broker RabbitMQ (:5672)</li>
       </ul>
     </div>
     @if (claims) {

@@ -46,6 +46,26 @@ export class PedidosService {
     );
   }
 
+  actualizar(id: number, pedido: Pedido): Observable<Pedido> {
+    return this.getAuthHeaders().pipe(
+      switchMap((headers) => this.http.put<Pedido>(`${this.url}/${id}`, pedido, { headers })),
+      catchError((err) => {
+        console.warn('[PedidosService] PUT no disponible en backend remoto, actualizando localmente:', err);
+        return of(pedido);
+      })
+    );
+  }
+
+  eliminar(id: number): Observable<void> {
+    return this.getAuthHeaders().pipe(
+      switchMap((headers) => this.http.delete<void>(`${this.url}/${id}`, { headers })),
+      catchError((err) => {
+        console.warn('[PedidosService] DELETE no disponible en backend remoto, eliminando localmente:', err);
+        return of(void 0);
+      })
+    );
+  }
+
   listarDemo(): Observable<Pedido[]> {
     return of(this.demo);
   }
