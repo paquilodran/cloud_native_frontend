@@ -45,46 +45,140 @@
   </article>
 </section>
 
-<!-- Panel Interactivo RabbitMQ -->
-<section class="card pad" style="margin-bottom: 20px; border-left: 4px solid #f97316;">
-  <div class="card-head" style="margin-bottom: 8px;">
+<!-- Panel Central RabbitMQ Enterprise (EP3 & EP4) -->
+<section class="card pad" style="margin-bottom: 24px; border-left: 4px solid #f97316;">
+  <div class="card-head" style="margin-bottom: 12px; display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px;">
     <div style="display:flex; align-items:center; gap:12px;">
-      <span class="mark rabbit" style="width:38px; height:38px; font-size:16px;">R</span>
+      <span class="mark rabbit" style="width:40px; height:40px; font-size:16px;">R</span>
       <div>
-        <h2 class="section-title" style="margin:0;">Mensajería Asíncrona — RabbitMQ</h2>
-        <p class="tiny" style="color:var(--muted); margin:0;">Dispara eventos y mensajes en tiempo real hacia la cola <code>hello</code> (puerto 5672 / REST 8080)</p>
+        <h2 class="section-title" style="margin:0;">Plataforma de Mensajería Asíncrona Resiliente (RabbitMQ)</h2>
+        <p class="tiny" style="color:var(--muted); margin:0;">3 Colas con Dead Letter Queues (DLQ), Exchanges Direct/Topic y RabbitAdmin Service (Duoc UC)</p>
       </div>
     </div>
-    <a href="http://localhost:15672" target="_blank" class="btn btn-ghost" style="color:#f97316; font-weight:600; text-decoration:none;">
-      📊 Dashboard RabbitMQ (15672) ↗
-    </a>
+    <div style="display:flex; gap:8px;">
+      <a href="http://localhost:15672" target="_blank" class="btn btn-ghost" style="color:#f97316; font-size:12px; font-weight:600; text-decoration:none; border:1px solid #fed7aa;">
+        📊 Nodo 1 UI (15672) ↗
+      </a>
+      <a href="http://localhost:15673" target="_blank" class="btn btn-ghost" style="color:#64748b; font-size:12px; font-weight:600; text-decoration:none; border:1px solid #e2e8f0;">
+        ⚡ Nodo 2 Clúster (15673) ↗
+      </a>
+    </div>
   </div>
 
-  <div style="display:flex; gap:10px; margin-top:14px; flex-wrap:wrap;">
-    <input type="text" [(ngModel)]="mensajeRabbit" class="input" style="flex:1; min-width:280px; padding:10px 14px; border:1px solid #d0d5dd; border-radius:8px;" placeholder="Escribe un mensaje para encolar en RabbitMQ...">
-    <button type="button" class="btn btn-primary" (click)="enviarARabbitMQ()" [disabled]="enviandoRabbit" style="background:#f97316; border-color:#f97316; padding:10px 18px; color:#fff; border-radius:8px; font-weight:600; cursor:pointer;">
-      @if (enviandoRabbit) {
-        <span>Enviando...</span>
-      } @else {
-        <span>📤 Enviar Mensaje a RabbitMQ</span>
-      }
+  <!-- Estado de las 3 Colas -->
+  <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:12px; margin-bottom:16px;">
+    <div style="background:#fff7ed; padding:12px; border-radius:8px; border:1px solid #fed7aa;">
+      <span class="tiny" style="color:#c2410c; font-weight:600;">COLA 1: PEDIDOS (DIRECT)</span>
+      <p style="margin:4px 0; font-size:13px; font-weight:600;">orders.queue <span style="font-weight:400; color:#64748b;">(TTL: 30s)</span></p>
+      <span class="tiny" style="color:#9a3412;">DLX: orders.dlx → DLQ: orders.dlq (24h)</span>
+    </div>
+    <div style="background:#f0fdf4; padding:12px; border-radius:8px; border:1px solid #bbf7d0;">
+      <span class="tiny" style="color:#15803d; font-weight:600;">COLA 2: NOTIFICACIONES (DIRECT)</span>
+      <p style="margin:4px 0; font-size:13px; font-weight:600;">notifications.queue <span style="font-weight:400; color:#64748b;">(TTL: 45s)</span></p>
+      <span class="tiny" style="color:#166534;">DLX: notifications.dlx → notifications.dlq</span>
+    </div>
+    <div style="background:#eff6ff; padding:12px; border-radius:8px; border:1px solid #bfdbfe;">
+      <span class="tiny" style="color:#1d4ed8; font-weight:600;">COLA 3: EVENTOS (TOPIC)</span>
+      <p style="margin:4px 0; font-size:13px; font-weight:600;">events.topic.queue <span style="font-weight:400; color:#64748b;">(Key: pedidos.*)</span></p>
+      <span class="tiny" style="color:#1e40af;">DLX: events.dlx → events.dlq</span>
+    </div>
+  </div>
+
+  <!-- Botones de Acción de Publicación -->
+  <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px;">
+    <button type="button" class="btn btn-primary" (click)="enviarOrdenNominal()" [disabled]="enviandoRabbit" style="background:#16a34a; border-color:#16a34a; color:#fff; font-size:12px; border-radius:6px; padding:8px 14px; cursor:pointer;">
+      ✓ Enviar Pedido Normal (ACK)
     </button>
-    <button type="button" class="btn btn-ghost" (click)="enviarLoteRabbit(5)" [disabled]="enviandoRabbit" style="border:1px solid #d0d5dd; border-radius:8px; padding:10px 14px; cursor:pointer;">
-      ⚡ Enviar Lote (5)
+    <button type="button" class="btn btn-primary" (click)="enviarOrdenConFallo()" [disabled]="enviandoRabbit" style="background:#dc2626; border-color:#dc2626; color:#fff; font-size:12px; border-radius:6px; padding:8px 14px; cursor:pointer;">
+      ⚠️ Simular Pedido con Fallo (3 Reintentos → DLQ)
+    </button>
+    <button type="button" class="btn btn-ghost" (click)="enviarNotificacionDemo()" [disabled]="enviandoRabbit" style="border:1px solid #cbd5e1; font-size:12px; border-radius:6px; padding:8px 14px; cursor:pointer;">
+      📩 Enviar Notificación (EMAIL)
+    </button>
+    <button type="button" class="btn btn-ghost" (click)="enviarEventoTopicDemo()" [disabled]="enviandoRabbit" style="border:1px solid #cbd5e1; font-size:12px; border-radius:6px; padding:8px 14px; cursor:pointer;">
+      🌐 Evento Topic (pedidos.despachado)
     </button>
   </div>
 
+  <!-- Administrador Dinamico de Colas (EP3 Criterios 6, 7 y 8) -->
+  <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:12px; margin-bottom:14px;">
+    <p class="tiny" style="font-weight:700; color:#334155; margin-bottom:8px; text-transform:uppercase;">
+      🛠️ Microservicio Administrador de RabbitMQ (RabbitAdminService — EP3)
+    </p>
+    <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+      <input type="text" [(ngModel)]="nuevaColaNombre" placeholder="Nombre cola ej: cola.auditoria" style="padding:6px 10px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px; min-width:180px;">
+      <input type="number" [(ngModel)]="nuevaColaTtl" placeholder="TTL ms" style="padding:6px 10px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px; width:100px;">
+      <button type="button" (click)="crearColaDinamica()" [disabled]="enviandoRabbit" style="background:#2563eb; color:#fff; border:none; border-radius:6px; padding:7px 12px; font-size:12px; cursor:pointer; font-weight:600;">
+        + Crear Cola (POST /admin/queues)
+      </button>
+      <div style="width:1px; height:20px; background:#cbd5e1; margin:0 4px;"></div>
+      <input type="text" [(ngModel)]="colaEliminarNombre" placeholder="Nombre cola a eliminar" style="padding:6px 10px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px; min-width:160px;">
+      <button type="button" (click)="eliminarColaDinamica()" [disabled]="enviandoRabbit" style="background:#64748b; color:#fff; border:none; border-radius:6px; padding:7px 12px; font-size:12px; cursor:pointer; font-weight:600;">
+        🗑️ Eliminar Cola (DELETE)
+      </button>
+    </div>
+  </div>
+
+  <!-- Alertas de Accion -->
   @if (ultimoEnvioRabbit) {
-    <div style="margin-top:12px; padding:10px 14px; border-radius:8px; background:#f0fdf4; color:#166534; font-size:13px; font-weight:500; display:flex; align-items:center; gap:8px;">
-      <span>{{ ultimoEnvioRabbit }}</span>
+    <div style="margin-top:10px; padding:10px 14px; border-radius:6px; background:#f0fdf4; color:#166534; font-size:12px; font-weight:500;">
+      {{ ultimoEnvioRabbit }}
     </div>
   }
 
   @if (errorRabbit) {
-    <div style="margin-top:12px; padding:10px 14px; border-radius:8px; background:#fef2f2; color:#991b1b; font-size:13px; font-weight:500; display:flex; align-items:center; gap:8px;">
-      <span>⚠️ {{ errorRabbit }}</span>
+    <div style="margin-top:10px; padding:10px 14px; border-radius:6px; background:#fef2f2; color:#991b1b; font-size:12px; font-weight:500;">
+      ⚠️ {{ errorRabbit }}
     </div>
   }
+
+  <!-- Auditoria de Dead Letter Queue (DLQ) -->
+  <div style="margin-top:16px; border-top:1px solid #f1f5f9; padding-top:12px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+      <h3 style="font-size:13px; font-weight:700; margin:0; color:#991b1b; display:flex; align-items:center; gap:6px;">
+        🚨 Auditoría de Mensajes Muertos (DLQ) — {{ dlqMessages.length }} registrados
+      </h3>
+      <div style="display:flex; gap:6px;">
+        <button type="button" (click)="cargarDlq()" class="btn btn-ghost" style="padding:4px 8px; font-size:11px; border:1px solid #cbd5e1; border-radius:4px; cursor:pointer;">
+          🔄 Refrescar
+        </button>
+        <button type="button" (click)="vaciarDlq()" class="btn btn-ghost" style="padding:4px 8px; font-size:11px; border:1px solid #fca5a5; color:#dc2626; border-radius:4px; cursor:pointer;">
+          Vaciado DLQ
+        </button>
+      </div>
+    </div>
+
+    @if (dlqMessages.length > 0) {
+      <div style="max-height:180px; overflow-y:auto; border:1px solid #fecaca; border-radius:6px; background:#fff;">
+        <table style="width:100%; border-collapse:collapse; font-size:11px;">
+          <thead>
+            <tr style="background:#fee2e2; text-align:left; color:#991b1b;">
+              <th style="padding:6px 10px;">Cola Origen</th>
+              <th style="padding:6px 10px;">Causa x-death</th>
+              <th style="padding:6px 10px;">Reintentos</th>
+              <th style="padding:6px 10px;">Timestamp</th>
+              <th style="padding:6px 10px;">Payload</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (msg of dlqMessages; track msg.id) {
+              <tr style="border-bottom:1px solid #fee2e2;">
+                <td style="padding:6px 10px; font-weight:600; color:#b91c1c;">{{ msg.colaOrigen }}</td>
+                <td style="padding:6px 10px;"><code>{{ msg.razon }}</code></td>
+                <td style="padding:6px 10px;">{{ msg.reintentos }}</td>
+                <td style="padding:6px 10px; color:#64748b;">{{ msg.timestamp | date:'shortTime' }}</td>
+                <td style="padding:6px 10px; max-width:260px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" [title]="msg.payload">{{ msg.payload }}</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    } @else {
+      <div style="background:#f8fafc; padding:10px; border-radius:6px; font-size:12px; color:#64748b; text-align:center;">
+        Sin mensajes en Dead Letter Queue actualmente. Todo el tráfico opera con ACK nominal.
+      </div>
+    }
+  </div>
 </section>
 
 <section class="grid-main">
