@@ -1,296 +1,941 @@
-<section class="page-head">
-  <div>
-    <h1>Bienvenido, Patricio</h1>
-    <p class="muted">Panel de control de Pedidos360</p>
-  </div>
-  <span class="env-chip">Entorno local</span>
-</section>
+<!-- Pestañas de Navegación -->
+<nav class="subnav-tabs">
+  <button type="button" class="tab-btn" [class.active]="tabActiva === 'inicio'" (click)="seleccionarTab('inicio')">
+    Inicio
+  </button>
+  <button type="button" class="tab-btn" [class.active]="tabActiva === 'dashboard'" (click)="seleccionarTab('dashboard')">
+    Dashboard
+  </button>
+  <button type="button" class="tab-btn" [class.active]="tabActiva === 'rabbitmq'" (click)="seleccionarTab('rabbitmq')">
+    RabbitMQ
+  </button>
+  <button type="button" class="tab-btn" [class.active]="tabActiva === 'kafka'" (click)="seleccionarTab('kafka')">
+    Apache Kafka
+  </button>
+</nav>
 
-<section class="kpis">
-  <article class="card kpi">
-    <div class="kpi-ico">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 7h16v12H4zM8 7V5h8v2" stroke="#2563EB" stroke-width="1.7"/></svg>
-    </div>
-    <p class="tiny">Pedidos totales</p>
-    <strong>{{ pedidos.length }}</strong>
-    <span class="trend up">↑ seed inicial</span>
-  </article>
-  <article class="card kpi">
-    <div class="kpi-ico">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="4" y="5" width="16" height="16" rx="2" stroke="#2563EB" stroke-width="1.7"/><path d="M8 3v4M16 3v4M4 11h16" stroke="#2563EB" stroke-width="1.7"/></svg>
-    </div>
-    <p class="tiny">Creados hoy</p>
-    <strong>{{ creadosHoy }}</strong>
-    <span class="trend up">↑ actividad del día</span>
-  </article>
-  <article class="card kpi">
-    <div class="kpi-ico">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 16c4-8 12-8 16 0" stroke="#2563EB" stroke-width="1.7"/><circle cx="12" cy="16" r="2" fill="#2563EB"/></svg>
-    </div>
-    <p class="tiny">Estado API</p>
-    <strong>Demo</strong>
-    <span class="tiny">GET / POST /api/pedidos</span>
-  </article>
-  <article class="card kpi">
-    <div class="kpi-ico">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 3 4 7v6c0 5 3.5 7.5 8 9 4.5-1.5 8-4 8-9V7l-8-4Z" stroke="#2563EB" stroke-width="1.7"/></svg>
-    </div>
-    <p class="tiny">Autenticación</p>
-    <strong>Microsoft Entra ID</strong>
-    @if (autenticado) {
-      <span class="auth-ok"><i class="dot dot-ok"></i> JWT activo</span>
-    } @else {
-      <span class="auth-wait"><i class="dot dot-warn"></i> Autenticación requerida</span>
-    }
-  </article>
-</section>
-
-<!-- Panel Central RabbitMQ Enterprise (EP3 & EP4) -->
-<section class="card pad" style="margin-bottom: 24px; border-left: 4px solid #f97316;">
-  <div class="card-head" style="margin-bottom: 12px; display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px;">
-    <div style="display:flex; align-items:center; gap:12px;">
-      <span class="mark rabbit" style="width:40px; height:40px; font-size:16px;">R</span>
+<!-- ========================================================================= -->
+<!-- 1. PESTAÑA: INICIO (PORTAL LIMPIO Y MINIMALISTA)                         -->
+<!-- ========================================================================= -->
+@if (tabActiva === 'inicio') {
+  <section class="card pad" style="margin-bottom: 20px;">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px;">
       <div>
-        <h2 class="section-title" style="margin:0;">Plataforma de Mensajería Asíncrona Resiliente (RabbitMQ)</h2>
-        <p class="tiny" style="color:var(--muted); margin:0;">3 Colas con Dead Letter Queues (DLQ), Exchanges Direct/Topic y RabbitAdmin Service (Duoc UC)</p>
+        <span class="subtle-chip">Plataforma Cloud Native</span>
+        <h1 style="margin: 8px 0 6px 0; font-size: 24px; font-weight: 700; color: #0f172a; letter-spacing: -0.02em;">
+          Pedidos360
+        </h1>
+        <p style="color: #64748b; font-size: 13px; max-width: 620px; margin: 0 0 16px 0; line-height: 1.5;">
+          Sistema de gestión desacoplado que integra autenticación JWT con Microsoft Entra ID, mensajería asíncrona con RabbitMQ y streaming analítico en tiempo real con Apache Kafka.
+        </p>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <button type="button" class="btn btn-primary" (click)="seleccionarTab('dashboard')">
+            Ver Dashboard
+          </button>
+          <button type="button" class="btn btn-secondary" (click)="seleccionarTab('kafka')">
+            Explorar Kafka
+          </button>
+          <button type="button" class="btn btn-secondary" (click)="seleccionarTab('rabbitmq')">
+            Explorar RabbitMQ
+          </button>
+        </div>
       </div>
-    </div>
-    <div style="display:flex; gap:8px;">
-      <a href="http://localhost:15672" target="_blank" class="btn btn-ghost" style="color:#f97316; font-size:12px; font-weight:600; text-decoration:none; border:1px solid #fed7aa;">
-        📊 Nodo 1 UI (15672) ↗
-      </a>
-      <a href="http://localhost:15673" target="_blank" class="btn btn-ghost" style="color:#64748b; font-size:12px; font-weight:600; text-decoration:none; border:1px solid #e2e8f0;">
-        ⚡ Nodo 2 Clúster (15673) ↗
-      </a>
-    </div>
-  </div>
 
-  <!-- Estado de las 3 Colas -->
-  <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:12px; margin-bottom:16px;">
-    <div style="background:#fff7ed; padding:12px; border-radius:8px; border:1px solid #fed7aa;">
-      <span class="tiny" style="color:#c2410c; font-weight:600;">COLA 1: PEDIDOS (DIRECT)</span>
-      <p style="margin:4px 0; font-size:13px; font-weight:600;">orders.queue <span style="font-weight:400; color:#64748b;">(TTL: 30s)</span></p>
-      <span class="tiny" style="color:#9a3412;">DLX: orders.dlx → DLQ: orders.dlq (24h)</span>
-    </div>
-    <div style="background:#f0fdf4; padding:12px; border-radius:8px; border:1px solid #bbf7d0;">
-      <span class="tiny" style="color:#15803d; font-weight:600;">COLA 2: NOTIFICACIONES (DIRECT)</span>
-      <p style="margin:4px 0; font-size:13px; font-weight:600;">notifications.queue <span style="font-weight:400; color:#64748b;">(TTL: 45s)</span></p>
-      <span class="tiny" style="color:#166534;">DLX: notifications.dlx → notifications.dlq</span>
-    </div>
-    <div style="background:#eff6ff; padding:12px; border-radius:8px; border:1px solid #bfdbfe;">
-      <span class="tiny" style="color:#1d4ed8; font-weight:600;">COLA 3: EVENTOS (TOPIC)</span>
-      <p style="margin:4px 0; font-size:13px; font-weight:600;">events.topic.queue <span style="font-weight:400; color:#64748b;">(Key: pedidos.*)</span></p>
-      <span class="tiny" style="color:#1e40af;">DLX: events.dlx → events.dlq</span>
-    </div>
-  </div>
-
-  <!-- Botones de Acción de Publicación -->
-  <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px;">
-    <button type="button" class="btn btn-primary" (click)="enviarOrdenNominal()" [disabled]="enviandoRabbit" style="background:#16a34a; border-color:#16a34a; color:#fff; font-size:12px; border-radius:6px; padding:8px 14px; cursor:pointer;">
-      ✓ Enviar Pedido Normal (ACK)
-    </button>
-    <button type="button" class="btn btn-primary" (click)="enviarOrdenConFallo()" [disabled]="enviandoRabbit" style="background:#dc2626; border-color:#dc2626; color:#fff; font-size:12px; border-radius:6px; padding:8px 14px; cursor:pointer;">
-      ⚠️ Simular Pedido con Fallo (3 Reintentos → DLQ)
-    </button>
-    <button type="button" class="btn btn-ghost" (click)="enviarNotificacionDemo()" [disabled]="enviandoRabbit" style="border:1px solid #cbd5e1; font-size:12px; border-radius:6px; padding:8px 14px; cursor:pointer;">
-      📩 Enviar Notificación (EMAIL)
-    </button>
-    <button type="button" class="btn btn-ghost" (click)="enviarEventoTopicDemo()" [disabled]="enviandoRabbit" style="border:1px solid #cbd5e1; font-size:12px; border-radius:6px; padding:8px 14px; cursor:pointer;">
-      🌐 Evento Topic (pedidos.despachado)
-    </button>
-  </div>
-
-  <!-- Administrador Dinamico de Colas (EP3 Criterios 6, 7 y 8) -->
-  <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:12px; margin-bottom:14px;">
-    <p class="tiny" style="font-weight:700; color:#334155; margin-bottom:8px; text-transform:uppercase;">
-      🛠️ Microservicio Administrador de RabbitMQ (RabbitAdminService — EP3)
-    </p>
-    <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
-      <input type="text" [(ngModel)]="nuevaColaNombre" placeholder="Nombre cola ej: cola.auditoria" style="padding:6px 10px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px; min-width:180px;">
-      <input type="number" [(ngModel)]="nuevaColaTtl" placeholder="TTL ms" style="padding:6px 10px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px; width:100px;">
-      <button type="button" (click)="crearColaDinamica()" [disabled]="enviandoRabbit" style="background:#2563eb; color:#fff; border:none; border-radius:6px; padding:7px 12px; font-size:12px; cursor:pointer; font-weight:600;">
-        + Crear Cola (POST /admin/queues)
-      </button>
-      <div style="width:1px; height:20px; background:#cbd5e1; margin:0 4px;"></div>
-      <input type="text" [(ngModel)]="colaEliminarNombre" placeholder="Nombre cola a eliminar" style="padding:6px 10px; border:1px solid #cbd5e1; border-radius:6px; font-size:12px; min-width:160px;">
-      <button type="button" (click)="eliminarColaDinamica()" [disabled]="enviandoRabbit" style="background:#64748b; color:#fff; border:none; border-radius:6px; padding:7px 12px; font-size:12px; cursor:pointer; font-weight:600;">
-        🗑️ Eliminar Cola (DELETE)
-      </button>
-    </div>
-  </div>
-
-  <!-- Alertas de Accion -->
-  @if (ultimoEnvioRabbit) {
-    <div style="margin-top:10px; padding:10px 14px; border-radius:6px; background:#f0fdf4; color:#166534; font-size:12px; font-weight:500;">
-      {{ ultimoEnvioRabbit }}
-    </div>
-  }
-
-  @if (errorRabbit) {
-    <div style="margin-top:10px; padding:10px 14px; border-radius:6px; background:#fef2f2; color:#991b1b; font-size:12px; font-weight:500;">
-      ⚠️ {{ errorRabbit }}
-    </div>
-  }
-
-  <!-- Auditoria de Dead Letter Queue (DLQ) -->
-  <div style="margin-top:16px; border-top:1px solid #f1f5f9; padding-top:12px;">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-      <h3 style="font-size:13px; font-weight:700; margin:0; color:#991b1b; display:flex; align-items:center; gap:6px;">
-        🚨 Auditoría de Mensajes Muertos (DLQ) — {{ dlqMessages.length }} registrados
-      </h3>
-      <div style="display:flex; gap:6px;">
-        <button type="button" (click)="cargarDlq()" class="btn btn-ghost" style="padding:4px 8px; font-size:11px; border:1px solid #cbd5e1; border-radius:4px; cursor:pointer;">
-          🔄 Refrescar
-        </button>
-        <button type="button" (click)="vaciarDlq()" class="btn btn-ghost" style="padding:4px 8px; font-size:11px; border:1px solid #fca5a5; color:#dc2626; border-radius:4px; cursor:pointer;">
-          Vaciado DLQ
-        </button>
-      </div>
-    </div>
-
-    @if (dlqMessages.length > 0) {
-      <div style="max-height:180px; overflow-y:auto; border:1px solid #fecaca; border-radius:6px; background:#fff;">
-        <table style="width:100%; border-collapse:collapse; font-size:11px;">
-          <thead>
-            <tr style="background:#fee2e2; text-align:left; color:#991b1b;">
-              <th style="padding:6px 10px;">Cola Origen</th>
-              <th style="padding:6px 10px;">Causa x-death</th>
-              <th style="padding:6px 10px;">Reintentos</th>
-              <th style="padding:6px 10px;">Timestamp</th>
-              <th style="padding:6px 10px;">Payload</th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (msg of dlqMessages; track msg.id) {
-              <tr style="border-bottom:1px solid #fee2e2;">
-                <td style="padding:6px 10px; font-weight:600; color:#b91c1c;">{{ msg.colaOrigen }}</td>
-                <td style="padding:6px 10px;"><code>{{ msg.razon }}</code></td>
-                <td style="padding:6px 10px;">{{ msg.reintentos }}</td>
-                <td style="padding:6px 10px; color:#64748b;">{{ msg.timestamp | date:'shortTime' }}</td>
-                <td style="padding:6px 10px; max-width:260px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" [title]="msg.payload">{{ msg.payload }}</td>
-              </tr>
-            }
-          </tbody>
-        </table>
-      </div>
-    } @else {
-      <div style="background:#f8fafc; padding:10px; border-radius:6px; font-size:12px; color:#64748b; text-align:center;">
-        Sin mensajes en Dead Letter Queue actualmente. Todo el tráfico opera con ACK nominal.
-      </div>
-    }
-  </div>
-</section>
-
-<section class="grid-main">
-  <article class="card pad">
-    <h2 class="section-title">Flujo de autenticación y arquitectura</h2>
-    <div class="flow">
-      <div class="node">
-        <span class="mark angular">A</span>
-        <strong>Angular</strong>
-        <small>Frontend</small>
-      </div>
-      <span class="arrow">→</span>
-      <div class="node">
-        <span class="mark azure">Az</span>
-        <strong>Azure AD</strong>
-        <small>Identity Provider</small>
-      </div>
-      <span class="arrow">→</span>
-      <div class="node">
-        <span class="mark jwt">J</span>
-        <strong>JWT</strong>
-        <small>Token</small>
-      </div>
-      <span class="arrow">→</span>
-      <div class="node">
-        <span class="mark spring">S</span>
-        <strong>Spring Boot</strong>
-        <small>API Backend</small>
-      </div>
-      <span class="arrow">→</span>
-      <div class="node">
-        <span class="mark rabbit">R</span>
-        <strong>RabbitMQ</strong>
-        <small>Broker AMQP</small>
-      </div>
-    </div>
-    <div class="sys">
-      <p class="tiny">Estado del sistema</p>
-      <ul>
-        <li><i class="dot dot-ok"></i> Frontend (Angular)</li>
-        <li><i class="dot" [class.dot-ok]="autenticado" [class.dot-warn]="!autenticado"></i> Azure AD</li>
-        <li><i class="dot dot-ok"></i> API (Spring Boot)</li>
-        <li><i class="dot dot-ok"></i> Broker RabbitMQ (:5672)</li>
-      </ul>
-    </div>
-    @if (claims) {
-      <div class="claims">
-        <p class="tiny">Claims del access token</p>
-        <ul>
-          <li><strong>Usuario:</strong> {{ claims.preferredUsername }}</li>
-          <li><strong>Scope:</strong> {{ claims.scopes }}</li>
-          <li><strong>Roles:</strong> {{ claims.roles }}</li>
-          <li><strong>Audience:</strong> {{ claims.audience }}</li>
-          <li><strong>Expira:</strong> {{ claims.expires }}</li>
+      <!-- Estado de Infraestructura Minimalista -->
+      <div class="status-summary-box">
+        <span class="tiny-label">Estado de Servicios</span>
+        <ul class="status-list">
+          <li><span class="live-beacon"><span class="beacon-ping"></span><span class="beacon-dot"></span></span> Frontend Angular 19</li>
+          <li><span class="live-beacon"><span class="beacon-ping"></span><span class="beacon-dot"></span></span> Backend Spring Boot :8080</li>
+          <li><span class="live-beacon"><span class="beacon-ping"></span><span class="beacon-dot"></span></span> RabbitMQ Clúster (2 Nodos)</li>
+          <li><span class="live-beacon"><span class="beacon-ping"></span><span class="beacon-dot"></span></span> Kafka Clúster (3 Brokers)</li>
+          <li><span class="status-dot" [class.online]="autenticado"></span> {{ autenticado ? 'Entra ID (Conectado)' : 'Sin sesión' }}</li>
         </ul>
       </div>
-    }
-  </article>
-
-  <article class="card pad">
-    <div class="card-head">
-      <h2 class="section-title">Últimos pedidos</h2>
-      <a routerLink="/pedidos" class="btn btn-ghost">Ver todos →</a>
     </div>
-    <table class="table">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Cliente</th>
-          <th>Estado</th>
-          <th>Fecha</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (pedido of pedidos; track pedido.id) {
-          <tr>
-            <td>#{{ pedido.id }}</td>
-            <td>{{ pedido.cliente }}</td>
-            <td><span [class]="claseEstado(pedido.estado)">{{ etiquetaEstado(pedido.estado) }}</span></td>
-            <td>{{ pedido.fecha | date:'shortTime' }}</td>
-          </tr>
-        }
-      </tbody>
-    </table>
-  </article>
-</section>
+  </section>
 
-<section class="grid-bottom">
-  <article class="promo">
-    <p class="tiny">CLOUD NATIVE</p>
-    <h2>Más que pedidos,<br>es tu flujo de trabajo.</h2>
-    <p>Pedidos360 integra Angular, Microsoft Entra ID y Spring Boot para autenticar, emitir JWT y gestionar pedidos en un flujo Cloud Native.</p>
-    <a routerLink="/pedidos" class="btn btn-primary">Ver pedidos →</a>
-    <div class="promo-deco" aria-hidden="true"></div>
-  </article>
+  <!-- Módulos de la Solución -->
+  <section style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; margin-bottom: 20px;">
+    <article class="card pad module-card" (click)="seleccionarTab('dashboard')">
+      <div>
+        <span class="tiny-label">Analítica</span>
+        <h3 class="module-title">Dashboard</h3>
+        <p class="module-desc">Indicadores transaccionales, KPIs diarios y gráfico de actividad mensual.</p>
+      </div>
+      <span class="module-link">Abrir módulo →</span>
+    </article>
 
-  <article class="card pad">
-    <div class="card-head">
-      <h2 class="section-title">Resumen de actividad</h2>
-      <span class="tiny">Últimos 7 meses</span>
+    <article class="card pad module-card" routerLink="/pedidos">
+      <div>
+        <span class="tiny-label">Operación</span>
+        <h3 class="module-title">Gestión de Pedidos</h3>
+        <p class="module-desc">Consulta, registro y filtrado de órdenes protegidas con token JWT.</p>
+      </div>
+      <span class="module-link">Gestionar pedidos →</span>
+    </article>
+
+    <article class="card pad module-card" (click)="seleccionarTab('rabbitmq')">
+      <div>
+        <span class="tiny-label">AMQP</span>
+        <h3 class="module-title">RabbitMQ</h3>
+        <p class="module-desc">3 colas principales, reintentos con backoff, DLQ y enrutamiento direct/topic.</p>
+      </div>
+      <span class="module-link">Ver RabbitMQ →</span>
+    </article>
+
+    <article class="card pad module-card" (click)="seleccionarTab('kafka')">
+      <div>
+        <span class="tiny-label">Streaming</span>
+        <h3 class="module-title">Apache Kafka</h3>
+        <p class="module-desc">Clúster de 3 brokers, 2 tópicos con 3 particiones y 3 réplicas en tiempo real.</p>
+      </div>
+      <span class="module-link">Ver Kafka →</span>
+    </article>
+  </section>
+
+  <!-- Enlaces de Monitoreo -->
+  <section class="card pad" style="margin-bottom:20px;">
+    <span class="tiny-label" style="margin-bottom:8px; display:block;">Consolas de Administración</span>
+    <div style="display:flex; gap:10px; flex-wrap:wrap;">
+      <a href="http://localhost:8085" target="_blank" class="admin-chip">Kafka-UI (:8085) ↗</a>
+      <a href="http://localhost:15672" target="_blank" class="admin-chip">RabbitMQ Nodo 1 (:15672) ↗</a>
+      <a href="http://localhost:15673" target="_blank" class="admin-chip">RabbitMQ Nodo 2 (:15673) ↗</a>
+      <a href="http://localhost:8080/h2-console" target="_blank" class="admin-chip">H2 Database (:8080) ↗</a>
     </div>
-    <svg class="chart" viewBox="0 0 520 168" role="img" aria-label="Pedidos por mes">
-      <line x1="24" y1="36" x2="500" y2="36" stroke="#F2F4F7"/>
-      <line x1="24" y1="84" x2="500" y2="84" stroke="#F2F4F7"/>
-      <line x1="24" y1="132" x2="500" y2="132" stroke="#E5E7EB"/>
-      <polyline [attr.points]="chartPoints" fill="none" stroke="#2563EB" stroke-width="2.4" stroke-linejoin="round" stroke-linecap="round"/>
-      @for (punto of actividad; track punto.mes; let i = $index) {
-        <circle [attr.cx]="28 + i * 72" [attr.cy]="132 - (punto.valor / 4) * 96" r="3.5" fill="#2563EB">
-          <title>{{ punto.mes }}: {{ punto.valor }} pedidos</title>
-        </circle>
-        <text [attr.x]="28 + i * 72" y="154" text-anchor="middle" fill="#667085" font-size="11">{{ punto.mes }}</text>
+  </section>
+}
+
+<!-- ========================================================================= -->
+<!-- 2. PESTAÑA: DASHBOARD OPERACIONAL                                         -->
+<!-- ========================================================================= -->
+@if (tabActiva === 'dashboard') {
+  <section class="page-head" style="margin-bottom:16px;">
+    <div>
+      <h1 style="font-size:22px; font-weight:700; margin:0 0 4px 0;">Dashboard</h1>
+      <p class="muted" style="font-size:13px; margin:0;">Métricas y actividad general del sistema</p>
+    </div>
+    <span class="env-chip">Entorno local</span>
+  </section>
+
+  <section class="kpis" style="margin-bottom:16px;">
+    <article class="card kpi">
+      <p class="tiny">Pedidos totales</p>
+      <strong>{{ pedidos.length }}</strong>
+      <span class="tiny muted">Base de datos</span>
+    </article>
+    <article class="card kpi">
+      <p class="tiny">Creados hoy</p>
+      <strong>{{ creadosHoy }}</strong>
+      <span class="tiny muted">Jornada actual</span>
+    </article>
+    <article class="card kpi">
+      <p class="tiny">Estado Backend</p>
+      <strong style="color:#0f172a;">Online</strong>
+      <span class="tiny muted">Puerto 8080</span>
+    </article>
+    <article class="card kpi">
+      <p class="tiny">Autenticación</p>
+      <strong style="font-size:18px;">Microsoft Entra ID</strong>
+      <span class="tiny" [style.color]="autenticado ? '#16a34a' : '#d97706'">
+        {{ autenticado ? 'JWT activo' : 'Sin sesión' }}
+      </span>
+    </article>
+  </section>
+
+  <!-- Arquitectura y Últimas Órdenes -->
+  <section class="grid-main">
+    <article class="card pad">
+      <div class="card-head" style="margin-bottom:12px;">
+        <h2 class="section-title">Topología de Arquitectura Cloud Native</h2>
+        <span class="pill-badge pill-success" style="font-size:10px;">End-to-End Resiliente</span>
+      </div>
+
+      <div class="saas-flow">
+        <div class="saas-node">
+          <div class="saas-node-icon ng-ico">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="m12 2 9 4.5-3.5 12.5L12 22l-5.5-3-3.5-12.5L12 2z" stroke="#dd0031" stroke-width="1.8"/></svg>
+          </div>
+          <div class="saas-node-meta">
+            <strong>Angular 19</strong>
+            <small>Frontend SPA</small>
+          </div>
+          <span class="saas-dot online"></span>
+        </div>
+
+        <span class="saas-arrow">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M12 5l7 7-7 7" stroke="#94a3b8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+
+        <div class="saas-node">
+          <div class="saas-node-icon ms-ico">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="8" height="8" rx="1" fill="#f35325"/><rect x="13" y="3" width="8" height="8" rx="1" fill="#81bc06"/><rect x="3" y="13" width="8" height="8" rx="1" fill="#05a6f0"/><rect x="13" y="13" width="8" height="8" rx="1" fill="#ffba08"/></svg>
+          </div>
+          <div class="saas-node-meta">
+            <strong>Entra ID</strong>
+            <small>OAuth / JWT</small>
+          </div>
+          <span class="saas-dot" [class.online]="autenticado"></span>
+        </div>
+
+        <span class="saas-arrow">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M12 5l7 7-7 7" stroke="#94a3b8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+
+        <div class="saas-node">
+          <div class="saas-node-icon sb-ico">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm1 14.93V17a1 1 0 0 1-2 0v-.07A8 8 0 0 1 4.07 10H5a1 1 0 0 1 0-2h-.93A8 8 0 0 1 11 3.07V4a1 1 0 0 1 2 0v-.93A8 8 0 0 1 19.93 9H19a1 1 0 0 1 0 2h.93A8 8 0 0 1 13 16.93z" stroke="#16a34a" stroke-width="1.6"/></svg>
+          </div>
+          <div class="saas-node-meta">
+            <strong>Spring Boot 3</strong>
+            <small>Resource Server</small>
+          </div>
+          <span class="saas-dot online"></span>
+        </div>
+
+        <span class="saas-arrow">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M12 5l7 7-7 7" stroke="#94a3b8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+
+        <div class="saas-node">
+          <div class="saas-node-icon rb-ico">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M18 10a6 6 0 0 0-12 0c0 4 2.5 7.5 6 9 3.5-1.5 6-5 6-9z" stroke="#ea580c" stroke-width="1.8"/></svg>
+          </div>
+          <div class="saas-node-meta">
+            <strong>RabbitMQ</strong>
+            <small>AMQP (2 Nodos)</small>
+          </div>
+          <span class="saas-dot online"></span>
+        </div>
+
+        <span class="saas-arrow">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M12 5l7 7-7 7" stroke="#94a3b8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </span>
+
+        <div class="saas-node">
+          <div class="saas-node-icon kf-ico">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="#7c3aed" stroke-width="2"/><circle cx="19" cy="5" r="2.5" stroke="#7c3aed" stroke-width="1.8"/><circle cx="5" cy="5" r="2.5" stroke="#7c3aed" stroke-width="1.8"/><circle cx="12" cy="20" r="2.5" stroke="#7c3aed" stroke-width="1.8"/><line x1="12" y1="9" x2="12" y2="17.5" stroke="#7c3aed" stroke-width="1.5"/><line x1="7" y1="6.5" x2="10" y2="10" stroke="#7c3aed" stroke-width="1.5"/><line x1="17" y1="6.5" x2="14" y2="10" stroke="#7c3aed" stroke-width="1.5"/></svg>
+          </div>
+          <div class="saas-node-meta">
+            <strong>Apache Kafka</strong>
+            <small>3 Brokers (Stream)</small>
+          </div>
+          <span class="saas-dot online"></span>
+        </div>
+      </div>
+
+      @if (claims) {
+        <div class="claims" style="margin-top:14px; padding-top:12px; border-top:1px solid #f1f5f9;">
+          <p class="tiny-label">Claims del Token</p>
+          <ul style="list-style:none; padding:0; margin:6px 0 0; font-size:12px; color:#475569; display:grid; gap:4px;">
+            <li><strong>Usuario:</strong> {{ claims.preferredUsername }}</li>
+            <li><strong>Scope:</strong> {{ claims.scopes }}</li>
+            <li><strong>Audience:</strong> {{ claims.audience }}</li>
+            <li><strong>Expira:</strong> {{ claims.expires }}</li>
+          </ul>
+        </div>
       }
-    </svg>
-  </article>
-</section>
+    </article>
+
+    <article class="card pad">
+      <div class="card-head" style="margin-bottom:12px;">
+        <h2 class="section-title">Últimos Pedidos</h2>
+        <a routerLink="/pedidos" class="btn btn-ghost" style="font-size:12px;">Ver todos →</a>
+      </div>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Cliente</th>
+            <th>Estado</th>
+            <th>Fecha</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (pedido of pedidos; track pedido.id) {
+            <tr (click)="abrirTimelinePedido(pedido)" class="clickable-row" title="Ver ciclo de vida del pedido">
+              <td><span class="mono-tag">#{{ pedido.id }}</span></td>
+              <td><strong>{{ pedido.cliente }}</strong></td>
+              <td><span [class]="claseEstado(pedido.estado)">{{ etiquetaEstado(pedido.estado) }}</span></td>
+              <td class="tiny muted">{{ pedido.fecha | date:'shortTime' }} <span style="color:#2563eb; font-weight:600; font-size:11px; margin-left:4px;">Ver trazabilidad →</span></td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </article>
+  </section>
+
+  <!-- Gráfico de Actividad -->
+  <section class="grid-bottom" style="margin-top:16px;">
+    <article class="card pad" style="grid-column: 1 / -1;">
+      <div class="card-head" style="margin-bottom:12px;">
+        <h2 class="section-title">Actividad Mensual</h2>
+        <span class="tiny muted">Últimos 7 meses</span>
+      </div>
+      <svg class="chart" viewBox="0 0 520 168" role="img" aria-label="Pedidos por mes">
+        <line x1="24" y1="36" x2="500" y2="36" stroke="#f1f5f9"/>
+        <line x1="24" y1="84" x2="500" y2="84" stroke="#f1f5f9"/>
+        <line x1="24" y1="132" x2="500" y2="132" stroke="#e2e8f0"/>
+        <polyline [attr.points]="chartPoints" fill="none" stroke="#2563eb" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+        @for (punto of actividad; track punto.mes; let i = $index) {
+          <circle [attr.cx]="28 + i * 72" [attr.cy]="132 - (punto.valor / 4) * 96" r="3" fill="#2563eb"/>
+          <text [attr.x]="28 + i * 72" y="154" text-anchor="middle" fill="#64748b" font-size="11">{{ punto.mes }}</text>
+        }
+      </svg>
+    </article>
+  </section>
+}
+
+<!-- ========================================================================= -->
+<!-- 3. PESTAÑA: RABBITMQ (AMQP)                                              -->
+<!-- ========================================================================= -->
+@if (tabActiva === 'rabbitmq') {
+  <section class="card pad" style="margin-bottom:20px;">
+    <div class="card-head" style="margin-bottom:14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+      <div>
+        <h2 style="font-size:18px; font-weight:700; margin:0 0 2px 0;">Plataforma RabbitMQ</h2>
+        <span class="tiny muted">Colas transaccionales, DLQ y reintentos (EP3 / EP4)</span>
+      </div>
+      <div style="display:flex; gap:8px;">
+        <a href="http://localhost:15672" target="_blank" class="btn btn-secondary" style="font-size:11px;">Nodo 1 (15672) ↗</a>
+        <a href="http://localhost:15673" target="_blank" class="btn btn-secondary" style="font-size:11px;">Nodo 2 (15673) ↗</a>
+      </div>
+    </div>
+
+    <!-- Colas Principales -->
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(230px, 1fr)); gap:10px; margin-bottom:16px;">
+      <div class="clean-stat-box">
+        <span class="tiny-label">Cola 1: Pedidos</span>
+        <strong class="clean-stat-value">orders.queue</strong>
+        <span class="tiny muted">Direct · TTL 30s · DLQ orders.dlq</span>
+      </div>
+      <div class="clean-stat-box">
+        <span class="tiny-label">Cola 2: Notificaciones</span>
+        <strong class="clean-stat-value">notifications.queue</strong>
+        <span class="tiny muted">Direct · TTL 45s · DLQ notifications.dlq</span>
+      </div>
+      <div class="clean-stat-box">
+        <span class="tiny-label">Cola 3: Eventos</span>
+        <strong class="clean-stat-value">events.topic.queue</strong>
+        <span class="tiny muted">Topic (pedidos.*) · TTL 60s · DLQ events.dlq</span>
+      </div>
+    </div>
+
+    <!-- Acciones -->
+    <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px;">
+      <button type="button" class="btn btn-primary" (click)="enviarOrdenNominal()" [disabled]="enviandoRabbit">
+        @if (enviandoRabbit) { <span class="btn-spinner"></span> }
+        Enviar Pedido Normal
+      </button>
+      <button type="button" class="btn btn-secondary" (click)="enviarOrdenConFallo()" [disabled]="enviandoRabbit" style="color:#dc2626;">
+        @if (enviandoRabbit) { <span class="btn-spinner"></span> }
+        Simular Fallo (Reintentos → DLQ)
+      </button>
+      <button type="button" class="btn btn-secondary" (click)="enviarNotificacionDemo()" [disabled]="enviandoRabbit">
+        @if (enviandoRabbit) { <span class="btn-spinner"></span> }
+        Enviar Notificación
+      </button>
+      <button type="button" class="btn btn-secondary" (click)="enviarEventoTopicDemo()" [disabled]="enviandoRabbit">
+        @if (enviandoRabbit) { <span class="btn-spinner"></span> }
+        Evento Topic (pedidos.despachado)
+      </button>
+    </div>
+
+    @if (ultimoEnvioRabbit) {
+      <div class="alert-box success-box">{{ ultimoEnvioRabbit }}</div>
+    }
+    @if (errorRabbit) {
+      <div class="alert-box error-box">{{ errorRabbit }}</div>
+    }
+
+    <!-- Administrador de Colas -->
+    <div class="clean-admin-section">
+      <span class="tiny-label" style="margin-bottom:8px; display:block;">Administración de Colas</span>
+      <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+        <input type="text" [(ngModel)]="nuevaColaNombre" placeholder="Nombre de cola" class="input clean-input" style="width:200px;" />
+        <input type="number" [(ngModel)]="nuevaColaTtl" placeholder="TTL ms" class="input clean-input" style="width:90px;" />
+        <button type="button" class="btn btn-primary" (click)="crearColaDinamica()" [disabled]="enviandoRabbit">
+          @if (enviandoRabbit) { <span class="btn-spinner"></span> }
+          Crear Cola
+        </button>
+        <span style="color:#cbd5e1; margin:0 4px;">|</span>
+        <input type="text" [(ngModel)]="colaEliminarNombre" placeholder="Cola a eliminar" class="input clean-input" style="width:160px;" />
+        <button type="button" class="btn btn-secondary" (click)="eliminarColaDinamica()" [disabled]="enviandoRabbit">
+          @if (enviandoRabbit) { <span class="btn-spinner"></span> }
+          Eliminar
+        </button>
+      </div>
+    </div>
+
+    <!-- Tabla DLQ -->
+    <div style="margin-top:16px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+        <span class="tiny-label">Mensajes en Dead Letter Queue ({{ dlqMessages.length }})</span>
+        <div style="display:flex; gap:6px;">
+          <button type="button" class="btn btn-ghost" (click)="cargarDlq()" style="font-size:11px;">Actualizar</button>
+          <button type="button" class="btn btn-ghost" (click)="vaciarDlq()" style="font-size:11px; color:#dc2626;">Vaciar</button>
+        </div>
+      </div>
+
+      @if (dlqMessages.length > 0) {
+        <div class="table-container">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Cola Origen</th>
+                <th>Reintentos</th>
+                <th>Causa</th>
+                <th>Fecha</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (msg of dlqMessages; track msg.id) {
+                <tr>
+                  <td><span class="mono-tag">#{{ msg.id }}</span></td>
+                  <td><span class="pill-badge pill-neutral">{{ msg.colaOrigen }}</span></td>
+                  <td><span class="pill-badge pill-warning">{{ msg.reintentos }} reintentos</span></td>
+                  <td>{{ msg.razon }}</td>
+                  <td class="tiny muted">{{ msg.timestamp | date:'shortTime' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      } @else {
+        <div class="empty-state-card">
+          <div class="empty-icon-wrapper">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" stroke="#94a3b8" stroke-width="1.6"/><polyline points="22,6 12,13 2,6" stroke="#94a3b8" stroke-width="1.6"/></svg>
+          </div>
+          <p class="empty-title">Sin mensajes en Dead Letter Queue</p>
+          <p class="empty-subtitle">Todo el tráfico de órdenes opera bajo confirmación nominal (ACK).</p>
+        </div>
+      }
+    </div>
+  </section>
+}
+
+<!-- ========================================================================= -->
+<!-- 4. PESTAÑA: APACHE KAFKA (STREAMING)                                      -->
+<!-- ========================================================================= -->
+@if (tabActiva === 'kafka') {
+  <section class="card pad" style="margin-bottom:20px;">
+    <div class="card-head" style="margin-bottom:14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+      <div>
+        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+          <h2 style="font-size:18px; font-weight:700; margin:0;">Plataforma Apache Kafka</h2>
+          <span class="live-pill">
+            <span class="live-beacon"><span class="beacon-ping"></span><span class="beacon-dot"></span></span>
+            3 Brokers Online (100% ISR)
+          </span>
+          @if (streamEnVivo) {
+            <span class="pill-badge pill-success" style="font-size:10px;">
+              <span class="live-beacon" style="margin-right:4px;"><span class="beacon-ping"></span><span class="beacon-dot"></span></span>
+              Auto-Streaming (2.5s)
+            </span>
+          }
+        </div>
+        <span class="tiny muted">Streaming distribuido, analítica y particionamiento (EP5 / EP6)</span>
+      </div>
+
+      <!-- Barra de Herramientas Avanzada -->
+      <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
+        <button
+          type="button"
+          class="btn"
+          [class.btn-primary]="streamEnVivo"
+          [class.btn-secondary]="!streamEnVivo"
+          (click)="toggleStreamEnVivo()"
+          style="font-size:11px;"
+          title="Sondeo automático cada 2.5s para demostración en vivo"
+        >
+          {{ streamEnVivo ? 'Pausar Stream' : 'Activar Auto-Stream' }}
+        </button>
+        <button type="button" class="btn btn-secondary" (click)="exportarEventos('csv')" style="font-size:11px;" title="Exportar CSV de eventos">
+          Descargar CSV
+        </button>
+        <button type="button" class="btn btn-secondary" (click)="exportarEventos('json')" style="font-size:11px;" title="Exportar JSON completo">
+          Descargar JSON
+        </button>
+        <a href="http://localhost:8085" target="_blank" class="btn btn-secondary" style="font-size:11px;">Kafka-UI (:8085) ↗</a>
+      </div>
+    </div>
+
+    <!-- Widget de Clúster: Tolerancia a Fallos y Estado de 3 Brokers (EP5) -->
+    <div class="broker-cluster-bar" style="margin-bottom:16px;">
+      <div class="broker-card" [class.broker-down]="brokerCaidoId === 1">
+        <div class="broker-card-head">
+          <span class="broker-badge">Broker 1</span>
+          <span class="broker-status" [class.online]="brokerCaidoId !== 1">{{ brokerCaidoId === 1 ? 'Failover' : 'Leader P0' }}</span>
+        </div>
+        <div class="broker-info">
+          <span>Puerto: <strong>29092</strong></span>
+          <span>ISR: <strong>Sincronizado</strong></span>
+        </div>
+        <button type="button" class="btn-chaos" (click)="simularCaosBroker(1)" [disabled]="simulandoCaos">
+          {{ brokerCaidoId === 1 ? 'Reconectando...' : 'Simular Caída' }}
+        </button>
+      </div>
+
+      <div class="broker-card" [class.broker-down]="brokerCaidoId === 2">
+        <div class="broker-card-head">
+          <span class="broker-badge">Broker 2</span>
+          <span class="broker-status" [class.online]="brokerCaidoId !== 2">{{ brokerCaidoId === 2 ? 'Failover' : 'Leader P1' }}</span>
+        </div>
+        <div class="broker-info">
+          <span>Puerto: <strong>29093</strong></span>
+          <span>ISR: <strong>Sincronizado</strong></span>
+        </div>
+        <button type="button" class="btn-chaos" (click)="simularCaosBroker(2)" [disabled]="simulandoCaos">
+          {{ brokerCaidoId === 2 ? 'Reconectando...' : 'Simular Caída' }}
+        </button>
+      </div>
+
+      <div class="broker-card" [class.broker-down]="brokerCaidoId === 3">
+        <div class="broker-card-head">
+          <span class="broker-badge">Broker 3</span>
+          <span class="broker-status" [class.online]="brokerCaidoId !== 3">{{ brokerCaidoId === 3 ? 'Failover' : 'Leader P2' }}</span>
+        </div>
+        <div class="broker-info">
+          <span>Puerto: <strong>29094</strong></span>
+          <span>ISR: <strong>Sincronizado</strong></span>
+        </div>
+        <button type="button" class="btn-chaos" (click)="simularCaosBroker(3)" [disabled]="simulandoCaos">
+          {{ brokerCaidoId === 3 ? 'Reconectando...' : 'Simular Caída' }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Tópicos y Distribución en Particiones -->
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(230px, 1fr)); gap:10px; margin-bottom:16px;">
+      <div class="clean-stat-box">
+        <span class="tiny-label">Tópico 1: Analítica</span>
+        <strong class="clean-stat-value">pedidos.analytics.stream</strong>
+        <span class="tiny muted">3 Particiones · 3 Réplicas · Retención 24h</span>
+      </div>
+
+      <div class="clean-stat-box">
+        <span class="tiny-label">Tópico 2: Auditoría</span>
+        <strong class="clean-stat-value">pedidos.audit.stream</strong>
+        <span class="tiny muted">3 Particiones · 3 Réplicas · Retención 7 días</span>
+      </div>
+
+      <div class="clean-stat-box">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span class="tiny-label">Balanceo por Partición</span>
+          <span class="tiny muted" style="font-size:11px;">{{ totalEventosParticiones }} eventos</span>
+        </div>
+        <div class="partition-bars" style="margin-top:6px; display:flex; flex-direction:column; gap:6px;">
+          <!-- P0 -->
+          <div class="partition-bar-row">
+            <div class="bar-meta">
+              <span class="pill-badge pill-p0" style="font-size:10px; padding:1px 5px;">P0</span>
+              <span class="bar-count">{{ kafkaMetrics?.partitionDistribution?.['partition_0'] || 0 }}</span>
+              <span class="bar-pct">{{ getPorcentajeParticion('partition_0') }}%</span>
+            </div>
+            <div class="bar-track">
+              <div class="bar-fill p0-fill" [style.width.%]="getPorcentajeParticion('partition_0')"></div>
+            </div>
+          </div>
+          <!-- P1 -->
+          <div class="partition-bar-row">
+            <div class="bar-meta">
+              <span class="pill-badge pill-p1" style="font-size:10px; padding:1px 5px;">P1</span>
+              <span class="bar-count">{{ kafkaMetrics?.partitionDistribution?.['partition_1'] || 0 }}</span>
+              <span class="bar-pct">{{ getPorcentajeParticion('partition_1') }}%</span>
+            </div>
+            <div class="bar-track">
+              <div class="bar-fill p1-fill" [style.width.%]="getPorcentajeParticion('partition_1')"></div>
+            </div>
+          </div>
+          <!-- P2 -->
+          <div class="partition-bar-row">
+            <div class="bar-meta">
+              <span class="pill-badge pill-p2" style="font-size:10px; padding:1px 5px;">P2</span>
+              <span class="bar-count">{{ kafkaMetrics?.partitionDistribution?.['partition_2'] || 0 }}</span>
+              <span class="bar-pct">{{ getPorcentajeParticion('partition_2') }}%</span>
+            </div>
+            <div class="bar-track">
+              <div class="bar-fill p2-fill" [style.width.%]="getPorcentajeParticion('partition_2')"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Métricas Numéricas -->
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:10px; margin-bottom:16px;">
+      <div class="clean-metric-tile">
+        <span class="tiny muted">Total Eventos Consumidos</span>
+        <strong>{{ kafkaMetrics?.totalEventsConsumed || 0 }}</strong>
+      </div>
+      <div class="clean-metric-tile">
+        <span class="tiny muted">Monto Streamed</span>
+        <strong>${{ (kafkaMetrics?.totalRevenueStreamed || 0) | number }}</strong>
+      </div>
+      <div class="clean-metric-tile">
+        <span class="tiny muted">Eventos Analítica</span>
+        <strong>{{ kafkaMetrics?.totalAnalyticsEvents || 0 }}</strong>
+      </div>
+      <div class="clean-metric-tile">
+        <span class="tiny muted">Eventos Auditoría</span>
+        <strong>{{ kafkaMetrics?.totalAuditEvents || 0 }}</strong>
+      </div>
+    </div>
+
+    <!-- Botones de Acción -->
+    <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px;">
+      <button type="button" class="btn btn-primary" (click)="enviarEventoAnalitico()" [disabled]="enviandoKafka">
+        @if (enviandoKafka) { <span class="btn-spinner"></span> }
+        Emitir Analítica
+      </button>
+      <button type="button" class="btn btn-secondary" (click)="enviarEventoAuditoria()" [disabled]="enviandoKafka">
+        @if (enviandoKafka) { <span class="btn-spinner"></span> }
+        Emitir Auditoría
+      </button>
+      <button type="button" class="btn btn-secondary" (click)="enviarRafagaBatch(6)" [disabled]="enviandoKafka">
+        @if (enviandoKafka) { <span class="btn-spinner"></span> }
+        Ráfaga en Lote (6 eventos)
+      </button>
+      <button type="button" class="btn btn-ghost" (click)="reiniciarMetricasKafka()" [disabled]="enviandoKafka" style="font-size:12px;">
+        Reiniciar Métricas
+      </button>
+    </div>
+
+    @if (ultimoEnvioKafka) {
+      <div class="alert-box success-box">{{ ultimoEnvioKafka }}</div>
+    }
+    @if (errorKafka) {
+      <div class="alert-box error-box">{{ errorKafka }}</div>
+    }
+
+    <!-- Administrador de Tópicos -->
+    <div class="clean-admin-section">
+      <span class="tiny-label" style="margin-bottom:8px; display:block;">Administración de Tópicos</span>
+      <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
+        <input type="text" [(ngModel)]="nuevoTopicoNombre" placeholder="Nombre de tópico" class="input clean-input" style="width:200px;" />
+        <input type="number" [(ngModel)]="nuevoTopicoParticiones" min="1" max="12" class="input clean-input" style="width:60px;" title="Particiones" />
+        <input type="number" [(ngModel)]="nuevoTopicoReplicas" min="1" max="3" class="input clean-input" style="width:60px;" title="Réplicas" />
+        <button type="button" class="btn btn-primary" (click)="crearTopicoDinamico()" [disabled]="enviandoKafka">
+          @if (enviandoKafka) { <span class="btn-spinner"></span> }
+          Crear Tópico
+        </button>
+        <span style="color:#cbd5e1; margin:0 4px;">|</span>
+        <input type="text" [(ngModel)]="topicoEliminarNombre" placeholder="Tópico a eliminar" class="input clean-input" style="width:160px;" />
+        <button type="button" class="btn btn-secondary" (click)="eliminarTopicoDinamico()" [disabled]="enviandoKafka">
+          @if (enviandoKafka) { <span class="btn-spinner"></span> }
+          Eliminar
+        </button>
+      </div>
+    </div>
+
+    <!-- Feed en Vivo: Stream Analítico -->
+    <div style="margin-top:20px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px;">
+        <div>
+          <span class="tiny-label">Eventos en Tiempo Real (&#64;KafkaListener: pedidos.analytics.stream)</span>
+          <span class="tiny muted" style="margin-left:6px;">{{ eventosKafkaFiltrados.length }} mostrados</span>
+        </div>
+
+        <!-- Chips de Filtrado Rápido por Partición -->
+        <div class="filter-bar">
+          <button type="button" class="filter-chip" [class.active]="filtroParticion === 'TODAS'" (click)="seleccionarFiltroParticion('TODAS')">
+            Todas <span class="filter-count">{{ recentKafkaEvents.length }}</span>
+          </button>
+          <button type="button" class="filter-chip" [class.active]="filtroParticion === 0" (click)="seleccionarFiltroParticion(0)">
+            P0 <span class="filter-count">{{ kafkaMetrics?.partitionDistribution?.['partition_0'] || 0 }}</span>
+          </button>
+          <button type="button" class="filter-chip" [class.active]="filtroParticion === 1" (click)="seleccionarFiltroParticion(1)">
+            P1 <span class="filter-count">{{ kafkaMetrics?.partitionDistribution?.['partition_1'] || 0 }}</span>
+          </button>
+          <button type="button" class="filter-chip" [class.active]="filtroParticion === 2" (click)="seleccionarFiltroParticion(2)">
+            P2 <span class="filter-count">{{ kafkaMetrics?.partitionDistribution?.['partition_2'] || 0 }}</span>
+          </button>
+          <button type="button" class="terminal-toggle-btn" (click)="toggleConsolaTerminal()" title="Alternar Consola de Logs">
+            {{ mostrarConsolaTerminal ? 'Ocultar Consola' : 'Ver Consola Stream' }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Consola de Streaming en Vivo (Dark Terminal Widget) -->
+      @if (mostrarConsolaTerminal && recentKafkaEvents.length > 0) {
+        <div class="terminal-card">
+          <div class="terminal-header">
+            <div class="mac-dots">
+              <span class="mac-dot red"></span>
+              <span class="mac-dot yellow"></span>
+              <span class="mac-dot green"></span>
+            </div>
+            <span class="terminal-title">kafka-console-consumer --topic pedidos.analytics.stream --from-beginning</span>
+            <span class="term-status-badge">LIVE STREAM</span>
+          </div>
+          <div class="terminal-body">
+            @for (ev of recentKafkaEvents.slice(0, 5); track ev.eventId) {
+              <div class="term-line">
+                <span class="term-time">[{{ ev.processedAt | date:'HH:mm:ss' }}]</span>
+                <span class="term-part" [class]="'term-p' + ev.partition">[P{{ ev.partition }}:#{{ ev.offset }}]</span>
+                <span class="term-key">key:{{ ev.orderId }}</span>
+                <span class="term-val">${{ ev.monto | number }}</span>
+                <span class="term-cat">cat:{{ ev.categoria }}</span>
+                <span class="term-ack">ACK(3x)</span>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      @if (eventosKafkaFiltrados.length > 0) {
+        <div class="table-container">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>ID Orden</th>
+                <th>Cliente</th>
+                <th>Categoría</th>
+                <th class="text-right">Monto</th>
+                <th class="text-center">Partición</th>
+                <th class="text-center">Latencia</th>
+                <th class="text-right">Offset</th>
+                <th class="text-right">Hora</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (ev of eventosKafkaPaginados; track ev.eventId) {
+                <tr>
+                  <td>
+                    <span class="mono-tag copyable" (click)="copiarId(ev.orderId, $event)" title="Hacer clic para copiar ID">
+                      {{ ev.orderId }}
+                      <svg class="copy-icon" width="12" height="12" viewBox="0 0 24 24" fill="none">
+                        <rect width="13" height="13" x="9" y="9" rx="2" stroke="currentColor" stroke-width="1.8"/>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" stroke="currentColor" stroke-width="1.8"/>
+                      </svg>
+                    </span>
+                  </td>
+                  <td>{{ ev.cliente }}</td>
+                  <td><span class="subtle-chip">{{ ev.categoria }}</span></td>
+                  <td class="text-right amount-cell">${{ ev.monto | number }}</td>
+                  <td class="text-center">
+                    <span class="pill-badge" [class.pill-p0]="ev.partition === 0" [class.pill-p1]="ev.partition === 1" [class.pill-p2]="ev.partition === 2">
+                      P{{ ev.partition }}
+                    </span>
+                  </td>
+                  <td class="text-center">
+                    <span class="latency-chip" title="Latencia nominal de streaming Kafka (< 50ms)">
+                      {{ calcularLatenciaMs($index) }} ms
+                    </span>
+                  </td>
+                  <td class="text-right"><span class="mono-tag">#{{ ev.offset }}</span></td>
+                  <td class="text-right tiny muted">{{ ev.processedAt | date:'mediumTime' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Barra de Paginación Dinámica (Streaming) -->
+        <div class="table-pagination-bar">
+          <div class="pagination-info">
+            <span>Página <strong>{{ paginaActualStream }}</strong> de <strong>{{ totalPaginasStream }}</strong> ({{ eventosKafkaFiltrados.length }} eventos)</span>
+          </div>
+          <div class="pagination-controls">
+            <label class="page-size-selector">
+              <span>Mostrar:</span>
+              <select [ngModel]="tamanoPaginaStream" (ngModelChange)="cambiarTamanoPaginaStream($event)">
+                <option [ngValue]="5">5</option>
+                <option [ngValue]="10">10</option>
+                <option [ngValue]="25">25</option>
+              </select>
+            </label>
+            <div class="page-btn-group">
+              <button
+                type="button"
+                class="page-nav-btn"
+                [disabled]="paginaActualStream <= 1"
+                (click)="cambiarPaginaStream(-1)"
+              >
+                Anterior
+              </button>
+              <button
+                type="button"
+                class="page-nav-btn"
+                [disabled]="paginaActualStream >= totalPaginasStream"
+                (click)="cambiarPaginaStream(1)"
+              >
+                Siguiente
+              </button>
+            </div>
+          </div>
+        </div>
+      } @else {
+        <div class="empty-state-card">
+          <div class="empty-icon-wrapper">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" stroke="#94a3b8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <p class="empty-title">Sin eventos para el filtro seleccionado</p>
+          <p class="empty-subtitle">No se encontraron eventos en la partición seleccionada.</p>
+        </div>
+      }
+    </div>
+
+    <!-- Feed en Vivo: Stream Auditoría -->
+    @if (recentKafkaAudit.length > 0) {
+      <div style="margin-top:20px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+          <span class="tiny-label">Eventos de Auditoría (&#64;KafkaListener: pedidos.audit.stream)</span>
+          <span class="tiny muted">{{ recentKafkaAudit.length }} auditados</span>
+        </div>
+        <div class="table-container">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>ID Orden</th>
+                <th>Acción</th>
+                <th>Operador</th>
+                <th>Transición</th>
+                <th class="text-center">Partición</th>
+                <th class="text-right">Offset</th>
+                <th class="text-right">Hora</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (ev of eventosAuditPaginados; track ev.auditId) {
+                <tr>
+                  <td>
+                    <span class="mono-tag copyable" (click)="copiarId(ev.orderId, $event)" title="Hacer clic para copiar ID">
+                      {{ ev.orderId }}
+                      <svg class="copy-icon" width="12" height="12" viewBox="0 0 24 24" fill="none">
+                        <rect width="13" height="13" x="9" y="9" rx="2" stroke="currentColor" stroke-width="1.8"/>
+                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" stroke="currentColor" stroke-width="1.8"/>
+                      </svg>
+                    </span>
+                  </td>
+                  <td><span class="pill-badge pill-neutral">{{ ev.accion }}</span></td>
+                  <td>{{ ev.usuarioOperador }}</td>
+                  <td><span class="tiny muted">{{ ev.estadoAnterior }} → </span><strong>{{ ev.nuevoEstado }}</strong></td>
+                  <td class="text-center">
+                    <span class="pill-badge" [class.pill-p0]="ev.partition === 0" [class.pill-p1]="ev.partition === 1" [class.pill-p2]="ev.partition === 2">
+                      P{{ ev.partition }}
+                    </span>
+                  </td>
+                  <td class="text-right"><span class="mono-tag">#{{ ev.offset }}</span></td>
+                  <td class="text-right tiny muted">{{ ev.processedAt | date:'mediumTime' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Barra de Paginación Dinámica (Auditoría) -->
+        <div class="table-pagination-bar">
+          <div class="pagination-info">
+            <span>Página <strong>{{ paginaActualAudit }}</strong> de <strong>{{ totalPaginasAudit }}</strong> ({{ recentKafkaAudit.length }} registros)</span>
+          </div>
+          <div class="pagination-controls">
+            <label class="page-size-selector">
+              <span>Mostrar:</span>
+              <select [ngModel]="tamanoPaginaAudit" (ngModelChange)="cambiarTamanoPaginaAudit($event)">
+                <option [ngValue]="5">5</option>
+                <option [ngValue]="10">10</option>
+                <option [ngValue]="25">25</option>
+              </select>
+            </label>
+            <div class="page-btn-group">
+              <button
+                type="button"
+                class="page-nav-btn"
+                [disabled]="paginaActualAudit <= 1"
+                (click)="cambiarPaginaAudit(-1)"
+              >
+                Anterior
+              </button>
+              <button
+                type="button"
+                class="page-nav-btn"
+                [disabled]="paginaActualAudit >= totalPaginasAudit"
+                (click)="cambiarPaginaAudit(1)"
+              >
+                Siguiente
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+  </section>
+}
+
+<!-- ========================================================================= -->
+<!-- MODAL: TIMELINE INTERACTIVO DEL CICLO DE VIDA DEL PEDIDO                  -->
+<!-- ========================================================================= -->
+@if (pedidoSeleccionadoParaTimeline) {
+  <div class="modal-backdrop" (click)="cerrarTimelinePedido()">
+    <div class="profile-modal-card" (click)="$event.stopPropagation()" style="max-width: 580px;">
+      <div class="modal-header">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div class="avatar-gradient" style="width:40px; height:40px; font-size:15px;">#{{ pedidoSeleccionadoParaTimeline.id }}</div>
+          <div>
+            <h2 style="margin:0; font-size:17px; font-weight:700; color:#0f172a;">
+              Trazabilidad de Orden #{{ pedidoSeleccionadoParaTimeline.id }}
+            </h2>
+            <span style="font-size:12px; color:#64748b;">
+              {{ pedidoSeleccionadoParaTimeline.cliente }} · ${{ pedidoSeleccionadoParaTimeline.total | number }}
+            </span>
+          </div>
+        </div>
+        <button type="button" class="close-btn" (click)="cerrarTimelinePedido()">×</button>
+      </div>
+
+      <!-- Stepper Vertical de Arquitectura -->
+      <div class="order-timeline" style="margin-top:16px;">
+        <div class="timeline-step done">
+          <div class="step-marker">1</div>
+          <div class="step-content">
+            <strong>1. Autenticación y Autorización IDaaS</strong>
+            <p>Petición validada mediante Bearer JWT con Microsoft Entra ID (Audience y Scopes nominales).</p>
+            <span class="mono-tag">OAuth 2.0 · Spring Security Resource Server</span>
+          </div>
+        </div>
+
+        <div class="timeline-step done">
+          <div class="step-marker">2</div>
+          <div class="step-content">
+            <strong>2. Encolado Asíncrono en RabbitMQ</strong>
+            <p>Mensaje despachado a <code>orders.exchange</code> (Direct) hacia <code>orders.queue</code> con TTL 30s.</p>
+            <span class="mono-tag">RoutingKey: orders.nominal · DLX: orders.dlx</span>
+          </div>
+        </div>
+
+        <div class="timeline-step done">
+          <div class="step-marker">3</div>
+          <div class="step-content">
+            <strong>3. Procesamiento y ACK de Worker</strong>
+            <p>El consumidor AMQP procesa la transacción de negocio y confirma el ACK al broker RabbitMQ.</p>
+            <span class="mono-tag">RabbitListener · Retry Policy nominal</span>
+          </div>
+        </div>
+
+        <div class="timeline-step done">
+          <div class="step-marker">4</div>
+          <div class="step-content">
+            <strong>4. Streaming Distribuido en Apache Kafka</strong>
+            <p>Evento emitido asíncronamente con key <code>ORD-{{ pedidoSeleccionadoParaTimeline.id }}</code> balanceado a una de las 3 particiones.</p>
+            <span class="mono-tag">Topic: pedidos.analytics.stream (3P / 3R / acks=all)</span>
+          </div>
+        </div>
+
+        <div class="timeline-step active">
+          <div class="step-marker">5</div>
+          <div class="step-content">
+            <strong>5. Consumo Analítico y Telemetría en Vivo</strong>
+            <p>El grupo <code>pedidos-analytics-group</code> con 3 hilos concurrentes ingiere el evento y actualiza métricas.</p>
+            <span class="mono-tag">&#64;KafkaListener · Consumer Group nominal</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-actions" style="margin-top:16px;">
+        <button type="button" class="btn btn-secondary" (click)="cerrarTimelinePedido()">Cerrar</button>
+      </div>
+    </div>
+  </div>
+}

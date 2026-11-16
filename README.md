@@ -1,9 +1,11 @@
-# Pedidos360 — Frontend (Angular + RabbitMQ Dashboard + MSAL)
+# Pedidos360 — Frontend (Angular + Apache Kafka Streaming + RabbitMQ + MSAL)
 
 **Institución:** Duoc UC  
 **Asignatura:** DSY1107 — Desarrollo Cloud Native I  
-**Evaluación:** Evaluación Parcial N° 3 (Encargo 12%) & Evaluación Parcial N° 4 (Presentación 18%)  
-**Rama Oficial:** `guia-dlx-dlq-retencion-alertas`  
+**Evaluaciones:**
+- EP3 (Encargo RabbitMQ 12%) & EP4 (Presentación RabbitMQ 18%)
+- **EP5 (Encargo Kafka Streaming 12%) & EP6 (Presentación Kafka Streaming 18%)**
+**Entorno de Contenedores:** OrbStack / Docker Desktop  
 **Repositorio Frontend:** [https://github.com/paquilodran/cloud_native_frontend](https://github.com/paquilodran/cloud_native_frontend)  
 **Repositorio Backend:** [https://github.com/paquilodran/cloud_native_backend](https://github.com/paquilodran/cloud_native_backend)  
 
@@ -13,12 +15,16 @@
 
 Aplicación Single Page Application (SPA) construida con **Angular 19** que combina:
 1. **Autenticación IDaaS y Seguridad:** Integración completa con **Microsoft Entra ID (Azure AD)** mediante la biblioteca oficial `@azure/msal-angular` (flujo OAuth 2.0 / OpenID Connect con PKCE y validación de tokens JWT en cada petición HTTP).
-2. **Panel de Control RabbitMQ Enterprise:** Interfaz gráfica interactiva para monitorear y gestionar la arquitectura de mensajería asíncrona resiliente del backend:
-   - **Monitoreo de 3 Colas y 3 DLQ:** Estado de `orders.queue`, `notifications.queue` y `events.topic.queue`.
-   - **Disparo de Eventos:** Envío de órdenes nominales (confirmadas con ACK) y simulación de órdenes con fallo crítico (demostrando 3 reintentos automáticos y desvío hacia `orders.dlq`).
-   - **Enrutamiento por Patrones:** Publicación en Topic Exchange (`pedidos.*`).
-   - **Microservicio Administrador Dinámico:** Formulario para crear y eliminar colas en tiempo real consumiendo los endpoints REST del `RabbitAdminService` con validaciones de entrada.
-   - **Auditoría de Mensajes Muertos en Vivo:** Tabla con historial de eventos en la Dead Letter Queue, mostrando causa `x-death`, reintentos, cola origen y timestamp.
+2. **Panel de Streaming y Analítica en Tiempo Real con Apache Kafka (EP5 & EP6):**
+   - **Monitoreo de los 2 Tópicos Principales:** `pedidos.analytics.stream` y `pedidos.audit.stream`, ambos con **3 Particiones y 3 Réplicas**.
+   - **Distribución de Carga en Particiones (P0, P1, P2):** Visualización en vivo de balanceo de eventos entre las 3 particiones del clúster.
+   - **Métricas de Streaming:** Contadores atómicos de eventos totales, facturación acumulada por categoría y tiempo de respuesta.
+   - **Disparo de Eventos Streaming:** Emisión de eventos analíticos (Tópico 1) y eventos de auditoría (Tópico 2).
+   - **Ráfaga en Lote:** Prueba de carga de 6 a 12 eventos concurrentes para evidenciar balanceo en los 3 brokers.
+   - **Microservicio Administrador de Kafka:** Creación y eliminación de tópicos en caliente vía API REST.
+   - **Acceso directo a Kafka-UI:** Enlace integrado a `http://localhost:8085` para inspección de Log-End-Offsets y Consumer Lag.
+3. **Panel de Control RabbitMQ Enterprise (EP3 & EP4):**
+   - Monitoreo de 3 Colas principales, 3 Dead Letter Queues (DLQ), exchanges Direct/Topic y simulación de fallos con reintentos y auditoría `x-death`.
 
 ---
 
