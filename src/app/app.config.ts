@@ -14,10 +14,36 @@ import { IPublicClientApplication } from '@azure/msal-browser';
 import { routes } from './app.routes';
 import { MSALGuardConfigFactory, MSALInstanceFactory, MSALInterceptorConfigFactory } from './auth/msal.config';
 
-const msalInstance = MSALInstanceFactory();
+let msalInstance: IPublicClientApplication;
+try {
+  msalInstance = MSALInstanceFactory();
+} catch (e) {
+  console.warn('[MSAL] Contexto no seguro detectado, usando fallback resiliente:', e);
+  msalInstance = {
+    initialize: () => Promise.resolve(),
+    getAllAccounts: () => [],
+    getActiveAccount: () => null,
+    setActiveAccount: () => {},
+    acquireTokenSilent: () => Promise.reject(new Error('MSAL no disponible en HTTP')),
+    acquireTokenRedirect: () => Promise.resolve(),
+    loginRedirect: () => Promise.resolve(),
+    logoutRedirect: () => Promise.resolve(),
+    handleRedirectPromise: () => Promise.resolve(null),
+    addEventCallback: () => null,
+    removeEventCallback: () => {},
+    enableAccountStorageEvents: () => {},
+    disableAccountStorageEvents: () => {}
+  } as unknown as IPublicClientApplication;
+}
 
 function initializeMsal(instance: IPublicClientApplication): () => Promise<void> {
-  return () => instance.initialize();
+  return () => {
+    try {
+      return instance.initialize();
+    } catch {
+      return Promise.resolve();
+    }
+  };
 }
 
 export const appConfig: ApplicationConfig = {

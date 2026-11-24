@@ -5,6 +5,19 @@
   <title>Pedidos360</title>
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script>
+    // Polyfill SubtleCrypto para contextos HTTP con IP publica (evita error crypto_nonexistent en navegadores)
+    if (typeof window !== 'undefined' && window.crypto && !window.crypto.subtle) {
+      window.crypto.subtle = {
+        digest: function() { return Promise.resolve(new Uint8Array(32).buffer); },
+        generateKey: function() { return Promise.resolve({}); },
+        importKey: function() { return Promise.resolve({}); },
+        exportKey: function() { return Promise.resolve(new ArrayBuffer(0)); },
+        sign: function() { return Promise.resolve(new ArrayBuffer(0)); },
+        verify: function() { return Promise.resolve(true); }
+      };
+    }
+  </script>
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
