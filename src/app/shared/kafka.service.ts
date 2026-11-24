@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 export interface KafkaTopicStatus {
   name: string;
@@ -67,7 +68,9 @@ export interface CreateKafkaTopicRequest {
 @Injectable({ providedIn: 'root' })
 export class KafkaService {
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = 'http://localhost:8080/api/public/kafka';
+  private readonly baseUrl = environment.apiUrl
+    ? `${environment.apiUrl.replace(/\/+$/, '')}/public/kafka`
+    : 'http://localhost:8080/api/public/kafka';
 
   getStatus(): Observable<{ system: string; status: string; topics: KafkaTopicStatus[]; metrics: StreamingMetrics }> {
     return this.http.get<any>(`${this.baseUrl}/status`);
