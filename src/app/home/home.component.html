@@ -424,9 +424,9 @@
       <div>
         <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
           <h2 style="font-size:18px; font-weight:700; margin:0;">Plataforma Apache Kafka</h2>
-          <span class="live-pill">
+          <span class="live-pill" [style.background]="(brokerCaidoId || brokersOnlineCount < 3) ? '#fef3c7' : ''" [style.color]="(brokerCaidoId || brokersOnlineCount < 3) ? '#92400e' : ''">
             <span class="live-beacon"><span class="beacon-ping"></span><span class="beacon-dot"></span></span>
-            3 Brokers Online (100% ISR)
+            {{ (brokerCaidoId ? 2 : brokersOnlineCount) }} Brokers Online ({{ (brokerCaidoId || brokersOnlineCount < 3) ? 'Failover Activo' : '100% ISR' }})
           </span>
           @if (streamEnVivo) {
             <span class="pill-badge pill-success" style="font-size:10px;">
@@ -463,42 +463,42 @@
 
     <!-- Widget de Clúster: Tolerancia a Fallos y Estado de 3 Brokers (EP5) -->
     <div class="broker-cluster-bar" style="margin-bottom:16px;">
-      <div class="broker-card" [class.broker-down]="brokerCaidoId === 1">
+      <div class="broker-card" [class.broker-down]="brokerCaidoId === 1 || !activeBrokerIds.includes(1)">
         <div class="broker-card-head">
           <span class="broker-badge">Broker 1</span>
-          <span class="broker-status" [class.online]="brokerCaidoId !== 1">{{ brokerCaidoId === 1 ? 'Failover' : 'Leader P0' }}</span>
+          <span class="broker-status" [class.online]="brokerCaidoId !== 1 && activeBrokerIds.includes(1)">{{ (brokerCaidoId === 1 || !activeBrokerIds.includes(1)) ? 'Failover' : 'Leader P0' }}</span>
         </div>
         <div class="broker-info">
           <span>Puerto: <strong>29092</strong></span>
-          <span>ISR: <strong>Sincronizado</strong></span>
+          <span>ISR: <strong>{{ (brokerCaidoId === 1 || !activeBrokerIds.includes(1)) ? 'Desconectado' : 'Sincronizado' }}</strong></span>
         </div>
         <button type="button" class="btn-chaos" (click)="simularCaosBroker(1)" [disabled]="simulandoCaos">
           {{ brokerCaidoId === 1 ? 'Reconectando...' : 'Simular Caída' }}
         </button>
       </div>
 
-      <div class="broker-card" [class.broker-down]="brokerCaidoId === 2">
+      <div class="broker-card" [class.broker-down]="brokerCaidoId === 2 || !activeBrokerIds.includes(2)">
         <div class="broker-card-head">
           <span class="broker-badge">Broker 2</span>
-          <span class="broker-status" [class.online]="brokerCaidoId !== 2">{{ brokerCaidoId === 2 ? 'Failover' : 'Leader P1' }}</span>
+          <span class="broker-status" [class.online]="brokerCaidoId !== 2 && activeBrokerIds.includes(2)">{{ (brokerCaidoId === 2 || !activeBrokerIds.includes(2)) ? 'Failover' : 'Leader P1' }}</span>
         </div>
         <div class="broker-info">
           <span>Puerto: <strong>29093</strong></span>
-          <span>ISR: <strong>Sincronizado</strong></span>
+          <span>ISR: <strong>{{ (brokerCaidoId === 2 || !activeBrokerIds.includes(2)) ? 'Desconectado' : 'Sincronizado' }}</strong></span>
         </div>
         <button type="button" class="btn-chaos" (click)="simularCaosBroker(2)" [disabled]="simulandoCaos">
           {{ brokerCaidoId === 2 ? 'Reconectando...' : 'Simular Caída' }}
         </button>
       </div>
 
-      <div class="broker-card" [class.broker-down]="brokerCaidoId === 3">
+      <div class="broker-card" [class.broker-down]="brokerCaidoId === 3 || !activeBrokerIds.includes(3)">
         <div class="broker-card-head">
           <span class="broker-badge">Broker 3</span>
-          <span class="broker-status" [class.online]="brokerCaidoId !== 3">{{ brokerCaidoId === 3 ? 'Failover' : 'Leader P2' }}</span>
+          <span class="broker-status" [class.online]="brokerCaidoId !== 3 && activeBrokerIds.includes(3)">{{ (brokerCaidoId === 3 || !activeBrokerIds.includes(3)) ? 'Failover' : 'Leader P2' }}</span>
         </div>
         <div class="broker-info">
           <span>Puerto: <strong>29094</strong></span>
-          <span>ISR: <strong>Sincronizado</strong></span>
+          <span>ISR: <strong>{{ (brokerCaidoId === 3 || !activeBrokerIds.includes(3)) ? 'Desconectado' : 'Sincronizado' }}</strong></span>
         </div>
         <button type="button" class="btn-chaos" (click)="simularCaosBroker(3)" [disabled]="simulandoCaos">
           {{ brokerCaidoId === 3 ? 'Reconectando...' : 'Simular Caída' }}

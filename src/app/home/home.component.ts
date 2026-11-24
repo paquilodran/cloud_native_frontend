@@ -75,6 +75,8 @@ export class HomeComponent implements OnInit, OnDestroy {
   // Simulador de Caos y Tolerancia a Fallos
   simulandoCaos = false;
   brokerCaidoId: number | null = null;
+  brokersOnlineCount = 3;
+  activeBrokerIds: number[] = [1, 2, 3];
 
   // Modales interactivos
   pedidoSeleccionadoParaTimeline: Pedido | null = null;
@@ -558,6 +560,18 @@ export class HomeComponent implements OnInit, OnDestroy {
       error: () => {
         this.kafkaTopics = [];
       }
+    });
+
+    this.kafkaService.getClusterOverview().subscribe({
+      next: (res) => {
+        if (res && res.brokersCount !== undefined) {
+          this.brokersOnlineCount = res.brokersCount;
+          if (Array.isArray(res.nodes)) {
+            this.activeBrokerIds = res.nodes.map((n: any) => n.id);
+          }
+        }
+      },
+      error: () => {}
     });
 
     this.cargarEventosKafka();
