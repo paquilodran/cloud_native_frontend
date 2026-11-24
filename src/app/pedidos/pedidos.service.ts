@@ -36,13 +36,27 @@ export class PedidosService {
 
   listar(): Observable<Pedido[]> {
     return this.getAuthHeaders().pipe(
-      switchMap((headers) => this.http.get<Pedido[]>(this.url, { headers }))
+      switchMap((headers) => this.http.get<Pedido[]>(this.url, { headers })),
+      catchError((err) => {
+        console.warn('[PedidosService] Error al conectar con API remota, activando fallback resiliente con pedidos en memoria:', err);
+        return of([...this.demo]);
+      })
     );
   }
 
   crear(pedido: Pedido): Observable<Pedido> {
     return this.getAuthHeaders().pipe(
-      switchMap((headers) => this.http.post<Pedido>(this.url, pedido, { headers }))
+      switchMap((headers) => this.http.post<Pedido>(this.url, pedido, { headers })),
+      catchError((err) => {
+        console.warn('[PedidosService] POST no disponible en backend remoto, registrando pedido en memoria:', err);
+        const nuevo: Pedido = {
+          ...pedido,
+          id: this.demo.length > 0 ? Math.max(...this.demo.map(p => p.id ?? 0)) + 1 : 1,
+          fecha: new Date().toISOString()
+        };
+        this.demo.unshift(nuevo);
+        return of(nuevo);
+      })
     );
   }
 

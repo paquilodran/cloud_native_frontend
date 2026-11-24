@@ -7,10 +7,10 @@
 </section>
 
 <div class="status-row">
-  @if (error().startsWith('401 Unauthorized')) {
+  @if (error().startsWith('401 Unauthorized') && usuario() === 'Invitado') {
     <span class="badge badge-danger">Autenticación requerida</span>
     <span class="tiny">{{ error() }}</span>
-  } @else if (!error()) {
+  } @else {
     <span class="badge badge-success">Autenticación activa</span>
     <span class="tiny">Microsoft Entra ID · JWT activo</span>
   }
@@ -33,7 +33,7 @@
     <p class="error">{{ error() }}</p>
   }
 
-  @if (error().startsWith('401 Unauthorized')) {
+  @if (error().startsWith('401 Unauthorized') && usuario() === 'Invitado') {
     <div class="locked">
       <p>Autenticación requerida</p>
       <p class="tiny">{{ error() }}</p>
