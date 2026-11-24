@@ -30,9 +30,14 @@ export interface CreateQueueRequest {
 @Injectable({ providedIn: 'root' })
 export class RabbitMQService {
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = environment.apiUrl
-    ? `${environment.apiUrl.replace(/\/+$/, '')}/public/rabbitmq`
-    : 'http://localhost:8080/api/public/rabbitmq';
+  private get baseUrl(): string {
+    if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+      return 'http://localhost:8080/api/public/rabbitmq';
+    }
+    return environment.apiUrl
+      ? `${environment.apiUrl.replace(/\/+$/, '')}/public/rabbitmq`
+      : 'http://localhost:8080/api/public/rabbitmq';
+  }
 
   getStatus(): Observable<TopologyStatus> {
     return this.http.get<TopologyStatus>(`${this.baseUrl}/status`);

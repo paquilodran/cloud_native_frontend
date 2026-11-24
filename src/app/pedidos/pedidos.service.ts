@@ -9,7 +9,12 @@ import { Pedido } from './pedido.model';
 export class PedidosService {
   private readonly http = inject(HttpClient);
   private readonly msal = inject(MsalService);
-  private readonly url = `${environment.apiUrl}/pedidos`;
+  private get url(): string {
+    if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+      return 'http://localhost:8080/api/pedidos';
+    }
+    return `${environment.apiUrl}/pedidos`;
+  }
 
   readonly demo: Pedido[] = [
     { id: 1, nombre: 'Pedido oficina', cliente: 'Cliente Norte', estado: 'CREADO', total: 15000, fecha: '2026-09-10T10:00:00Z' },

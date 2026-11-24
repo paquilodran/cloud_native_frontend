@@ -68,9 +68,14 @@ export interface CreateKafkaTopicRequest {
 @Injectable({ providedIn: 'root' })
 export class KafkaService {
   private readonly http = inject(HttpClient);
-  private readonly baseUrl = environment.apiUrl
-    ? `${environment.apiUrl.replace(/\/+$/, '')}/public/kafka`
-    : 'http://localhost:8080/api/public/kafka';
+  private get baseUrl(): string {
+    if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+      return 'http://localhost:8080/api/public/kafka';
+    }
+    return environment.apiUrl
+      ? `${environment.apiUrl.replace(/\/+$/, '')}/public/kafka`
+      : 'http://localhost:8080/api/public/kafka';
+  }
 
   getStatus(): Observable<{ system: string; status: string; topics: KafkaTopicStatus[]; metrics: StreamingMetrics }> {
     return this.http.get<any>(`${this.baseUrl}/status`);
