@@ -115,6 +115,27 @@ export class CartasComponent implements OnInit {
     this.pagina = Math.min(this.totalPaginas, Math.max(1, this.pagina + delta));
   }
 
+  comprarRapido(carta: Carta): void {
+    if (this.procesando()) return;
+    this.procesando.set(true);
+    this.cartasService.comprar(carta, 1, this.entrenador).subscribe({
+      next: (orden) => {
+        this.procesando.set(false);
+        this.notifications.notify(
+          '¡Compra Exitosa!',
+          `Compraste 1 x ${carta.nombre} (Orden #${orden.id}). Evento emitido a Kafka y RabbitMQ.`,
+          'success',
+          'CARTAS'
+        );
+        this.cargarOrdenes();
+      },
+      error: () => {
+        this.procesando.set(false);
+        this.notifications.notify('Error', 'No se pudo completar la compra.', 'error', 'CARTAS');
+      }
+    });
+  }
+
   comprar(carta: Carta): void {
     if (this.procesando()) return;
     this.procesando.set(true);

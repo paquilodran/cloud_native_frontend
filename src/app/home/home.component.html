@@ -1,22 +1,46 @@
 <!-- ========================================================================= -->
-<!-- POKÉVAULT TCG: GBA CONSOLE INTERFACE (4 PANTALLAS RETRO NINTENDO)        -->
+<!-- POKÉVAULT TCG: GBA CONSOLE INTERFACE (INTUITIVA & RETRO)                  -->
 <!-- ========================================================================= -->
 
-<!-- Barra de Pestañas Retro estilo Pokédex GBA -->
-<nav style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; border-bottom: 3px solid #101018; padding-bottom: 10px;">
+<!-- Barra de Pestañas Retro Grande y Clara -->
+<nav style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; border-bottom: 3px solid #101018; padding-bottom: 12px;">
   <button type="button" class="gba-tab" [class.active]="tabActiva === 'mochila' || tabActiva === 'inicio'" (click)="seleccionarTab('mochila')">
-    🎒 MOCHILA / CARTAS
+    🎒 1. MOCHILA &amp; TIENDA
   </button>
   <button type="button" class="gba-tab" [class.active]="tabActiva === 'kafka'" (click)="seleccionarTab('kafka')">
-    ⚡ GIMNASIO KAFKA (ISR {{ brokersOnlineCount }}/3)
+    ⚡ 2. GIMNASIO KAFKA (ISR {{ brokersOnlineCount }}/3)
   </button>
   <button type="button" class="gba-tab" [class.active]="tabActiva === 'rabbitmq'" (click)="seleccionarTab('rabbitmq')">
-    🏥 CENTRO RABBITMQ (DLQ: {{ dlqMessages.length }})
+    🏥 3. CENTRO RABBITMQ (DLQ: {{ dlqMessages.length }})
   </button>
   <button type="button" class="gba-tab" [class.active]="tabActiva === 'entrenador' || tabActiva === 'dashboard'" (click)="seleccionarTab('entrenador')">
-    🪪 FICHA ENTRENADOR (AWS • JWT)
+    🪪 4. FICHA ENTRENADOR (AWS • JWT)
   </button>
 </nav>
+
+<!-- Guía Rápida de Misiones Interactivas (Para Evaluación o Demo) -->
+<section class="gba-dialog-dark" style="padding: 10px 14px; margin-bottom: 16px; border-left: 4px solid #F8D030;">
+  <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <span class="font-pixel" style="font-size: 9px; color: #F8D030;">🎯 MISIONES RÁPIDAS DE DEMOSTRACIÓN:</span>
+      <span style="font-family: 'Inter', sans-serif; font-size: 12px; color: #94A3B8;">Prueba el clúster con 1 clic:</span>
+    </div>
+    <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+      <button type="button" class="gba-mini-btn" (click)="seleccionarTab('mochila')">
+        🎁 1. Abrir Sobre
+      </button>
+      <button type="button" class="gba-mini-btn" (click)="seleccionarTab('kafka'); emitirRafaga()">
+        ⚡ 2. Ráfaga Kafka
+      </button>
+      <button type="button" class="gba-mini-btn" (click)="seleccionarTab('kafka'); simularCaosBroker(1)">
+        💀 3. Probar Caída Bulbasaur
+      </button>
+      <button type="button" class="gba-mini-btn" (click)="seleccionarTab('rabbitmq'); curarDlqJoy()">
+        💉 4. Curar DLQ
+      </button>
+    </div>
+  </div>
+</section>
 
 <!-- ========================================================================= -->
 <!-- PANTALLA 1: MOCHILA / CARTAS (TIENDA CIUDAD AZULONA & BASE SET)           -->
@@ -35,31 +59,31 @@
     <section class="gba-dialog-dark" style="padding: 14px 18px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
       <div style="display: flex; align-items: center; gap: 12px;">
         <div class="font-pixel" [style.background]="brokersOnlineCount === 3 ? '#22C55E' : brokersOnlineCount === 2 ? '#EAB308' : '#EF4444'" 
-             style="color: #000; padding: 6px 10px; border: 2px solid #000; border-radius: 4px; font-size: 10px;">
+             style="color: #000; padding: 6px 12px; border: 2px solid #000; border-radius: 4px; font-size: 11px;">
           ISR {{ brokersOnlineCount }}/3
         </div>
         <div>
           <h2 class="font-pixel" style="font-size: 12px; margin: 0 0 4px 0; color: #F8FAFC;">
             BATALLA DE GIMNASIO KAFKA — EL TRÍO DE KANTO (3 BROKERS)
           </h2>
-          <p class="font-telemetry" style="font-size: 16px; margin: 0; color: #94A3B8;">
+          <p style="font-family: 'Inter', sans-serif; font-size: 13px; margin: 0; color: #CBD5E1;">
             @if (brokersOnlineCount === 3) {
-              QUÓRUM SALUDABLE • 3/3 ISR SINCRONIZADOS — min.insync.replicas=2 cumplido con holgura (RF=3)
+              <strong style="color: #22C55E;">✓ Quórum Saludable (3/3 ISR):</strong> Todos los brokers sincronizados. Tolerancia a fallos con min.insync.replicas=2.
             } @else if (brokersOnlineCount === 2) {
-              1 BROKER DEBILITADO • FAILOVER AUTOMÁTICO ACTIVO — ¡Tolerancia a fallos preservada!
+              <strong style="color: #EAB308;">⚠️ Failover Activo (2/3 ISR):</strong> 1 broker desconectado. El clúster sigue produciendo y consumiendo sin pérdida de datos.
             } @else {
-              CRÍTICO • QUÓRUM ROTO (&lt; min.insync.replicas=2) — Productores con acks=all en espera
+              <strong style="color: #EF4444;">🚨 Quórum Crítico (&lt; 2 ISR):</strong> Menos del mínimo requerido. Reactiva al menos 2 brokers para reanudar.
             }
           </p>
         </div>
       </div>
 
       <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-        <button type="button" class="gba-btn gba-btn-primary" (click)="enviarEventoAnalitico()" [disabled]="enviandoKafka">
+        <button type="button" class="gba-btn gba-btn-primary" (click)="enviarEventoAnalitico()" [disabled]="enviandoKafka" title="Envía un evento analítico a Kafka">
           ⚡ EMITIR 1 EVENTO
         </button>
-        <button type="button" class="gba-btn" style="background: #EAB308; color: #000;" (click)="emitirRafaga()">
-          💥 RÁFAGA x5 ANALYTICS
+        <button type="button" class="gba-btn" style="background: #EAB308; color: #000;" (click)="emitirRafaga()" title="Emite 5 eventos distribuidos en las particiones P0, P1 y P2">
+          💥 RÁFAGA x5 (BALANCEO P0/P1/P2)
         </button>
       </div>
     </section>
@@ -72,13 +96,13 @@
                [style.border-color]="activeBrokerIds.includes(1) ? '#10B981' : '#64748B'" style="border-width: 4px;">
         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
           <div style="display: flex; gap: 10px; align-items: center;">
-            <img [src]="getPokemonGbaSprite(1)" alt="Bulbasaur" class="pixel-art" style="width: 54px; height: 54px;">
+            <img [src]="getPokemonGbaSprite(1)" alt="Bulbasaur" class="pixel-art" style="width: 56px; height: 56px;">
             <div>
               <span class="font-pixel" style="font-size: 11px; color: #101018; display: block;">BULBASAUR Lv.50</span>
-              <span class="font-pixel" style="font-size: 8px; color: #10B981;">TIPO PLANTA • P0 LEADER</span>
+              <span class="font-pixel" style="font-size: 8px; color: #10B981; font-weight: bold;">TIPO PLANTA • P0 LEADER</span>
             </div>
           </div>
-          <span class="font-pixel" style="font-size: 8px; background: #10B981; color: #FFF; padding: 2px 6px; border: 1px solid #000; border-radius: 3px;">
+          <span class="font-pixel" style="font-size: 9px; background: #10B981; color: #FFF; padding: 3px 6px; border: 1px solid #000; border-radius: 4px;">
             :29092
           </span>
         </div>
@@ -87,7 +111,9 @@
         <div style="margin: 8px 0;">
           <div style="display: flex; justify-content: space-between; font-size: 9px;" class="font-pixel">
             <span>HP / ISR:</span>
-            <span>{{ activeBrokerIds.includes(1) ? '100% (EN LÍNEA)' : '0% (DEBILITADO)' }}</span>
+            <span [style.color]="activeBrokerIds.includes(1) ? '#16A34A' : '#DC2626'">
+              {{ activeBrokerIds.includes(1) ? '100% (EN LÍNEA)' : '0% (DEBILITADO)' }}
+            </span>
           </div>
           <div class="hp-gauge-container" style="margin-top: 4px;">
             <div class="hp-gauge-fill" [class.hp-green]="activeBrokerIds.includes(1)" [class.hp-red]="!activeBrokerIds.includes(1)" 
@@ -95,13 +121,13 @@
           </div>
         </div>
 
-        <p class="font-telemetry" style="font-size: 16px; color: #334155; margin: 6px 0;">
-          Eventos en Partición 0: <strong>{{ kafkaMetrics?.partitionDistribution?.['partition_0'] || 0 }}</strong>
+        <p style="font-family: 'Inter', sans-serif; font-size: 13px; color: #334155; margin: 6px 0;">
+          Eventos procesados en P0: <strong>{{ kafkaMetrics?.partitionDistribution?.['partition_0'] || 0 }}</strong>
         </p>
 
         <button type="button" class="gba-btn" [class.gba-btn-danger]="activeBrokerIds.includes(1)" [class.gba-btn-heal]="!activeBrokerIds.includes(1)"
-                style="width: 100%; margin-top: 6px; justify-content: center;" (click)="simularCaosBroker(1)" [disabled]="simulandoCaos">
-          {{ activeBrokerIds.includes(1) ? '💀 DEBILITAR (STOP)' : '💊 REVIVIR (START)' }}
+                style="width: 100%; margin-top: 6px; justify-content: center; font-size: 9px;" (click)="simularCaosBroker(1)" [disabled]="simulandoCaos">
+          {{ activeBrokerIds.includes(1) ? '💀 APAGAR BROKER (STOP)' : '💊 ENCENDER BROKER (START)' }}
         </button>
       </article>
 
@@ -110,13 +136,13 @@
                [style.border-color]="activeBrokerIds.includes(2) ? '#FF5722' : '#64748B'" style="border-width: 4px;">
         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
           <div style="display: flex; gap: 10px; align-items: center;">
-            <img [src]="getPokemonGbaSprite(4)" alt="Charmander" class="pixel-art" style="width: 54px; height: 54px;">
+            <img [src]="getPokemonGbaSprite(4)" alt="Charmander" class="pixel-art" style="width: 56px; height: 56px;">
             <div>
               <span class="font-pixel" style="font-size: 11px; color: #101018; display: block;">CHARMANDER Lv.50</span>
-              <span class="font-pixel" style="font-size: 8px; color: #FF5722;">TIPO FUEGO • P1 LEADER</span>
+              <span class="font-pixel" style="font-size: 8px; color: #FF5722; font-weight: bold;">TIPO FUEGO • P1 LEADER</span>
             </div>
           </div>
-          <span class="font-pixel" style="font-size: 8px; background: #FF5722; color: #FFF; padding: 2px 6px; border: 1px solid #000; border-radius: 3px;">
+          <span class="font-pixel" style="font-size: 9px; background: #FF5722; color: #FFF; padding: 3px 6px; border: 1px solid #000; border-radius: 4px;">
             :29093
           </span>
         </div>
@@ -125,7 +151,9 @@
         <div style="margin: 8px 0;">
           <div style="display: flex; justify-content: space-between; font-size: 9px;" class="font-pixel">
             <span>HP / ISR:</span>
-            <span>{{ activeBrokerIds.includes(2) ? '100% (EN LÍNEA)' : '0% (DEBILITADO)' }}</span>
+            <span [style.color]="activeBrokerIds.includes(2) ? '#16A34A' : '#DC2626'">
+              {{ activeBrokerIds.includes(2) ? '100% (EN LÍNEA)' : '0% (DEBILITADO)' }}
+            </span>
           </div>
           <div class="hp-gauge-container" style="margin-top: 4px;">
             <div class="hp-gauge-fill" [class.hp-green]="activeBrokerIds.includes(2)" [class.hp-red]="!activeBrokerIds.includes(2)" 
@@ -133,13 +161,13 @@
           </div>
         </div>
 
-        <p class="font-telemetry" style="font-size: 16px; color: #334155; margin: 6px 0;">
-          Eventos en Partición 1: <strong>{{ kafkaMetrics?.partitionDistribution?.['partition_1'] || 0 }}</strong>
+        <p style="font-family: 'Inter', sans-serif; font-size: 13px; color: #334155; margin: 6px 0;">
+          Eventos procesados en P1: <strong>{{ kafkaMetrics?.partitionDistribution?.['partition_1'] || 0 }}</strong>
         </p>
 
         <button type="button" class="gba-btn" [class.gba-btn-danger]="activeBrokerIds.includes(2)" [class.gba-btn-heal]="!activeBrokerIds.includes(2)"
-                style="width: 100%; margin-top: 6px; justify-content: center;" (click)="simularCaosBroker(2)" [disabled]="simulandoCaos">
-          {{ activeBrokerIds.includes(2) ? '💀 DEBILITAR (STOP)' : '💊 REVIVIR (START)' }}
+                style="width: 100%; margin-top: 6px; justify-content: center; font-size: 9px;" (click)="simularCaosBroker(2)" [disabled]="simulandoCaos">
+          {{ activeBrokerIds.includes(2) ? '💀 APAGAR BROKER (STOP)' : '💊 ENCENDER BROKER (START)' }}
         </button>
       </article>
 
@@ -148,13 +176,13 @@
                [style.border-color]="activeBrokerIds.includes(3) ? '#3B82F6' : '#64748B'" style="border-width: 4px;">
         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
           <div style="display: flex; gap: 10px; align-items: center;">
-            <img [src]="getPokemonGbaSprite(7)" alt="Squirtle" class="pixel-art" style="width: 54px; height: 54px;">
+            <img [src]="getPokemonGbaSprite(7)" alt="Squirtle" class="pixel-art" style="width: 56px; height: 56px;">
             <div>
               <span class="font-pixel" style="font-size: 11px; color: #101018; display: block;">SQUIRTLE Lv.50</span>
-              <span class="font-pixel" style="font-size: 8px; color: #3B82F6;">TIPO AGUA • P2 LEADER</span>
+              <span class="font-pixel" style="font-size: 8px; color: #3B82F6; font-weight: bold;">TIPO AGUA • P2 LEADER</span>
             </div>
           </div>
-          <span class="font-pixel" style="font-size: 8px; background: #3B82F6; color: #FFF; padding: 2px 6px; border: 1px solid #000; border-radius: 3px;">
+          <span class="font-pixel" style="font-size: 9px; background: #3B82F6; color: #FFF; padding: 3px 6px; border: 1px solid #000; border-radius: 4px;">
             :29094
           </span>
         </div>
@@ -163,7 +191,9 @@
         <div style="margin: 8px 0;">
           <div style="display: flex; justify-content: space-between; font-size: 9px;" class="font-pixel">
             <span>HP / ISR:</span>
-            <span>{{ activeBrokerIds.includes(3) ? '100% (EN LÍNEA)' : '0% (DEBILITADO)' }}</span>
+            <span [style.color]="activeBrokerIds.includes(3) ? '#16A34A' : '#DC2626'">
+              {{ activeBrokerIds.includes(3) ? '100% (EN LÍNEA)' : '0% (DEBILITADO)' }}
+            </span>
           </div>
           <div class="hp-gauge-container" style="margin-top: 4px;">
             <div class="hp-gauge-fill" [class.hp-green]="activeBrokerIds.includes(3)" [class.hp-red]="!activeBrokerIds.includes(3)" 
@@ -171,53 +201,53 @@
           </div>
         </div>
 
-        <p class="font-telemetry" style="font-size: 16px; color: #334155; margin: 6px 0;">
-          Eventos en Partición 2: <strong>{{ kafkaMetrics?.partitionDistribution?.['partition_2'] || 0 }}</strong>
+        <p style="font-family: 'Inter', sans-serif; font-size: 13px; color: #334155; margin: 6px 0;">
+          Eventos procesados en P2: <strong>{{ kafkaMetrics?.partitionDistribution?.['partition_2'] || 0 }}</strong>
         </p>
 
         <button type="button" class="gba-btn" [class.gba-btn-danger]="activeBrokerIds.includes(3)" [class.gba-btn-heal]="!activeBrokerIds.includes(3)"
-                style="width: 100%; margin-top: 6px; justify-content: center;" (click)="simularCaosBroker(3)" [disabled]="simulandoCaos">
-          {{ activeBrokerIds.includes(3) ? '💀 DEBILITAR (STOP)' : '💊 REVIVIR (START)' }}
+                style="width: 100%; margin-top: 6px; justify-content: center; font-size: 9px;" (click)="simularCaosBroker(3)" [disabled]="simulandoCaos">
+          {{ activeBrokerIds.includes(3) ? '💀 APAGAR BROKER (STOP)' : '💊 ENCENDER BROKER (START)' }}
         </button>
       </article>
     </div>
 
     <!-- Consola de Combate Pokémon en Tiempo Real -->
     <section class="gba-dialog-box" style="margin-bottom: 16px;">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-        <span class="font-pixel" style="font-size: 10px; color: #101018;">CONSOLA DE COMBATE KAFKA STREAMING</span>
-        <span class="font-telemetry" style="font-size: 15px; color: #64748B;">TOTAL CONSUMIDO: {{ kafkaMetrics?.totalEventsConsumed || 0 }}</span>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <span class="font-pixel" style="font-size: 10px; color: #101018;">CONSOLA DE STREAMING KAFKA EN TIEMPO REAL</span>
+        <span class="font-silk" style="font-size: 10px; color: #2563EB;">TOTAL CONSUMIDOS: {{ kafkaMetrics?.totalEventsConsumed || 0 }} EVENTOS</span>
       </div>
-      <div style="background: #0B0E14; border: 2px solid #000; border-radius: 4px; padding: 10px; max-height: 140px; overflow-y: auto;">
+      <div style="background: #0B0E14; border: 2px solid #000; border-radius: 6px; padding: 12px; max-height: 150px; overflow-y: auto;">
         @if (recentKafkaEvents.length === 0) {
-          <p class="font-telemetry" style="font-size: 16px; color: #64748B; margin: 0;">
-            Esperando eventos analíticos en el clúster... Haz clic en [ EMITIR 1 EVENTO ] o [ RÁFAGA x5 ANALYTICS ].
+          <p style="font-family: 'Inter', sans-serif; font-size: 13px; color: #64748B; margin: 0;">
+            Aún no hay eventos registrados. Haz clic arriba en <strong>[ ⚡ EMITIR 1 EVENTO ]</strong> o <strong>[ 💥 RÁFAGA x5 ]</strong>.
           </p>
         } @else {
-          @for (ev of recentKafkaEvents.slice(0, 5); track ev.eventId) {
-            <p class="font-telemetry" style="font-size: 16px; margin: 2px 0; color: #A3E635; line-height: 1.3;">
-              ▶ [{{ ev.processedAt ? ev.processedAt.slice(11, 19) : 'LIVE' }}] [P{{ ev.partition }}] {{ ev.categoria }}: ¡Evento #{{ ev.orderId }} procesado por el clúster!
+          @for (ev of recentKafkaEvents.slice(0, 6); track ev.eventId) {
+            <p style="font-family: 'VT323', monospace; font-size: 18px; margin: 2px 0; color: #A3E635; line-height: 1.2;">
+              ▶ [{{ ev.processedAt ? ev.processedAt.slice(11, 19) : 'EN VIVO' }}] [Partición {{ ev.partition }}] {{ ev.categoria }}: Orden #{{ ev.orderId }} procesada (${{ ev.monto | number }}).
             </p>
           }
         }
       </div>
     </section>
 
-    <!-- Expediente de Tópicos TCG -->
-    <section class="gba-dialog-dark" style="padding: 12px 16px;">
-      <span class="font-pixel" style="font-size: 10px; color: #F8D030; display: block; margin-bottom: 8px;">
-        EXPEDIENTE DE TÓPICOS APACHE KAFKA
+    <!-- Tópicos TCG -->
+    <section class="gba-dialog-dark" style="padding: 14px 18px;">
+      <span class="font-pixel" style="font-size: 10px; color: #F8D030; display: block; margin-bottom: 10px;">
+        CONFIGURACIÓN DE TÓPICOS KAFKA (EP5 / EP6)
       </span>
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px;">
-        <div style="background: #18202F; border: 2px solid #334155; padding: 8px 12px; border-radius: 4px;">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px;">
+        <div style="background: #18202F; border: 2px solid #334155; padding: 10px 14px; border-radius: 6px;">
           <strong class="font-pixel" style="font-size: 10px; color: #38BDF8;">tcg.analytics.stream</strong>
-          <p class="font-telemetry" style="font-size: 15px; color: #94A3B8; margin: 4px 0 0 0;">
+          <p style="font-family: 'Inter', sans-serif; font-size: 12px; color: #CBD5E1; margin: 4px 0 0 0;">
             Particiones: 3 • Factor Réplica: 3 • Retención: 24h • Grupo: tcg-analytics-group
           </p>
         </div>
-        <div style="background: #18202F; border: 2px solid #334155; padding: 8px 12px; border-radius: 4px;">
+        <div style="background: #18202F; border: 2px solid #334155; padding: 10px 14px; border-radius: 6px;">
           <strong class="font-pixel" style="font-size: 10px; color: #A855F7;">tcg.audit.stream</strong>
-          <p class="font-telemetry" style="font-size: 15px; color: #94A3B8; margin: 4px 0 0 0;">
+          <p style="font-family: 'Inter', sans-serif; font-size: 12px; color: #CBD5E1; margin: 4px 0 0 0;">
             Particiones: 3 • Factor Réplica: 3 • Retención: 7d • Política: compact,delete
           </p>
         </div>
@@ -234,31 +264,34 @@
   <div class="space-y-4">
 
     <!-- Diálogo de la Enfermera Joy con Chansey -->
-    <section class="gba-dialog-box" style="display: flex; gap: 16px; align-items: center; margin-bottom: 16px; flex-wrap: wrap;">
-      <div style="flex-shrink: 0; background: #FFE4E6; border: 2px solid #000; border-radius: 6px; padding: 4px;">
-        <img [src]="chanseySprite" alt="Chansey Enfermera" class="pixel-art" style="width: 64px; height: 64px; object-fit: contain;">
-      </div>
-      <div style="flex: 1; min-width: 260px;">
-        <span class="font-pixel" style="font-size: 10px; color: #BE123C; display: block; margin-bottom: 4px;">
-          ENFERMERA JOY • CENTRO POKÉMON RABBITMQ
-        </span>
-        <p class="font-telemetry" style="font-size: 18px; margin: 0 0 10px 0; color: #0F172A; line-height: 1.2;">
-          “¡Bienvenido a la sala de emergencias AMQP! Nuestro clúster de 2 nodos espejo garantiza alta disponibilidad. Tienes <strong>{{ dlqMessages.length }}</strong> mensajes en la Dead Letter Queue.”
-          <span class="prompt-arrow font-pixel" style="font-size: 10px; color: #BE123C;">▼</span>
-        </p>
-        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-          <button type="button" class="gba-btn gba-btn-heal" (click)="curarDlqJoy()" [disabled]="dlqMessages.length === 0">
-            <span>💉</span>
-            <span>USAR REVIVIR MÁXIMO (REINTENTAR DLQ: {{ dlqMessages.length }})</span>
-          </button>
-          <button type="button" class="gba-btn" (click)="enviarOrdenNominal()" [disabled]="enviandoRabbit">
-            <span>📦</span>
-            <span>ENVIAR ORDEN DIRECTA</span>
-          </button>
-          <button type="button" class="gba-btn gba-btn-danger" (click)="enviarOrdenConFallo()" [disabled]="enviandoRabbit">
-            <span>☠️</span>
-            <span>SIMULAR FALLO → DLQ</span>
-          </button>
+    <section class="gba-dialog-box" style="margin-bottom: 16px;">
+      <div style="display: flex; gap: 16px; align-items: center; flex-wrap: wrap;">
+        <div style="background: #FFE4E6; border: 2px solid #000; border-radius: 8px; padding: 6px; flex-shrink: 0;">
+          <img [src]="chanseySprite" alt="Chansey Enfermera" class="pixel-art" style="width: 64px; height: 64px; object-fit: contain;">
+        </div>
+        <div style="flex: 1; min-width: 260px;">
+          <span class="font-pixel" style="font-size: 11px; color: #BE123C; display: block; margin-bottom: 4px;">
+            ENFERMERA JOY &amp; CHANSEY • SALA DE RECUPERACIÓN AMQP
+          </span>
+          <p style="font-family: 'Inter', sans-serif; font-size: 14px; margin: 0 0 10px 0; color: #0F172A; line-height: 1.4;">
+            ¡Bienvenido al Centro Pokémon RabbitMQ! Nuestro clúster cuenta con <strong>2 nodos en espejo activo-activo</strong>. Si un mensaje falla o expira su TTL, se guarda en la <strong>Dead Letter Queue (DLQ)</strong> para recuperarlo con Revivir Máximo.
+            <span class="prompt-arrow font-pixel" style="font-size: 10px; color: #BE123C;">▼</span>
+          </p>
+
+          <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <button type="button" class="gba-btn gba-btn-heal" style="font-size: 10px; padding: 10px 14px;" (click)="curarDlqJoy()" [disabled]="dlqMessages.length === 0">
+              <span>💉</span>
+              <span>USAR REVIVIR MÁXIMO (CURAR DLQ: {{ dlqMessages.length }})</span>
+            </button>
+            <button type="button" class="gba-btn" style="font-size: 10px; padding: 10px 14px;" (click)="enviarOrdenNominal()" [disabled]="enviandoRabbit">
+              <span>📦</span>
+              <span>ENVIAR ORDEN NORMAL</span>
+            </button>
+            <button type="button" class="gba-btn gba-btn-danger" style="font-size: 10px; padding: 10px 14px;" (click)="enviarOrdenConFallo()" [disabled]="enviandoRabbit">
+              <span>☠️</span>
+              <span>SIMULAR MENSAJE CON FALLO → DLQ</span>
+            </button>
+          </div>
         </div>
       </div>
     </section>
@@ -267,14 +300,14 @@
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-bottom: 16px;">
       
       <!-- NODO 1 -->
-      <article class="gba-dialog-dark" style="padding: 14px; border-width: 3px; border-color: #22C55E;">
+      <article class="gba-dialog-dark" style="padding: 16px; border-width: 3px; border-color: #22C55E;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
           <span class="font-pixel" style="font-size: 11px; color: #22C55E;">NODO 1: rabbit1</span>
-          <span class="font-pixel" style="font-size: 8px; background: #22C55E; color: #000; padding: 2px 6px; border-radius: 3px;">
+          <span class="font-pixel" style="font-size: 9px; background: #22C55E; color: #000; padding: 3px 6px; border-radius: 4px;">
             PUERTO 5672
           </span>
         </div>
-        <p class="font-telemetry" style="font-size: 16px; color: #94A3B8; margin: 0 0 6px 0;">
+        <p style="font-family: 'Inter', sans-serif; font-size: 13px; color: #CBD5E1; margin: 0 0 8px 0;">
           Modo: Clúster Quorum Primario • Management: :15672
         </p>
         <div class="hp-gauge-container">
@@ -283,14 +316,14 @@
       </article>
 
       <!-- NODO 2 -->
-      <article class="gba-dialog-dark" style="padding: 14px; border-width: 3px; border-color: #22C55E;">
+      <article class="gba-dialog-dark" style="padding: 16px; border-width: 3px; border-color: #22C55E;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
           <span class="font-pixel" style="font-size: 11px; color: #22C55E;">NODO 2: rabbit2</span>
-          <span class="font-pixel" style="font-size: 8px; background: #22C55E; color: #000; padding: 2px 6px; border-radius: 3px;">
+          <span class="font-pixel" style="font-size: 9px; background: #22C55E; color: #000; padding: 3px 6px; border-radius: 4px;">
             PUERTO 5673
           </span>
         </div>
-        <p class="font-telemetry" style="font-size: 16px; color: #94A3B8; margin: 0 0 6px 0;">
+        <p style="font-family: 'Inter', sans-serif; font-size: 13px; color: #CBD5E1; margin: 0 0 8px 0;">
           Modo: Espejo Sincronizado (Mirrored) • Management: :15673
         </p>
         <div class="hp-gauge-container">
@@ -302,33 +335,33 @@
 
     <!-- Sala de Cuarentena (Dead Letter Queue DLQ) -->
     <section class="gba-dialog-box" style="margin-bottom: 16px;">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-        <span class="font-pixel" style="font-size: 10px; color: #BE123C;">SALA DE CUARENTENA: DEAD LETTER QUEUE (DLQ)</span>
-        <span class="font-telemetry" style="font-size: 16px; color: #64748B;">MENSAJES ENVENENADOS: {{ dlqMessages.length }}</span>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+        <span class="font-pixel" style="font-size: 11px; color: #BE123C;">SALA DE CUARENTENA: DEAD LETTER QUEUE (DLQ)</span>
+        <span class="font-silk" style="font-size: 10px; color: #475569;">MENSAJES EN CUARENTENA: {{ dlqMessages.length }}</span>
       </div>
 
       @if (dlqMessages.length === 0) {
-        <p class="font-telemetry" style="font-size: 18px; color: #16A34A; margin: 10px 0; text-align: center;">
-          ✓ ¡No hay mensajes envenenados! Todas las colas están operando normalmente.
+        <p style="font-family: 'Inter', sans-serif; font-size: 14px; color: #16A34A; margin: 16px 0; text-align: center;">
+          ✓ ¡Todas las colas están en orden! No hay mensajes fallidos en la Dead Letter Queue.
         </p>
       } @else {
-        <div style="max-height: 220px; overflow-y: auto;">
+        <div style="max-height: 240px; overflow-y: auto;">
           <table style="width: 100%; border-collapse: collapse; text-align: left;">
             <thead>
               <tr class="font-pixel" style="font-size: 9px; color: #0F172A; border-bottom: 2px solid #000;">
-                <th style="padding: 6px;">ID MENSAJE</th>
-                <th style="padding: 6px;">ORIGEN</th>
-                <th style="padding: 6px;">RAZÓN DE FALLO</th>
-                <th style="padding: 6px;">ACCIÓN</th>
+                <th style="padding: 8px;">ID MENSAJE</th>
+                <th style="padding: 8px;">COLA ORIGEN</th>
+                <th style="padding: 8px;">CAUSA DE FALLO</th>
+                <th style="padding: 8px;">ACCIÓN</th>
               </tr>
             </thead>
             <tbody>
               @for (m of dlqMessages; track m.id) {
-                <tr class="font-telemetry" style="font-size: 16px; border-bottom: 1px solid #E2E8F0;">
-                  <td style="padding: 6px;">{{ m.id }}</td>
-                  <td style="padding: 6px;">{{ m.colaOrigen }}</td>
-                  <td style="padding: 6px; color: #DC2626;">{{ m.razon }}</td>
-                  <td style="padding: 6px;">
+                <tr style="font-family: 'Inter', sans-serif; font-size: 13px; border-bottom: 1px solid #E2E8F0;">
+                  <td style="padding: 8px; font-weight: bold;">{{ m.id }}</td>
+                  <td style="padding: 8px;">{{ m.colaOrigen }}</td>
+                  <td style="padding: 8px; color: #DC2626;">{{ m.razon }}</td>
+                  <td style="padding: 8px;">
                     <button type="button" class="gba-btn gba-btn-heal" style="font-size: 8px; padding: 4px 8px;" (click)="vaciarDlq()">
                       REVIVIR
                     </button>
@@ -354,7 +387,7 @@
       
       <!-- Tarjeta de Entrenador Oficial Estilo GBA -->
       <section style="background: linear-gradient(135deg, #F2D35B 0%, #DFB434 50%, #B98B1C 100%); border: 4px solid #101018; border-radius: 12px; padding: 8px; box-shadow: 4px 4px 0 #000;">
-        <div style="background: #F8F4E0; border: 3px solid #4B3F72; border-radius: 8px; padding: 14px; color: #181824;">
+        <div style="background: #F8F4E0; border: 3px solid #4B3F72; border-radius: 8px; padding: 16px; color: #181824;">
           
           <!-- Encabezado Ficha -->
           <div style="background: #4B3F72; border: 2px solid #000; border-radius: 4px; padding: 8px 12px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
@@ -363,39 +396,51 @@
           </div>
 
           <!-- Nombres de los Alumnos -->
-          <div style="margin-bottom: 12px;">
-            <span class="font-pixel" style="font-size: 8px; color: #64748B; display: block;">ENTRENADORES:</span>
-            <h3 class="font-pixel" style="font-size: 12px; color: #0F172A; margin: 4px 0;">
+          <div style="margin-bottom: 14px;">
+            <span class="font-pixel" style="font-size: 8px; color: #64748B; display: block;">ENTRENADORES TITULARES:</span>
+            <h3 class="font-pixel" style="font-size: 13px; color: #0F172A; margin: 4px 0;">
               PATRICIO QUILODRÁN &amp; SEBASTIAN DINAMARCA
             </h3>
-            <span class="font-telemetry" style="font-size: 16px; color: #475569;">
-              Duoc UC • DSY1107 Desarrollo Cloud Native I
+            <span style="font-family: 'Inter', sans-serif; font-size: 13px; color: #475569;">
+              Duoc UC • DSY1107 Desarrollo Cloud Native I (EP5 / EP6)
             </span>
           </div>
 
           <!-- Medallas de Gimnasio Cloud -->
-          <div style="margin-top: 14px;">
+          <div>
             <span class="font-pixel" style="font-size: 9px; color: #4B3F72; display: block; margin-bottom: 8px;">
               MEDALLAS DE GIMNASIO CLOUD (6/6):
             </span>
-            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;">
-              <div class="gba-dialog-dark" style="padding: 6px; text-align: center; font-size: 8px;" class="font-pixel">
-                ⛰️ ROCA<br><span style="color: #94A3B8; font-size: 7px;">AWS EC2</span>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
+              <div class="gba-dialog-dark" style="padding: 8px; text-align: center;">
+                <span style="font-size: 18px; display: block;">⛰️</span>
+                <span class="font-pixel" style="font-size: 8px; color: #F8D030;">ROCA</span>
+                <span style="font-family: 'Inter', sans-serif; font-size: 10px; color: #94A3B8; display: block;">AWS EC2</span>
               </div>
-              <div class="gba-dialog-dark" style="padding: 6px; text-align: center; font-size: 8px;" class="font-pixel">
-                💧 CASCADA<br><span style="color: #94A3B8; font-size: 7px;">API GW</span>
+              <div class="gba-dialog-dark" style="padding: 8px; text-align: center;">
+                <span style="font-size: 18px; display: block;">💧</span>
+                <span class="font-pixel" style="font-size: 8px; color: #38BDF8;">CASCADA</span>
+                <span style="font-family: 'Inter', sans-serif; font-size: 10px; color: #94A3B8; display: block;">API Gateway</span>
               </div>
-              <div class="gba-dialog-dark" style="padding: 6px; text-align: center; font-size: 8px;" class="font-pixel">
-                ⚡ TRUENO<br><span style="color: #94A3B8; font-size: 7px;">KAFKA (3)</span>
+              <div class="gba-dialog-dark" style="padding: 8px; text-align: center;">
+                <span style="font-size: 18px; display: block;">⚡</span>
+                <span class="font-pixel" style="font-size: 8px; color: #FACC15;">TRUENO</span>
+                <span style="font-family: 'Inter', sans-serif; font-size: 10px; color: #94A3B8; display: block;">Kafka 3N</span>
               </div>
-              <div class="gba-dialog-dark" style="padding: 6px; text-align: center; font-size: 8px;" class="font-pixel">
-                🌈 ARCOÍRIS<br><span style="color: #94A3B8; font-size: 7px;">RABBITMQ</span>
+              <div class="gba-dialog-dark" style="padding: 8px; text-align: center;">
+                <span style="font-size: 18px; display: block;">🌈</span>
+                <span class="font-pixel" style="font-size: 8px; color: #EC4899;">ARCOÍRIS</span>
+                <span style="font-family: 'Inter', sans-serif; font-size: 10px; color: #94A3B8; display: block;">RabbitMQ 2N</span>
               </div>
-              <div class="gba-dialog-dark" style="padding: 6px; text-align: center; font-size: 8px;" class="font-pixel">
-                👻 ALMA<br><span style="color: #94A3B8; font-size: 7px;">POSTGRES</span>
+              <div class="gba-dialog-dark" style="padding: 8px; text-align: center;">
+                <span style="font-size: 18px; display: block;">👻</span>
+                <span class="font-pixel" style="font-size: 8px; color: #C084FC;">ALMA</span>
+                <span style="font-family: 'Inter', sans-serif; font-size: 10px; color: #94A3B8; display: block;">Postgres 16</span>
               </div>
-              <div class="gba-dialog-dark" style="padding: 6px; text-align: center; font-size: 8px;" class="font-pixel">
-                🛡️ PANTANO<br><span style="color: #94A3B8; font-size: 7px;">ENTRA ID</span>
+              <div class="gba-dialog-dark" style="padding: 8px; text-align: center;">
+                <span style="font-size: 18px; display: block;">🛡️</span>
+                <span class="font-pixel" style="font-size: 8px; color: #4ADE80;">PANTANO</span>
+                <span style="font-family: 'Inter', sans-serif; font-size: 10px; color: #94A3B8; display: block;">Entra ID</span>
               </div>
             </div>
           </div>
@@ -404,36 +449,36 @@
       </section>
 
       <!-- Telemetría de Servidor AWS EC2 & Decodificador JWT -->
-      <section class="gba-dialog-dark" style="padding: 14px 18px;">
-        <span class="font-pixel" style="font-size: 10px; color: #F8D030; display: block; margin-bottom: 8px;">
+      <section class="gba-dialog-dark" style="padding: 16px 20px;">
+        <span class="font-pixel" style="font-size: 10px; color: #F8D030; display: block; margin-bottom: 10px;">
           INFRAESTRUCTURA AWS CLOUD (EC2 + API GATEWAY)
         </span>
 
-        <p class="font-telemetry" style="font-size: 16px; color: #CBD4EC; margin: 4px 0;">
-          Host Público EC2: <strong>13.221.177.55</strong> (us-east-1)
+        <p style="font-family: 'Inter', sans-serif; font-size: 13px; color: #CBD4EC; margin: 6px 0;">
+          Servidor EC2: <strong style="color: #38BDF8;">13.221.177.55</strong> (us-east-1)
         </p>
-        <p class="font-telemetry" style="font-size: 16px; color: #CBD4EC; margin: 4px 0;">
-          API Gateway: <strong>6cmzp83q6h.execute-api.us-east-1.amazonaws.com</strong>
+        <p style="font-family: 'Inter', sans-serif; font-size: 13px; color: #CBD4EC; margin: 6px 0;">
+          HTTP API Gateway: <strong style="color: #38BDF8;">6cmzp83q6h.execute-api.us-east-1.amazonaws.com</strong>
         </p>
 
-        <div style="margin: 12px 0;">
+        <div style="margin: 14px 0;">
           <button type="button" class="gba-btn gba-btn-primary" (click)="probarPingGateway()">
             📡 PROBAR LATENCIA GATEWAY
           </button>
-          <p class="font-telemetry" style="font-size: 15px; color: #22C55E; margin-top: 6px;">
+          <p class="font-telemetry" style="font-size: 16px; color: #22C55E; margin-top: 8px;">
             {{ pingLatencia }}
           </p>
         </div>
 
-        <div style="border-top: 1px solid #334155; padding-top: 10px; margin-top: 10px;">
-          <span class="font-pixel" style="font-size: 9px; color: #38BDF8; display: block; margin-bottom: 4px;">
+        <div style="border-top: 1px solid #334155; padding-top: 12px; margin-top: 12px;">
+          <span class="font-pixel" style="font-size: 9px; color: #38BDF8; display: block; margin-bottom: 6px;">
             AUTENTICACIÓN JWT (MICROSOFT ENTRA ID):
           </span>
-          <p class="font-telemetry" style="font-size: 15px; color: #94A3B8; margin: 2px 0;">
-            Algoritmo: RS256 • Tenant: 4531cbe0-83c7-406d-a972-e6302b1fb7d1
+          <p style="font-family: 'Inter', sans-serif; font-size: 12px; color: #94A3B8; margin: 2px 0;">
+            Algoritmo: RS256 • Tenant ID: 4531cbe0-83c7-406d-a972-e6302b1fb7d1
           </p>
-          <p class="font-telemetry" style="font-size: 15px; color: #94A3B8; margin: 2px 0;">
-            Estado: {{ autenticado ? 'SESIÓN ACTIVA CON TOKEN JWT VÁLIDO' : 'MODO LOCAL / DEMO ACTIVO' }}
+          <p style="font-family: 'Inter', sans-serif; font-size: 12px; color: #94A3B8; margin: 2px 0;">
+            Estado de Sesión: {{ autenticado ? '✓ Autenticado con Microsoft Entra ID' : '✓ Modo Demostración Activo' }}
           </p>
         </div>
       </section>

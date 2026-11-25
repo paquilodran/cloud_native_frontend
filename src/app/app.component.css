@@ -6,11 +6,23 @@
   background: #090B10;
   padding: 16px 12px;
   box-sizing: border-box;
+  transition: all 0.25s ease;
+}
+
+.gba-ampliada {
+  padding: 8px !important;
+}
+
+.gba-ampliada .gba-console-wrapper {
+  max-width: 100% !important;
+  border-radius: 12px !important;
+  border-width: 3px !important;
+  padding: 10px 14px 14px 14px !important;
 }
 
 .gba-console-wrapper {
   width: 100%;
-  max-width: 1360px;
+  max-width: 1380px;
   border-radius: 28px;
   padding: 14px 20px 20px 20px;
   position: relative;
@@ -88,7 +100,7 @@
   background: #334155;
   color: #F8FAFC;
   border: 1px solid #000;
-  padding: 4px 8px;
+  padding: 5px 8px;
   border-radius: 4px;
   cursor: pointer;
   box-shadow: 1px 1px 0 #000;
@@ -213,6 +225,50 @@
 .action-btn:active {
   transform: translateY(3px);
   box-shadow: 0 1px 0 #2E030F;
+}
+
+/* Toasts Flotantes */
+.gba-toast-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 99999;
+  pointer-events: none;
+}
+
+.gba-toast {
+  pointer-events: auto;
+  background: #10141D;
+  border: 2px solid #000;
+  border-radius: 6px;
+  padding: 8px 12px;
+  color: #FFF;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6), 2px 2px 0 #000;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 360px;
+  animation: slideIn 0.2s ease-out;
+}
+
+.gba-toast-success {
+  border-left: 5px solid #22C55E !important;
+}
+
+.gba-toast-error {
+  border-left: 5px solid #EF4444 !important;
+}
+
+.gba-toast-info {
+  border-left: 5px solid #38BDF8 !important;
+}
+
+@keyframes slideIn {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
 }
 
 @media (max-width: 768px) {

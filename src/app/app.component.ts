@@ -29,8 +29,13 @@ export class AppComponent implements OnInit {
   // GBA Console Shell State
   shellTheme: 'INDIGO' | 'DMG' = 'INDIGO';
   balance = 185000;
+  vistaAmpliada = false;
   readonly tabs = ['mochila', 'kafka', 'rabbitmq', 'entrenador'];
   currentTab = 'mochila';
+
+  toggleVistaAmpliada(): void {
+    this.vistaAmpliada = !this.vistaAmpliada;
+  }
 
   totalOrdenes = 3;
   autenticado = false;

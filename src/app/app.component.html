@@ -4,7 +4,7 @@
   <!-- ========================================================================= -->
   <!-- CARCASA DE CONSOLA GAME BOY ADVANCE (GBA CLOUD-NATIVE EDITION)           -->
   <!-- ========================================================================= -->
-  <div class="gba-outer-container">
+  <div class="gba-outer-container" [class.gba-ampliada]="vistaAmpliada">
     <div class="gba-console-wrapper" [class.gba-shell-indigo]="shellTheme === 'INDIGO'" [class.gba-shell-dmg]="shellTheme === 'DMG'">
       
       <!-- Botones Superiores L y R (Shoulder Bumpers) -->
@@ -14,7 +14,7 @@
         </button>
         <div class="gba-bumper-speaker">
           <span>::::</span>
-          <span class="font-pixel" style="font-size: 8px; color: #E2E8F0; margin: 0 8px;">NINTENDO GBA CONSOLE</span>
+          <span class="font-pixel" style="font-size: 8px; color: #E2E8F0; margin: 0 8px;">NINTENDO GBA CONSOLE • POKÉVAULT TCG</span>
           <span>::::</span>
         </div>
         <button type="button" class="gba-bumper-btn" (click)="nextTab()" title="Botón R (Tecla R o Pág. Siguiente)">
@@ -37,12 +37,17 @@
         </div>
 
         <!-- Telemetría & Perfil de Entrenador -->
-        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
           <!-- Saldo en Poké-dólares -->
           <div class="gba-wallet-box">
             <span class="font-pixel" style="font-size: 10px; color: #F8D030;">{{ formatPokedollars(balance) }}</span>
             <button type="button" class="gba-mini-btn" (click)="recargarBalance()" title="Recargar saldo">+₽50K</button>
           </div>
+
+          <!-- Selector de Modo Ampliado -->
+          <button type="button" class="gba-mini-btn" (click)="toggleVistaAmpliada()" title="Alternar tamaño de pantalla">
+            {{ vistaAmpliada ? '🔍 CONSOLA' : '🖥️ AMPLIAR' }}
+          </button>
 
           <!-- Selector de Carcasa GBA / DMG -->
           <button type="button" class="gba-mini-btn" (click)="toggleShellTheme()" title="Cambiar color de carcasa">
@@ -64,39 +69,51 @@
       </main>
 
       <!-- Controles Inferiores GBA (Decorativos / Interactivos) -->
-      <footer class="gba-controls-footer">
-        <!-- D-Pad -->
-        <div class="gba-dpad">
-          <div class="dpad-up" (click)="prevTab()">▲</div>
-          <div class="dpad-left" (click)="prevTab()">◀</div>
-          <div class="dpad-center"></div>
-          <div class="dpad-right" (click)="nextTab()">▶</div>
-          <div class="dpad-down" (click)="nextTab()">▼</div>
-        </div>
+      @if (!vistaAmpliada) {
+        <footer class="gba-controls-footer">
+          <!-- D-Pad -->
+          <div class="gba-dpad">
+            <div class="dpad-up" (click)="prevTab()">▲</div>
+            <div class="dpad-left" (click)="prevTab()">◀</div>
+            <div class="dpad-center"></div>
+            <div class="dpad-right" (click)="nextTab()">▶</div>
+            <div class="dpad-down" (click)="nextTab()">▼</div>
+          </div>
 
-        <!-- Botones Select y Start -->
-        <div class="gba-start-select">
-          <div class="btn-pill" (click)="irATab('mochila')">
-            <span></span>
-            <label class="font-pixel" style="font-size: 7px; color: #CBD5E1;">SELECT</label>
+          <!-- Botones Select y Start -->
+          <div class="gba-start-select">
+            <div class="btn-pill" (click)="irATab('mochila')">
+              <span></span>
+              <label class="font-pixel" style="font-size: 7px; color: #CBD5E1;">MOCHILA</label>
+            </div>
+            <div class="btn-pill" (click)="irATab('kafka')">
+              <span></span>
+              <label class="font-pixel" style="font-size: 7px; color: #CBD5E1;">KAFKA</label>
+            </div>
           </div>
-          <div class="btn-pill" (click)="irATab('kafka')">
-            <span></span>
-            <label class="font-pixel" style="font-size: 7px; color: #CBD5E1;">START</label>
-          </div>
-        </div>
 
-        <!-- Botones B y A de Nintendo -->
-        <div class="gba-ab-buttons">
-          <div class="action-btn" (click)="prevTab()">
-            <span class="font-pixel" style="font-size: 10px; color: #FFF;">B</span>
+          <!-- Botones B y A de Nintendo -->
+          <div class="gba-ab-buttons">
+            <div class="action-btn" (click)="prevTab()" title="Botón B (Pestaña Anterior)">
+              <span class="font-pixel" style="font-size: 10px; color: #FFF;">B</span>
+            </div>
+            <div class="action-btn" (click)="nextTab()" title="Botón A (Pestaña Siguiente)">
+              <span class="font-pixel" style="font-size: 10px; color: #FFF;">A</span>
+            </div>
           </div>
-          <div class="action-btn" (click)="nextTab()">
-            <span class="font-pixel" style="font-size: 10px; color: #FFF;">A</span>
-          </div>
-        </div>
-      </footer>
+        </footer>
+      }
 
     </div>
+  </div>
+
+  <!-- Contenedor Flotante de Toasts Retro -->
+  <div class="gba-toast-container">
+    @for (toast of notificationService.toasts$ | async; track toast.id) {
+      <div class="gba-toast" [class.gba-toast-success]="toast.type === 'success'" [class.gba-toast-error]="toast.type === 'error'">
+        <span class="font-pixel" style="font-size: 8px;">{{ toast.message }}</span>
+        <button type="button" class="gba-mini-btn" (click)="notificationService.dismissToast(toast.id)">X</button>
+      </div>
+    }
   </div>
 }
