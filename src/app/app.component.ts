@@ -8,6 +8,7 @@ import { filter } from 'rxjs';
 import { environment } from '../environments/environment';
 import { CartasService } from './cartas/cartas.service';
 import { NotificationService } from './shared/notification.service';
+import { formatPokedollars } from './shared/pokemon-sprites';
 
 @Component({
   selector: 'app-root',
@@ -23,8 +24,15 @@ export class AppComponent implements OnInit {
   private readonly cartasService = inject(CartasService);
   readonly notificationService = inject(NotificationService);
 
-  totalOrdenes = 3;
+  readonly formatPokedollars = formatPokedollars;
 
+  // GBA Console Shell State
+  shellTheme: 'INDIGO' | 'DMG' = 'INDIGO';
+  balance = 185000;
+  readonly tabs = ['mochila', 'kafka', 'rabbitmq', 'entrenador'];
+  currentTab = 'mochila';
+
+  totalOrdenes = 3;
   autenticado = false;
   usuario = 'Patricio';
   email = 'patricio@duocuc.cl';
@@ -33,6 +41,32 @@ export class AppComponent implements OnInit {
   esLogin = false;
   menuAbierto = false;
   busqueda = '';
+
+  toggleShellTheme(): void {
+    this.shellTheme = this.shellTheme === 'INDIGO' ? 'DMG' : 'INDIGO';
+  }
+
+  recargarBalance(): void {
+    this.balance += 50000;
+    this.notificationService.showToast('¡Has recibido ₽ 50.000 Poké-dólares de la Liga Pokémon!', 'success');
+  }
+
+  irATab(tab: string): void {
+    this.currentTab = tab;
+    this.router.navigate(['/'], { queryParams: { tab } });
+  }
+
+  prevTab(): void {
+    const idx = this.tabs.indexOf(this.currentTab);
+    const nextIdx = (idx - 1 + this.tabs.length) % this.tabs.length;
+    this.irATab(this.tabs[nextIdx]);
+  }
+
+  nextTab(): void {
+    const idx = this.tabs.indexOf(this.currentTab);
+    const nextIdx = (idx + 1) % this.tabs.length;
+    this.irATab(this.tabs[nextIdx]);
+  }
 
   // Control de agrupación / desagrupación en la barra lateral
   seccionMensajeriaAbierta = true;
@@ -50,6 +84,15 @@ export class AppComponent implements OnInit {
 
   @HostListener('window:keydown', ['$event'])
   onGlobalKeyDown(event: KeyboardEvent): void {
+    if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement) return;
+
+    if (event.key === '1') this.irATab('mochila');
+    if (event.key === '2') this.irATab('kafka');
+    if (event.key === '3') this.irATab('rabbitmq');
+    if (event.key === '4') this.irATab('entrenador');
+    if (event.key === 'l' || event.key === 'L') this.prevTab();
+    if (event.key === 'r' || event.key === 'R') this.nextTab();
+
     if (event.key === 'Escape') {
       if (this.modalPerfilAbierto) {
         this.cerrarModalPerfil();

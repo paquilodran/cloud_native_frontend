@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { MsalService } from '@azure/msal-angular';
 import { claseEstado, etiquetaEstado } from '../shared/estado-visual';
 import { NotificationService } from '../shared/notification.service';
+import { getPokemonGbaSprite, OAK_SPRITE, formatPokedollars } from '../shared/pokemon-sprites';
 import { Carta, Orden, colorTipo, esHolo } from './carta.model';
 import { CartasService } from './cartas.service';
 
@@ -26,15 +27,20 @@ export class CartasComponent implements OnInit {
   readonly sobreAbierto = signal<Carta[] | null>(null);
   readonly cartaDetalle = signal<Carta | null>(null);
   readonly cantidad = signal(1);
+  readonly historialAbierto = signal(false);
 
   readonly colorTipo = colorTipo;
   readonly esHolo = esHolo;
   readonly etiquetaEstado = etiquetaEstado;
   readonly claseEstado = claseEstado;
+  readonly getPokemonGbaSprite = getPokemonGbaSprite;
+  readonly oakSprite = OAK_SPRITE;
+  readonly formatPokedollars = formatPokedollars;
 
   busqueda = '';
   tipoFiltro = '';
   rarezaFiltro = '';
+  soloHolo = false;
   pagina = 1;
   readonly pageSize = 12;
 
@@ -59,8 +65,9 @@ export class CartasComponent implements OnInit {
     const q = this.busqueda.trim().toLowerCase();
     return this.cartas().filter((c) =>
       (!q || c.nombre.toLowerCase().includes(q)) &&
-      (!this.tipoFiltro || c.tipo === this.tipoFiltro) &&
-      (!this.rarezaFiltro || c.rareza === this.rarezaFiltro)
+      (!this.tipoFiltro || c.tipo.toLowerCase() === this.tipoFiltro.toLowerCase()) &&
+      (!this.rarezaFiltro || c.rareza === this.rarezaFiltro) &&
+      (!this.soloHolo || esHolo(c.rareza))
     );
   }
 
@@ -88,6 +95,20 @@ export class CartasComponent implements OnInit {
 
   filtrar(): void {
     this.pagina = 1;
+  }
+
+  filtrarElemento(elemento: string): void {
+    this.tipoFiltro = this.tipoFiltro === elemento ? '' : elemento;
+    this.pagina = 1;
+  }
+
+  toggleSoloHolo(): void {
+    this.soloHolo = !this.soloHolo;
+    this.pagina = 1;
+  }
+
+  toggleHistorial(): void {
+    this.historialAbierto.set(!this.historialAbierto());
   }
 
   cambiarPagina(delta: number): void {

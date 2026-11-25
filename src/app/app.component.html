@@ -1,355 +1,102 @@
 @if (esLogin) {
   <router-outlet />
 } @else {
-  <div class="app" [class.nav-open]="menuAbierto">
-    <aside class="sidebar">
-      <a routerLink="/" class="logo">
-        <span class="logo-mark" aria-hidden="true">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-            <circle cx="12" cy="12" r="10" stroke="#3B4CCA" stroke-width="2"/>
-            <path d="M2 12h20" stroke="#3B4CCA" stroke-width="2"/>
-            <path d="M2.2 11a10 10 0 0 1 19.6 0z" fill="#E3350D"/>
-            <circle cx="12" cy="12" r="3.2" fill="#fff" stroke="#3B4CCA" stroke-width="2"/>
-          </svg>
-        </span>
-        PokéVault TCG
-      </a>
-
-      <!-- 1. Módulos Principales -->
-      <nav class="menu">
-        <a routerLink="/" [queryParams]="{ tab: 'inicio' }" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: false }">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" stroke="currentColor" stroke-width="1.6"/><polyline points="9 22 9 12 15 12 15 22" stroke="currentColor" stroke-width="1.6"/></svg>
-          Inicio
-        </a>
-        <a routerLink="/" [queryParams]="{ tab: 'dashboard' }">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 3v18h18" stroke="currentColor" stroke-width="1.6"/><rect x="7" y="10" width="3" height="8" rx="1" fill="currentColor"/><rect x="13" y="6" width="3" height="12" rx="1" fill="currentColor"/><rect x="19" y="13" width="3" height="5" rx="1" fill="currentColor"/></svg>
-          Dashboard
-        </a>
-        <a routerLink="/cartas" routerLinkActive="active">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-          <span style="flex:1;">Cartas</span>
-          @if (totalOrdenes > 0) {
-            <span class="nav-count-badge">{{ totalOrdenes }}</span>
-          }
-        </a>
-      </nav>
-
-      <!-- 2. Sección Mensajería & Streaming (Colapsable) -->
-      <div class="nav-group-header" (click)="toggleSeccionMensajeria()" role="button" tabindex="0">
-        <span class="nav-label-text">Mensajería y Eventos</span>
-        <span class="nav-chevron">{{ seccionMensajeriaAbierta ? '▾' : '▸' }}</span>
-      </div>
-
-      @if (seccionMensajeriaAbierta) {
-        <nav class="menu sub-menu">
-          <a routerLink="/" [queryParams]="{ tab: 'rabbitmq' }">
-            <span class="sub-dot"></span>
-            RabbitMQ
-          </a>
-          <a routerLink="/" [queryParams]="{ tab: 'kafka' }">
-            <span class="sub-dot"></span>
-            Apache Kafka
-          </a>
-        </nav>
-      }
-
-      <!-- 3. Sección Tecnologías (Colapsable) -->
-      <div class="nav-group-header" (click)="toggleSeccionTecnologias()" role="button" tabindex="0">
-        <span class="nav-label-text">Stack Tecnológico</span>
-        <span class="nav-chevron">{{ seccionTecnologiasAbierta ? '▾' : '▸' }}</span>
-      </div>
-
-      @if (seccionTecnologiasAbierta) {
-        <ul class="tech">
-          <li><span class="tech-tag">Angular</span> Frontend SPA</li>
-          <li><span class="tech-tag">Spring</span> Backend API</li>
-          <li><span class="tech-tag">Entra ID</span> OAuth / JWT</li>
-          <li><span class="tech-tag">Rabbit</span> AMQP Cluster</li>
-          <li><span class="tech-tag">Kafka</span> 3 Brokers</li>
-        </ul>
-      }
-
-      <div class="sidebar-foot">
-        <strong>Cloud Native</strong>
-        <span>DSY1107 · Duoc UC</span>
-      </div>
-    </aside>
-
-    <div class="workspace">
-      <header class="header">
-        <button class="icon-btn burger" type="button" (click)="menuAbierto = !menuAbierto" aria-label="Menú">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+  <!-- ========================================================================= -->
+  <!-- CARCASA DE CONSOLA GAME BOY ADVANCE (GBA CLOUD-NATIVE EDITION)           -->
+  <!-- ========================================================================= -->
+  <div class="gba-outer-container">
+    <div class="gba-console-wrapper" [class.gba-shell-indigo]="shellTheme === 'INDIGO'" [class.gba-shell-dmg]="shellTheme === 'DMG'">
+      
+      <!-- Botones Superiores L y R (Shoulder Bumpers) -->
+      <div class="gba-bumpers-bar">
+        <button type="button" class="gba-bumper-btn" (click)="prevTab()" title="Botón L (Tecla L o Pág. Anterior)">
+          [ L ] PREV TAB
         </button>
+        <div class="gba-bumper-speaker">
+          <span>::::</span>
+          <span class="font-pixel" style="font-size: 8px; color: #E2E8F0; margin: 0 8px;">NINTENDO GBA CONSOLE</span>
+          <span>::::</span>
+        </div>
+        <button type="button" class="gba-bumper-btn" (click)="nextTab()" title="Botón R (Tecla R o Pág. Siguiente)">
+          NEXT TAB [ R ]
+        </button>
+      </div>
 
-        <label class="search">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#64748b" stroke-width="1.7"/><path d="m20 20-3.2-3.2" stroke="#64748b" stroke-width="1.7" stroke-linecap="round"/></svg>
-          <input class="input" [(ngModel)]="busqueda" (keyup.enter)="buscar()" placeholder="Buscar carta, orden...">
-        </label>
+      <!-- Barra de Encabezado Pokédex Superior -->
+      <header class="gba-pokedex-header">
+        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+          <div class="pokedex-led" title="Pokédex Power ON"></div>
+          <div>
+            <h1 class="font-pixel" style="font-size: 13px; margin: 0; color: #F8D030; text-shadow: 2px 2px 0 #000;">
+              POKéVAULT TCG
+            </h1>
+            <span class="font-silk" style="font-size: 8px; color: #CBD5E1;">
+              CLOUD-NATIVE GBA • AWS EC2 13.221.177.55
+            </span>
+          </div>
+        </div>
 
-        <div class="header-right">
-          <a routerLink="/login" class="ms-mark" title="Microsoft Entra ID">
-            <span class="sq s1"></span><span class="sq s2"></span><span class="sq s3"></span><span class="sq s4"></span>
-          </a>
-
-          <!-- Centro de Notificaciones (Campana) -->
-          <div class="notifications-container">
-            <button
-              type="button"
-              class="icon-btn notifications-trigger"
-              (click)="toggleMenuNotificaciones($event)"
-              aria-label="Centro de Notificaciones"
-              [class.active]="menuNotificacionesAbierto"
-              title="Notificaciones del Sistema"
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-              @if (notificationService.unreadCount > 0) {
-                <span class="notification-badge">{{ notificationService.unreadCount }}</span>
-              }
-            </button>
-
-            <!-- Desplegable de Notificaciones -->
-            @if (menuNotificacionesAbierto) {
-              <div class="notifications-dropdown">
-                <div class="notifications-header">
-                  <div style="display:flex; align-items:center; gap:8px;">
-                    <strong>Notificaciones</strong>
-                    <span class="notif-count-pill">{{ notificationService.unreadCount }} nuevas</span>
-                  </div>
-                  <div style="display:flex; gap:6px;">
-                    <button type="button" class="btn-text-action" (click)="notificationService.markAllAsRead()">Marcar leídas</button>
-                    <button type="button" class="btn-text-action" (click)="notificationService.clearAll()" style="color:#ef4444;">Limpiar</button>
-                  </div>
-                </div>
-
-                <div class="notifications-list">
-                  @for (notif of (notificationService.notifications$ | async); track notif.id) {
-                    <div class="notification-item" [class.unread]="!notif.leida" (click)="notificationService.markAsRead(notif.id)">
-                      <div class="notif-indicator" [class]="'notif-' + notif.tipo"></div>
-                      <div class="notif-content">
-                        <div class="notif-top">
-                          <span class="notif-title">{{ notif.titulo }}</span>
-                          <span class="notif-time">{{ notif.fecha | date:'shortTime' }}</span>
-                        </div>
-                        <p class="notif-msg">{{ notif.mensaje }}</p>
-                      </div>
-                    </div>
-                  } @empty {
-                    <div class="notif-empty">
-                      <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" stroke="#94a3b8" stroke-width="1.6"/><path d="M13.73 21a2 2 0 0 1-3.46 0" stroke="#94a3b8" stroke-width="1.6"/></svg>
-                      <p>No tienes notificaciones pendientes</p>
-                    </div>
-                  }
-                </div>
-              </div>
-            }
+        <!-- Telemetría & Perfil de Entrenador -->
+        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+          <!-- Saldo en Poké-dólares -->
+          <div class="gba-wallet-box">
+            <span class="font-pixel" style="font-size: 10px; color: #F8D030;">{{ formatPokedollars(balance) }}</span>
+            <button type="button" class="gba-mini-btn" (click)="recargarBalance()" title="Recargar saldo">+₽50K</button>
           </div>
 
-          <!-- Trigger de Perfil con Menú Desplegable -->
-          <div class="user-profile-container">
-            <div class="user-trigger" (click)="toggleMenuPerfil($event)" role="button" tabindex="0" [class.active]="menuPerfilAbierto">
-              <div class="avatar-wrapper">
-                <div class="avatar-gradient">{{ inicial }}</div>
-                <span class="user-status-dot" [class.online]="autenticado"></span>
-              </div>
-              <div class="user-info-meta">
-                <span class="user-name">{{ usuario }}</span>
-                <span class="user-role-badge">
-                  <span class="role-dot" [class.online]="autenticado"></span>
-                  {{ autenticado ? 'Entra ID · Admin' : 'Modo Invitado' }}
-                </span>
-              </div>
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" class="user-chevron"><path d="m6 9 6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            </div>
+          <!-- Selector de Carcasa GBA / DMG -->
+          <button type="button" class="gba-mini-btn" (click)="toggleShellTheme()" title="Cambiar color de carcasa">
+            {{ shellTheme === 'INDIGO' ? '🎨 INDIGO' : '🎨 GB DMG' }}
+          </button>
 
-            <!-- Menú Desplegable de Perfil -->
-            @if (menuPerfilAbierto) {
-              <div class="profile-dropdown">
-                <!-- Header del Dropdown -->
-                <div class="dropdown-header">
-                  <div class="dropdown-header-top">
-                    <div class="avatar-lg-gradient">{{ inicial }}</div>
-                    <div class="dropdown-user-details">
-                      <strong>{{ usuario }}</strong>
-                      <span class="dropdown-email">{{ email }}</span>
-                    </div>
-                  </div>
-                  <div class="dropdown-id-chip">
-                    <span class="ms-mark" style="transform:scale(0.85);"><span class="sq s1"></span><span class="sq s2"></span><span class="sq s3"></span><span class="sq s4"></span></span>
-                    <span>Microsoft Entra ID (IDaaS)</span>
-                    <span class="pill-badge pill-success" style="font-size:9px; padding:1px 5px; margin-left:auto;">
-                      {{ autenticado ? 'JWT Activo' : 'Sin sesión' }}
-                    </span>
-                  </div>
-                </div>
-
-                <!-- Secciones de Navegación del Dropdown -->
-                <div class="dropdown-body">
-                  <span class="dropdown-section-title">Cuenta y Seguridad</span>
-                  <button type="button" class="dropdown-item" (click)="abrirModalPerfil()">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><rect width="18" height="18" x="3" y="3" rx="2" stroke="currentColor" stroke-width="1.8"/><circle cx="9" cy="9" r="2" stroke="currentColor" stroke-width="1.8"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" stroke="currentColor" stroke-width="1.8"/></svg>
-                    <span>Perfil y Credenciales JWT</span>
-                    <span class="dropdown-item-badge">IDaaS</span>
-                  </button>
-
-                  <span class="dropdown-section-title" style="margin-top:8px;">Navegación Rápida</span>
-                  <a routerLink="/cartas" class="dropdown-item" (click)="menuPerfilAbierto = false">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-                    <span>Catálogo de Cartas</span>
-                  </a>
-                  <a routerLink="/" [queryParams]="{ tab: 'kafka' }" class="dropdown-item" (click)="menuPerfilAbierto = false">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.8"/><circle cx="19" cy="5" r="2" stroke="currentColor" stroke-width="1.8"/><circle cx="5" cy="5" r="2" stroke="currentColor" stroke-width="1.8"/><circle cx="12" cy="20" r="2" stroke="currentColor" stroke-width="1.8"/><path d="m7 6.5 3 3.5m4 0 3-3.5M12 9v8.5" stroke="currentColor" stroke-width="1.5"/></svg>
-                    <span>Streaming Apache Kafka</span>
-                  </a>
-                  <a routerLink="/" [queryParams]="{ tab: 'rabbitmq' }" class="dropdown-item" (click)="menuPerfilAbierto = false">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M18 10a6 6 0 0 0-12 0c0 4 2.5 7.5 6 9 3.5-1.5 6-5 6-9z" stroke="currentColor" stroke-width="1.8"/></svg>
-                    <span>Mensajería RabbitMQ</span>
-                  </a>
-                </div>
-
-                <!-- Footer del Dropdown -->
-                <div class="dropdown-footer">
-                  @if (autenticado) {
-                    <button type="button" class="dropdown-logout-btn" (click)="logout()">
-                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                      Cerrar sesión corporativa
-                    </button>
-                  } @else {
-                    <a routerLink="/login" class="dropdown-login-btn" (click)="menuPerfilAbierto = false">
-                      Iniciar con Entra ID
-                    </a>
-                  }
-                </div>
-              </div>
-            }
+          <!-- Ficha de Entrenador -->
+          <div class="gba-trainer-chip" (click)="irATab('entrenador')">
+            <span class="font-pixel" style="font-size: 9px; color: #A3E635;">TRN: PATRICIO &amp; SEBASTIAN</span>
           </div>
         </div>
       </header>
 
-      <main class="content">
-        <router-outlet />
+      <!-- Pantalla CRT LCD de la Consola GBA -->
+      <main class="gba-screen-bezel">
+        <div class="gba-screen-content scanlines" style="padding: 16px;">
+          <router-outlet></router-outlet>
+        </div>
       </main>
+
+      <!-- Controles Inferiores GBA (Decorativos / Interactivos) -->
+      <footer class="gba-controls-footer">
+        <!-- D-Pad -->
+        <div class="gba-dpad">
+          <div class="dpad-up" (click)="prevTab()">▲</div>
+          <div class="dpad-left" (click)="prevTab()">◀</div>
+          <div class="dpad-center"></div>
+          <div class="dpad-right" (click)="nextTab()">▶</div>
+          <div class="dpad-down" (click)="nextTab()">▼</div>
+        </div>
+
+        <!-- Botones Select y Start -->
+        <div class="gba-start-select">
+          <div class="btn-pill" (click)="irATab('mochila')">
+            <span></span>
+            <label class="font-pixel" style="font-size: 7px; color: #CBD5E1;">SELECT</label>
+          </div>
+          <div class="btn-pill" (click)="irATab('kafka')">
+            <span></span>
+            <label class="font-pixel" style="font-size: 7px; color: #CBD5E1;">START</label>
+          </div>
+        </div>
+
+        <!-- Botones B y A de Nintendo -->
+        <div class="gba-ab-buttons">
+          <div class="action-btn" (click)="prevTab()">
+            <span class="font-pixel" style="font-size: 10px; color: #FFF;">B</span>
+          </div>
+          <div class="action-btn" (click)="nextTab()">
+            <span class="font-pixel" style="font-size: 10px; color: #FFF;">A</span>
+          </div>
+        </div>
+      </footer>
+
     </div>
-  </div>
-
-  <!-- Modal de Perfil y Credenciales (Enterprise Modal) -->
-  @if (modalPerfilAbierto) {
-    <div class="modal-backdrop" (click)="cerrarModalPerfil()">
-      <div class="profile-modal-card" (click)="$event.stopPropagation()">
-        <!-- Header del Modal -->
-        <div class="modal-header">
-          <div style="display:flex; align-items:center; gap:14px;">
-            <div class="avatar-xl-gradient">{{ inicial }}</div>
-            <div>
-              <div style="display:flex; align-items:center; gap:8px;">
-                <h2 style="margin:0; font-size:18px; font-weight:700; color:#0f172a;">{{ usuario }}</h2>
-                <span class="pill-badge pill-success" style="font-size:10px;">Verificado Entra ID</span>
-              </div>
-              <span style="font-size:13px; color:#64748b;">{{ email }}</span>
-            </div>
-          </div>
-          <button type="button" class="close-btn" (click)="cerrarModalPerfil()" aria-label="Cerrar modal">×</button>
-        </div>
-
-        <!-- 1. Cuadrícula de Credenciales e Identidad -->
-        <span class="modal-subheading">Información de Identidad y Acceso (OAuth 2.0 / OIDC)</span>
-        <div class="modal-content-grid">
-          <div class="info-group">
-            <span class="info-label">Rol Asignado</span>
-            <strong class="info-value">Administrador Cloud Native</strong>
-          </div>
-          <div class="info-group">
-            <span class="info-label">Proveedor de Identidad</span>
-            <strong class="info-value" style="display:flex; align-items:center; gap:6px;">
-              <span class="ms-mark" style="transform:scale(0.85);"><span class="sq s1"></span><span class="sq s2"></span><span class="sq s3"></span><span class="sq s4"></span></span>
-              Microsoft Entra ID
-            </strong>
-          </div>
-          <div class="info-group">
-            <span class="info-label">Scope Autorizado</span>
-            <span class="info-value mono-val">api://{{ clientId }}/access_as_user</span>
-          </div>
-          <div class="info-group">
-            <span class="info-label">Client ID</span>
-            <span class="info-value mono-val">{{ clientId }}</span>
-          </div>
-          <div class="info-group" style="grid-column: 1 / -1;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-              <span class="info-label" style="margin:0;">Tenant ID (Directorio Duoc UC)</span>
-              <button type="button" class="btn-copy" (click)="copiarTexto(tenantId, 'tenant')">
-                {{ copiadoTenant ? 'Copiado!' : 'Copiar Tenant' }}
-              </button>
-            </div>
-            <code class="info-code">{{ tenantId }}</code>
-          </div>
-        </div>
-
-        <!-- 2. Clústeres y Microservicios Asignados -->
-        <div style="margin-top:16px;">
-          <span class="modal-subheading">Permisos de Clúster e Infraestructura</span>
-          <div class="cluster-access-list">
-            <div class="cluster-chip">
-              <span class="cluster-dot online"></span>
-              <span>Apache Kafka: <strong>tcg.analytics.stream</strong> (Read/Write)</span>
-            </div>
-            <div class="cluster-chip">
-              <span class="cluster-dot online"></span>
-              <span>RabbitMQ: <strong>orders.queue / DLQ</strong> (Publisher/Consumer)</span>
-            </div>
-            <div class="cluster-chip">
-              <span class="cluster-dot online"></span>
-              <span>API Gateway: <strong>Spring Boot Resource Server :8080</strong></span>
-            </div>
-          </div>
-        </div>
-
-        <!-- 3. Visor Criptográfico del Token JWT -->
-        <div style="margin-top:16px;">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-            <span class="modal-subheading" style="margin:0;">Token de Acceso Bearer (JWT)</span>
-            <button type="button" class="btn-copy" (click)="copiarTexto(tokenPreview || 'eyJhbGciOiJSUzI1NiIs...', 'token')">
-              {{ copiadoToken ? 'Token Copiado!' : 'Copiar JWT' }}
-            </button>
-          </div>
-          <div class="token-box">
-            {{ tokenPreview || 'eyJhbGciOiJSUzI1NiIsImtpZCI6IjFhMmIzYyIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJhcGk6Ly8zNjA5ZGZmYy00MTMzLWE2ZTUtMmRiZjNiYTJhMTIwIiwiaXNzIjoiaHR0cHM6Ly9zdHMud2luZG93cy5uZXQvNDUzMWNiZTAtODNjNy00MDZkLWE5NzItZTYzMDJiMWZiN2QxLyIsIm5hbWUiOiJQYXRyaWNpbyBBbGVqYW5kcm8iLCJyb2xlcyI6WyJBZG1pbiJdfQ...' }}
-          </div>
-          <span class="tiny muted" style="margin-top:4px; display:block; font-size:11px;">
-            Cifrado con clave asimétrica RSA-256 validado por el Resource Server de Spring Boot.
-          </span>
-        </div>
-
-        <!-- Footer del Modal -->
-        <div class="modal-actions">
-          <button type="button" class="btn btn-secondary" (click)="cerrarModalPerfil()">Cerrar</button>
-          @if (autenticado) {
-            <button type="button" class="btn btn-secondary" (click)="logout()" style="color:#dc2626;">
-              Cerrar sesión corporativa
-            </button>
-          }
-        </div>
-      </div>
-    </div>
-  }
-
-  <!-- Sistema Global de Toasts Flotantes -->
-  <div class="toast-container" aria-live="polite">
-    @for (toast of (notificationService.toasts$ | async); track toast.id) {
-      <div class="toast" [class.toast-success]="toast.type === 'success'" [class.toast-error]="toast.type === 'error'" [class.toast-info]="toast.type === 'info'">
-        <div class="toast-icon">
-          @if (toast.type === 'success') {
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          } @else if (toast.type === 'error') {
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><line x1="12" y1="8" x2="12" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="16" r="1" fill="currentColor"/></svg>
-          } @else {
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><line x1="12" y1="16" x2="12" y2="12" stroke="currentColor" stroke-width="2"/><line x1="12" y1="8" x2="12.01" y2="8" stroke="currentColor" stroke-width="2"/></svg>
-          }
-        </div>
-        <span class="toast-msg">{{ toast.message }}</span>
-        <button type="button" class="toast-close" (click)="notificationService.dismissToast(toast.id)" aria-label="Cerrar">×</button>
-      </div>
-    }
   </div>
 }

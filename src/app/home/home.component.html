@@ -1,941 +1,444 @@
-<!-- Pestañas de Navegación -->
-<nav class="subnav-tabs">
-  <button type="button" class="tab-btn" [class.active]="tabActiva === 'inicio'" (click)="seleccionarTab('inicio')">
-    Inicio
+<!-- ========================================================================= -->
+<!-- POKÉVAULT TCG: GBA CONSOLE INTERFACE (4 PANTALLAS RETRO NINTENDO)        -->
+<!-- ========================================================================= -->
+
+<!-- Barra de Pestañas Retro estilo Pokédex GBA -->
+<nav style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; border-bottom: 3px solid #101018; padding-bottom: 10px;">
+  <button type="button" class="gba-tab" [class.active]="tabActiva === 'mochila' || tabActiva === 'inicio'" (click)="seleccionarTab('mochila')">
+    🎒 MOCHILA / CARTAS
   </button>
-  <button type="button" class="tab-btn" [class.active]="tabActiva === 'dashboard'" (click)="seleccionarTab('dashboard')">
-    Dashboard
+  <button type="button" class="gba-tab" [class.active]="tabActiva === 'kafka'" (click)="seleccionarTab('kafka')">
+    ⚡ GIMNASIO KAFKA (ISR {{ brokersOnlineCount }}/3)
   </button>
-  <button type="button" class="tab-btn" [class.active]="tabActiva === 'rabbitmq'" (click)="seleccionarTab('rabbitmq')">
-    RabbitMQ
+  <button type="button" class="gba-tab" [class.active]="tabActiva === 'rabbitmq'" (click)="seleccionarTab('rabbitmq')">
+    🏥 CENTRO RABBITMQ (DLQ: {{ dlqMessages.length }})
   </button>
-  <button type="button" class="tab-btn" [class.active]="tabActiva === 'kafka'" (click)="seleccionarTab('kafka')">
-    Apache Kafka
+  <button type="button" class="gba-tab" [class.active]="tabActiva === 'entrenador' || tabActiva === 'dashboard'" (click)="seleccionarTab('entrenador')">
+    🪪 FICHA ENTRENADOR (AWS • JWT)
   </button>
 </nav>
 
 <!-- ========================================================================= -->
-<!-- 1. PESTAÑA: INICIO (PORTAL LIMPIO Y MINIMALISTA)                         -->
+<!-- PANTALLA 1: MOCHILA / CARTAS (TIENDA CIUDAD AZULONA & BASE SET)           -->
 <!-- ========================================================================= -->
-@if (tabActiva === 'inicio') {
-  <section class="card pad" style="margin-bottom: 20px;">
-    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 16px;">
-      <div>
-        <span class="subtle-chip">Plataforma Cloud Native</span>
-        <h1 style="margin: 8px 0 6px 0; font-size: 24px; font-weight: 700; color: #0f172a; letter-spacing: -0.02em;">
-          PokéVault TCG
-        </h1>
-        <p style="color: #64748b; font-size: 13px; max-width: 620px; margin: 0 0 16px 0; line-height: 1.5;">
-          Tienda de cartas Pokémon TCG desacoplada que integra autenticación JWT con Microsoft Entra ID, mensajería asíncrona con RabbitMQ y streaming analítico en tiempo real con Apache Kafka.
-        </p>
-        <div style="display:flex; gap:8px; flex-wrap:wrap;">
-          <button type="button" class="btn btn-primary" (click)="seleccionarTab('dashboard')">
-            Ver Dashboard
-          </button>
-          <button type="button" class="btn btn-secondary" (click)="seleccionarTab('kafka')">
-            Explorar Kafka
-          </button>
-          <button type="button" class="btn btn-secondary" (click)="seleccionarTab('rabbitmq')">
-            Explorar RabbitMQ
-          </button>
-        </div>
-      </div>
-
-      <!-- Estado de Infraestructura Minimalista -->
-      <div class="status-summary-box">
-        <span class="tiny-label">Estado de Servicios</span>
-        <ul class="status-list">
-          <li><span class="live-beacon"><span class="beacon-ping"></span><span class="beacon-dot"></span></span> Frontend Angular 19</li>
-          <li><span class="live-beacon"><span class="beacon-ping"></span><span class="beacon-dot"></span></span> Backend Spring Boot :8080</li>
-          <li><span class="live-beacon"><span class="beacon-ping"></span><span class="beacon-dot"></span></span> RabbitMQ Clúster (2 Nodos)</li>
-          <li><span class="live-beacon"><span class="beacon-ping"></span><span class="beacon-dot"></span></span> Kafka Clúster (3 Brokers)</li>
-          <li><span class="status-dot" [class.online]="autenticado"></span> {{ autenticado ? 'Entra ID (Conectado)' : 'Sin sesión' }}</li>
-        </ul>
-      </div>
-    </div>
-  </section>
-
-  <!-- Módulos de la Solución -->
-  <section style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; margin-bottom: 20px;">
-    <article class="card pad module-card" (click)="seleccionarTab('dashboard')">
-      <div>
-        <span class="tiny-label">Analítica</span>
-        <h3 class="module-title">Dashboard</h3>
-        <p class="module-desc">Indicadores transaccionales, KPIs diarios y gráfico de actividad mensual.</p>
-      </div>
-      <span class="module-link">Abrir módulo →</span>
-    </article>
-
-    <article class="card pad module-card" routerLink="/cartas">
-      <div>
-        <span class="tiny-label">Operación</span>
-        <h3 class="module-title">Catálogo de Cartas</h3>
-        <p class="module-desc">Compra de cartas y apertura de sobres con órdenes protegidas por JWT (Entra ID).</p>
-      </div>
-      <span class="module-link">Ver catálogo →</span>
-    </article>
-
-    <article class="card pad module-card" (click)="seleccionarTab('rabbitmq')">
-      <div>
-        <span class="tiny-label">AMQP</span>
-        <h3 class="module-title">RabbitMQ</h3>
-        <p class="module-desc">3 colas principales, reintentos con backoff, DLQ y enrutamiento direct/topic.</p>
-      </div>
-      <span class="module-link">Ver RabbitMQ →</span>
-    </article>
-
-    <article class="card pad module-card" (click)="seleccionarTab('kafka')">
-      <div>
-        <span class="tiny-label">Streaming</span>
-        <h3 class="module-title">Apache Kafka</h3>
-        <p class="module-desc">Clúster de 3 brokers, 2 tópicos con 3 particiones y 3 réplicas en tiempo real.</p>
-      </div>
-      <span class="module-link">Ver Kafka →</span>
-    </article>
-  </section>
-
-  <!-- Enlaces de Monitoreo -->
-  <section class="card pad" style="margin-bottom:20px;">
-    <span class="tiny-label" style="margin-bottom:8px; display:block;">Consolas de Administración</span>
-    <div style="display:flex; gap:10px; flex-wrap:wrap;">
-      <a href="http://localhost:8085" target="_blank" class="admin-chip">Kafka-UI (:8085) ↗</a>
-      <a href="http://localhost:15672" target="_blank" class="admin-chip">RabbitMQ Nodo 1 (:15672) ↗</a>
-      <a href="http://localhost:15673" target="_blank" class="admin-chip">RabbitMQ Nodo 2 (:15673) ↗</a>
-      <a href="http://localhost:8080/api/public/cartas" target="_blank" class="admin-chip">API Cartas (:8080) ↗</a>
-    </div>
-  </section>
+@if (tabActiva === 'mochila' || tabActiva === 'inicio') {
+  <app-cartas></app-cartas>
 }
 
 <!-- ========================================================================= -->
-<!-- 2. PESTAÑA: DASHBOARD OPERACIONAL                                         -->
-<!-- ========================================================================= -->
-@if (tabActiva === 'dashboard') {
-  <section class="page-head" style="margin-bottom:16px;">
-    <div>
-      <h1 style="font-size:22px; font-weight:700; margin:0 0 4px 0;">Dashboard</h1>
-      <p class="muted" style="font-size:13px; margin:0;">Métricas y actividad general del sistema</p>
-    </div>
-    <span class="env-chip">Entorno local</span>
-  </section>
-
-  <section class="kpis" style="margin-bottom:16px;">
-    <article class="card kpi">
-      <p class="tiny">Órdenes totales</p>
-      <strong>{{ ordenes.length }}</strong>
-      <span class="tiny muted">Base de datos</span>
-    </article>
-    <article class="card kpi">
-      <p class="tiny">Creados hoy</p>
-      <strong>{{ creadosHoy }}</strong>
-      <span class="tiny muted">Jornada actual</span>
-    </article>
-    <article class="card kpi">
-      <p class="tiny">Estado Backend</p>
-      <strong style="color:#0f172a;">Online</strong>
-      <span class="tiny muted">Puerto 8080</span>
-    </article>
-    <article class="card kpi">
-      <p class="tiny">Autenticación</p>
-      <strong style="font-size:18px;">Microsoft Entra ID</strong>
-      <span class="tiny" [style.color]="autenticado ? '#16a34a' : '#d97706'">
-        {{ autenticado ? 'JWT activo' : 'Sin sesión' }}
-      </span>
-    </article>
-  </section>
-
-  <!-- Arquitectura y Últimas Órdenes -->
-  <section class="grid-main">
-    <article class="card pad">
-      <div class="card-head" style="margin-bottom:12px;">
-        <h2 class="section-title">Topología de Arquitectura Cloud Native</h2>
-        <span class="pill-badge pill-success" style="font-size:10px;">End-to-End Resiliente</span>
-      </div>
-
-      <div class="saas-flow">
-        <div class="saas-node">
-          <div class="saas-node-icon ng-ico">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="m12 2 9 4.5-3.5 12.5L12 22l-5.5-3-3.5-12.5L12 2z" stroke="#dd0031" stroke-width="1.8"/></svg>
-          </div>
-          <div class="saas-node-meta">
-            <strong>Angular 19</strong>
-            <small>Frontend SPA</small>
-          </div>
-          <span class="saas-dot online"></span>
-        </div>
-
-        <span class="saas-arrow">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M12 5l7 7-7 7" stroke="#94a3b8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </span>
-
-        <div class="saas-node">
-          <div class="saas-node-icon ms-ico">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="8" height="8" rx="1" fill="#f35325"/><rect x="13" y="3" width="8" height="8" rx="1" fill="#81bc06"/><rect x="3" y="13" width="8" height="8" rx="1" fill="#05a6f0"/><rect x="13" y="13" width="8" height="8" rx="1" fill="#ffba08"/></svg>
-          </div>
-          <div class="saas-node-meta">
-            <strong>Entra ID</strong>
-            <small>OAuth / JWT</small>
-          </div>
-          <span class="saas-dot" [class.online]="autenticado"></span>
-        </div>
-
-        <span class="saas-arrow">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M12 5l7 7-7 7" stroke="#94a3b8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </span>
-
-        <div class="saas-node">
-          <div class="saas-node-icon sb-ico">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm1 14.93V17a1 1 0 0 1-2 0v-.07A8 8 0 0 1 4.07 10H5a1 1 0 0 1 0-2h-.93A8 8 0 0 1 11 3.07V4a1 1 0 0 1 2 0v-.93A8 8 0 0 1 19.93 9H19a1 1 0 0 1 0 2h.93A8 8 0 0 1 13 16.93z" stroke="#16a34a" stroke-width="1.6"/></svg>
-          </div>
-          <div class="saas-node-meta">
-            <strong>Spring Boot 3</strong>
-            <small>Resource Server</small>
-          </div>
-          <span class="saas-dot online"></span>
-        </div>
-
-        <span class="saas-arrow">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M12 5l7 7-7 7" stroke="#94a3b8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </span>
-
-        <div class="saas-node">
-          <div class="saas-node-icon rb-ico">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M18 10a6 6 0 0 0-12 0c0 4 2.5 7.5 6 9 3.5-1.5 6-5 6-9z" stroke="#ea580c" stroke-width="1.8"/></svg>
-          </div>
-          <div class="saas-node-meta">
-            <strong>RabbitMQ</strong>
-            <small>AMQP (2 Nodos)</small>
-          </div>
-          <span class="saas-dot online"></span>
-        </div>
-
-        <span class="saas-arrow">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M12 5l7 7-7 7" stroke="#94a3b8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </span>
-
-        <div class="saas-node">
-          <div class="saas-node-icon kf-ico">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="#7c3aed" stroke-width="2"/><circle cx="19" cy="5" r="2.5" stroke="#7c3aed" stroke-width="1.8"/><circle cx="5" cy="5" r="2.5" stroke="#7c3aed" stroke-width="1.8"/><circle cx="12" cy="20" r="2.5" stroke="#7c3aed" stroke-width="1.8"/><line x1="12" y1="9" x2="12" y2="17.5" stroke="#7c3aed" stroke-width="1.5"/><line x1="7" y1="6.5" x2="10" y2="10" stroke="#7c3aed" stroke-width="1.5"/><line x1="17" y1="6.5" x2="14" y2="10" stroke="#7c3aed" stroke-width="1.5"/></svg>
-          </div>
-          <div class="saas-node-meta">
-            <strong>Apache Kafka</strong>
-            <small>3 Brokers (Stream)</small>
-          </div>
-          <span class="saas-dot online"></span>
-        </div>
-      </div>
-
-      @if (claims) {
-        <div class="claims" style="margin-top:14px; padding-top:12px; border-top:1px solid #f1f5f9;">
-          <p class="tiny-label">Claims del Token</p>
-          <ul style="list-style:none; padding:0; margin:6px 0 0; font-size:12px; color:#475569; display:grid; gap:4px;">
-            <li><strong>Usuario:</strong> {{ claims.preferredUsername }}</li>
-            <li><strong>Scope:</strong> {{ claims.scopes }}</li>
-            <li><strong>Audience:</strong> {{ claims.audience }}</li>
-            <li><strong>Expira:</strong> {{ claims.expires }}</li>
-          </ul>
-        </div>
-      }
-    </article>
-
-    <article class="card pad">
-      <div class="card-head" style="margin-bottom:12px;">
-        <h2 class="section-title">Últimas Órdenes</h2>
-        <a routerLink="/cartas" class="btn btn-ghost" style="font-size:12px;">Ver todos →</a>
-      </div>
-      <table class="table">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Cliente</th>
-            <th>Estado</th>
-            <th>Fecha</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (pedido of ordenes; track pedido.id) {
-            <tr (click)="abrirTimelinePedido(pedido)" class="clickable-row" title="Ver ciclo de vida de la orden">
-              <td><span class="mono-tag">#{{ pedido.id }}</span></td>
-              <td><strong>{{ pedido.cliente }}</strong></td>
-              <td><span [class]="claseEstado(pedido.estado)">{{ etiquetaEstado(pedido.estado) }}</span></td>
-              <td class="tiny muted">{{ pedido.fecha | date:'shortTime' }} <span style="color:#2563eb; font-weight:600; font-size:11px; margin-left:4px;">Ver trazabilidad →</span></td>
-            </tr>
-          }
-        </tbody>
-      </table>
-    </article>
-  </section>
-
-  <!-- Gráfico de Actividad -->
-  <section class="grid-bottom" style="margin-top:16px;">
-    <article class="card pad" style="grid-column: 1 / -1;">
-      <div class="card-head" style="margin-bottom:12px;">
-        <h2 class="section-title">Actividad Mensual</h2>
-        <span class="tiny muted">Últimos 7 meses</span>
-      </div>
-      <svg class="chart" viewBox="0 0 520 168" role="img" aria-label="Órdenes por mes">
-        <line x1="24" y1="36" x2="500" y2="36" stroke="#f1f5f9"/>
-        <line x1="24" y1="84" x2="500" y2="84" stroke="#f1f5f9"/>
-        <line x1="24" y1="132" x2="500" y2="132" stroke="#e2e8f0"/>
-        <polyline [attr.points]="chartPoints" fill="none" stroke="#2563eb" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
-        @for (punto of actividad; track punto.mes; let i = $index) {
-          <circle [attr.cx]="28 + i * 72" [attr.cy]="132 - (punto.valor / 4) * 96" r="3" fill="#2563eb"/>
-          <text [attr.x]="28 + i * 72" y="154" text-anchor="middle" fill="#64748b" font-size="11">{{ punto.mes }}</text>
-        }
-      </svg>
-    </article>
-  </section>
-}
-
-<!-- ========================================================================= -->
-<!-- 3. PESTAÑA: RABBITMQ (AMQP)                                              -->
-<!-- ========================================================================= -->
-@if (tabActiva === 'rabbitmq') {
-  <section class="card pad" style="margin-bottom:20px;">
-    <div class="card-head" style="margin-bottom:14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-      <div>
-        <h2 style="font-size:18px; font-weight:700; margin:0 0 2px 0;">Plataforma RabbitMQ</h2>
-        <span class="tiny muted">Colas transaccionales, DLQ y reintentos (EP3 / EP4)</span>
-      </div>
-      <div style="display:flex; gap:8px;">
-        <a href="http://localhost:15672" target="_blank" class="btn btn-secondary" style="font-size:11px;">Nodo 1 (15672) ↗</a>
-        <a href="http://localhost:15673" target="_blank" class="btn btn-secondary" style="font-size:11px;">Nodo 2 (15673) ↗</a>
-      </div>
-    </div>
-
-    <!-- Colas Principales -->
-    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(230px, 1fr)); gap:10px; margin-bottom:16px;">
-      <div class="clean-stat-box">
-        <span class="tiny-label">Cola 1: Órdenes</span>
-        <strong class="clean-stat-value">orders.queue</strong>
-        <span class="tiny muted">Direct · TTL 30s · DLQ orders.dlq</span>
-      </div>
-      <div class="clean-stat-box">
-        <span class="tiny-label">Cola 2: Notificaciones</span>
-        <strong class="clean-stat-value">notifications.queue</strong>
-        <span class="tiny muted">Direct · TTL 45s · DLQ notifications.dlq</span>
-      </div>
-      <div class="clean-stat-box">
-        <span class="tiny-label">Cola 3: Eventos</span>
-        <strong class="clean-stat-value">events.topic.queue</strong>
-        <span class="tiny muted">Topic (tcg.*) · TTL 60s · DLQ events.dlq</span>
-      </div>
-    </div>
-
-    <!-- Acciones -->
-    <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px;">
-      <button type="button" class="btn btn-primary" (click)="enviarOrdenNominal()" [disabled]="enviandoRabbit">
-        @if (enviandoRabbit) { <span class="btn-spinner"></span> }
-        Comprar Carta (ACK nominal)
-      </button>
-      <button type="button" class="btn btn-secondary" (click)="enviarOrdenConFallo()" [disabled]="enviandoRabbit" style="color:#dc2626;">
-        @if (enviandoRabbit) { <span class="btn-spinner"></span> }
-        Simular Fallo (Reintentos → DLQ)
-      </button>
-      <button type="button" class="btn btn-secondary" (click)="enviarNotificacionDemo()" [disabled]="enviandoRabbit">
-        @if (enviandoRabbit) { <span class="btn-spinner"></span> }
-        Enviar Notificación
-      </button>
-      <button type="button" class="btn btn-secondary" (click)="enviarEventoTopicDemo()" [disabled]="enviandoRabbit">
-        @if (enviandoRabbit) { <span class="btn-spinner"></span> }
-        Evento Topic (tcg.despachado)
-      </button>
-    </div>
-
-    @if (ultimoEnvioRabbit) {
-      <div class="alert-box success-box">{{ ultimoEnvioRabbit }}</div>
-    }
-    @if (errorRabbit) {
-      <div class="alert-box error-box">{{ errorRabbit }}</div>
-    }
-
-    <!-- Administrador de Colas -->
-    <div class="clean-admin-section">
-      <span class="tiny-label" style="margin-bottom:8px; display:block;">Administración de Colas</span>
-      <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
-        <input type="text" [(ngModel)]="nuevaColaNombre" placeholder="Nombre de cola" class="input clean-input" style="width:200px;" />
-        <input type="number" [(ngModel)]="nuevaColaTtl" placeholder="TTL ms" class="input clean-input" style="width:90px;" />
-        <button type="button" class="btn btn-primary" (click)="crearColaDinamica()" [disabled]="enviandoRabbit">
-          @if (enviandoRabbit) { <span class="btn-spinner"></span> }
-          Crear Cola
-        </button>
-        <span style="color:#cbd5e1; margin:0 4px;">|</span>
-        <input type="text" [(ngModel)]="colaEliminarNombre" placeholder="Cola a eliminar" class="input clean-input" style="width:160px;" />
-        <button type="button" class="btn btn-secondary" (click)="eliminarColaDinamica()" [disabled]="enviandoRabbit">
-          @if (enviandoRabbit) { <span class="btn-spinner"></span> }
-          Eliminar
-        </button>
-      </div>
-    </div>
-
-    <!-- Tabla DLQ -->
-    <div style="margin-top:16px;">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-        <span class="tiny-label">Mensajes en Dead Letter Queue ({{ dlqMessages.length }})</span>
-        <div style="display:flex; gap:6px;">
-          <button type="button" class="btn btn-ghost" (click)="cargarDlq()" style="font-size:11px;">Actualizar</button>
-          <button type="button" class="btn btn-ghost" (click)="vaciarDlq()" style="font-size:11px; color:#dc2626;">Vaciar</button>
-        </div>
-      </div>
-
-      @if (dlqMessages.length > 0) {
-        <div class="table-container">
-          <table class="table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Cola Origen</th>
-                <th>Reintentos</th>
-                <th>Causa</th>
-                <th>Fecha</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (msg of dlqMessages; track msg.id) {
-                <tr>
-                  <td><span class="mono-tag">#{{ msg.id }}</span></td>
-                  <td><span class="pill-badge pill-neutral">{{ msg.colaOrigen }}</span></td>
-                  <td><span class="pill-badge pill-warning">{{ msg.reintentos }} reintentos</span></td>
-                  <td>{{ msg.razon }}</td>
-                  <td class="tiny muted">{{ msg.timestamp | date:'shortTime' }}</td>
-                </tr>
-              }
-            </tbody>
-          </table>
-        </div>
-      } @else {
-        <div class="empty-state-card">
-          <div class="empty-icon-wrapper">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" stroke="#94a3b8" stroke-width="1.6"/><polyline points="22,6 12,13 2,6" stroke="#94a3b8" stroke-width="1.6"/></svg>
-          </div>
-          <p class="empty-title">Sin mensajes en Dead Letter Queue</p>
-          <p class="empty-subtitle">Todo el tráfico de órdenes opera bajo confirmación nominal (ACK).</p>
-        </div>
-      }
-    </div>
-  </section>
-}
-
-<!-- ========================================================================= -->
-<!-- 4. PESTAÑA: APACHE KAFKA (STREAMING)                                      -->
+<!-- PANTALLA 2: BATALLA DE GIMNASIO KAFKA (EL TRÍO DE KANTO: 3 BROKERS)       -->
 <!-- ========================================================================= -->
 @if (tabActiva === 'kafka') {
-  <section class="card pad" style="margin-bottom:20px;">
-    <div class="card-head" style="margin-bottom:14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
-      <div>
-        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-          <h2 style="font-size:18px; font-weight:700; margin:0;">Plataforma Apache Kafka</h2>
-          <span class="live-pill" [style.background]="(brokerCaidoId || brokersOnlineCount < 3) ? '#fef3c7' : ''" [style.color]="(brokerCaidoId || brokersOnlineCount < 3) ? '#92400e' : ''">
-            <span class="live-beacon"><span class="beacon-ping"></span><span class="beacon-dot"></span></span>
-            {{ (brokerCaidoId ? 2 : brokersOnlineCount) }} Brokers Online ({{ (brokerCaidoId || brokersOnlineCount < 3) ? 'Failover Activo' : '100% ISR' }})
-          </span>
-          @if (streamEnVivo) {
-            <span class="pill-badge pill-success" style="font-size:10px;">
-              <span class="live-beacon" style="margin-right:4px;"><span class="beacon-ping"></span><span class="beacon-dot"></span></span>
-              Auto-Streaming (2.5s)
-            </span>
-          }
+  <div class="space-y-4">
+
+    <!-- Quorum & Telemetría Superior -->
+    <section class="gba-dialog-dark" style="padding: 14px 18px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+      <div style="display: flex; align-items: center; gap: 12px;">
+        <div class="font-pixel" [style.background]="brokersOnlineCount === 3 ? '#22C55E' : brokersOnlineCount === 2 ? '#EAB308' : '#EF4444'" 
+             style="color: #000; padding: 6px 10px; border: 2px solid #000; border-radius: 4px; font-size: 10px;">
+          ISR {{ brokersOnlineCount }}/3
         </div>
-        <span class="tiny muted">Streaming distribuido, analítica y particionamiento (EP5 / EP6)</span>
-      </div>
-
-      <!-- Barra de Herramientas Avanzada -->
-      <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center;">
-        <button
-          type="button"
-          class="btn"
-          [class.btn-primary]="streamEnVivo"
-          [class.btn-secondary]="!streamEnVivo"
-          (click)="toggleStreamEnVivo()"
-          style="font-size:11px;"
-          title="Sondeo automático cada 2.5s para demostración en vivo"
-        >
-          {{ streamEnVivo ? 'Pausar Stream' : 'Activar Auto-Stream' }}
-        </button>
-        <button type="button" class="btn btn-secondary" (click)="exportarEventos('csv')" style="font-size:11px;" title="Exportar CSV de eventos">
-          Descargar CSV
-        </button>
-        <button type="button" class="btn btn-secondary" (click)="exportarEventos('json')" style="font-size:11px;" title="Exportar JSON completo">
-          Descargar JSON
-        </button>
-        <a href="http://localhost:8085" target="_blank" class="btn btn-secondary" style="font-size:11px;">Kafka-UI (:8085) ↗</a>
-      </div>
-    </div>
-
-    <!-- Widget de Clúster: Tolerancia a Fallos y Estado de 3 Brokers (EP5) -->
-    <div class="broker-cluster-bar" style="margin-bottom:16px;">
-      <div class="broker-card poke-1" [class.broker-down]="brokerCaidoId === 1 || !activeBrokerIds.includes(1)">
-        <div class="broker-card-head">
-          <span class="broker-badge"><img class="poke-sprite" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png" alt="Bulbasaur"> Bulbasaur <small>Broker 1</small></span>
-          <span class="broker-status" [class.online]="brokerCaidoId !== 1 && activeBrokerIds.includes(1)">{{ (brokerCaidoId === 1 || !activeBrokerIds.includes(1)) ? 'Failover' : 'Leader P0' }}</span>
-        </div>
-        <div class="broker-info">
-          <span>Puerto: <strong>29092</strong></span>
-          <span>ISR: <strong>{{ (brokerCaidoId === 1 || !activeBrokerIds.includes(1)) ? 'Desconectado' : 'Sincronizado' }}</strong></span>
-        </div>
-        <button type="button" class="btn-chaos" (click)="simularCaosBroker(1)" [disabled]="simulandoCaos">
-          {{ brokerCaidoId === 1 ? 'Reconectando...' : 'Simular Caída' }}
-        </button>
-      </div>
-
-      <div class="broker-card poke-2" [class.broker-down]="brokerCaidoId === 2 || !activeBrokerIds.includes(2)">
-        <div class="broker-card-head">
-          <span class="broker-badge"><img class="poke-sprite" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/4.png" alt="Charmander"> Charmander <small>Broker 2</small></span>
-          <span class="broker-status" [class.online]="brokerCaidoId !== 2 && activeBrokerIds.includes(2)">{{ (brokerCaidoId === 2 || !activeBrokerIds.includes(2)) ? 'Failover' : 'Leader P1' }}</span>
-        </div>
-        <div class="broker-info">
-          <span>Puerto: <strong>29093</strong></span>
-          <span>ISR: <strong>{{ (brokerCaidoId === 2 || !activeBrokerIds.includes(2)) ? 'Desconectado' : 'Sincronizado' }}</strong></span>
-        </div>
-        <button type="button" class="btn-chaos" (click)="simularCaosBroker(2)" [disabled]="simulandoCaos">
-          {{ brokerCaidoId === 2 ? 'Reconectando...' : 'Simular Caída' }}
-        </button>
-      </div>
-
-      <div class="broker-card poke-3" [class.broker-down]="brokerCaidoId === 3 || !activeBrokerIds.includes(3)">
-        <div class="broker-card-head">
-          <span class="broker-badge"><img class="poke-sprite" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/7.png" alt="Squirtle"> Squirtle <small>Broker 3</small></span>
-          <span class="broker-status" [class.online]="brokerCaidoId !== 3 && activeBrokerIds.includes(3)">{{ (brokerCaidoId === 3 || !activeBrokerIds.includes(3)) ? 'Failover' : 'Leader P2' }}</span>
-        </div>
-        <div class="broker-info">
-          <span>Puerto: <strong>29094</strong></span>
-          <span>ISR: <strong>{{ (brokerCaidoId === 3 || !activeBrokerIds.includes(3)) ? 'Desconectado' : 'Sincronizado' }}</strong></span>
-        </div>
-        <button type="button" class="btn-chaos" (click)="simularCaosBroker(3)" [disabled]="simulandoCaos">
-          {{ brokerCaidoId === 3 ? 'Reconectando...' : 'Simular Caída' }}
-        </button>
-      </div>
-    </div>
-
-    <!-- Tópicos y Distribución en Particiones -->
-    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(230px, 1fr)); gap:10px; margin-bottom:16px;">
-      <div class="clean-stat-box">
-        <span class="tiny-label">Tópico 1: Analítica</span>
-        <strong class="clean-stat-value">tcg.analytics.stream</strong>
-        <span class="tiny muted">3 Particiones · 3 Réplicas · Retención 24h</span>
-      </div>
-
-      <div class="clean-stat-box">
-        <span class="tiny-label">Tópico 2: Auditoría</span>
-        <strong class="clean-stat-value">tcg.audit.stream</strong>
-        <span class="tiny muted">3 Particiones · 3 Réplicas · Retención 7 días</span>
-      </div>
-
-      <div class="clean-stat-box">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-          <span class="tiny-label">Balanceo por Partición</span>
-          <span class="tiny muted" style="font-size:11px;">{{ totalEventosParticiones }} eventos</span>
-        </div>
-        <div class="partition-bars" style="margin-top:6px; display:flex; flex-direction:column; gap:6px;">
-          <!-- P0 -->
-          <div class="partition-bar-row">
-            <div class="bar-meta">
-              <span class="pill-badge pill-p0" style="font-size:10px; padding:1px 5px;">P0</span>
-              <span class="bar-count">{{ kafkaMetrics?.partitionDistribution?.['partition_0'] || 0 }}</span>
-              <span class="bar-pct">{{ getPorcentajeParticion('partition_0') }}%</span>
-            </div>
-            <div class="bar-track">
-              <div class="bar-fill p0-fill" [style.width.%]="getPorcentajeParticion('partition_0')"></div>
-            </div>
-          </div>
-          <!-- P1 -->
-          <div class="partition-bar-row">
-            <div class="bar-meta">
-              <span class="pill-badge pill-p1" style="font-size:10px; padding:1px 5px;">P1</span>
-              <span class="bar-count">{{ kafkaMetrics?.partitionDistribution?.['partition_1'] || 0 }}</span>
-              <span class="bar-pct">{{ getPorcentajeParticion('partition_1') }}%</span>
-            </div>
-            <div class="bar-track">
-              <div class="bar-fill p1-fill" [style.width.%]="getPorcentajeParticion('partition_1')"></div>
-            </div>
-          </div>
-          <!-- P2 -->
-          <div class="partition-bar-row">
-            <div class="bar-meta">
-              <span class="pill-badge pill-p2" style="font-size:10px; padding:1px 5px;">P2</span>
-              <span class="bar-count">{{ kafkaMetrics?.partitionDistribution?.['partition_2'] || 0 }}</span>
-              <span class="bar-pct">{{ getPorcentajeParticion('partition_2') }}%</span>
-            </div>
-            <div class="bar-track">
-              <div class="bar-fill p2-fill" [style.width.%]="getPorcentajeParticion('partition_2')"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Métricas Numéricas -->
-    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:10px; margin-bottom:16px;">
-      <div class="clean-metric-tile">
-        <span class="tiny muted">Total Eventos Consumidos</span>
-        <strong>{{ kafkaMetrics?.totalEventsConsumed || 0 }}</strong>
-      </div>
-      <div class="clean-metric-tile">
-        <span class="tiny muted">Monto Streamed</span>
-        <strong>${{ (kafkaMetrics?.totalRevenueStreamed || 0) | number }}</strong>
-      </div>
-      <div class="clean-metric-tile">
-        <span class="tiny muted">Eventos Analítica</span>
-        <strong>{{ kafkaMetrics?.totalAnalyticsEvents || 0 }}</strong>
-      </div>
-      <div class="clean-metric-tile">
-        <span class="tiny muted">Eventos Auditoría</span>
-        <strong>{{ kafkaMetrics?.totalAuditEvents || 0 }}</strong>
-      </div>
-    </div>
-
-    <!-- Botones de Acción -->
-    <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px;">
-      <button type="button" class="btn btn-primary" (click)="enviarEventoAnalitico()" [disabled]="enviandoKafka">
-        @if (enviandoKafka) { <span class="btn-spinner"></span> }
-        Emitir Analítica
-      </button>
-      <button type="button" class="btn btn-secondary" (click)="enviarEventoAuditoria()" [disabled]="enviandoKafka">
-        @if (enviandoKafka) { <span class="btn-spinner"></span> }
-        Emitir Auditoría
-      </button>
-      <button type="button" class="btn btn-secondary" (click)="enviarRafagaBatch(6)" [disabled]="enviandoKafka">
-        @if (enviandoKafka) { <span class="btn-spinner"></span> }
-        Ráfaga en Lote (6 eventos)
-      </button>
-      <button type="button" class="btn btn-ghost" (click)="reiniciarMetricasKafka()" [disabled]="enviandoKafka" style="font-size:12px;">
-        Reiniciar Métricas
-      </button>
-    </div>
-
-    @if (ultimoEnvioKafka) {
-      <div class="alert-box success-box">{{ ultimoEnvioKafka }}</div>
-    }
-    @if (errorKafka) {
-      <div class="alert-box error-box">{{ errorKafka }}</div>
-    }
-
-    <!-- Administrador de Tópicos -->
-    <div class="clean-admin-section">
-      <span class="tiny-label" style="margin-bottom:8px; display:block;">Administración de Tópicos</span>
-      <div style="display:flex; gap:8px; flex-wrap:wrap; align-items:center;">
-        <input type="text" [(ngModel)]="nuevoTopicoNombre" placeholder="Nombre de tópico" class="input clean-input" style="width:200px;" />
-        <input type="number" [(ngModel)]="nuevoTopicoParticiones" min="1" max="12" class="input clean-input" style="width:60px;" title="Particiones" />
-        <input type="number" [(ngModel)]="nuevoTopicoReplicas" min="1" max="3" class="input clean-input" style="width:60px;" title="Réplicas" />
-        <button type="button" class="btn btn-primary" (click)="crearTopicoDinamico()" [disabled]="enviandoKafka">
-          @if (enviandoKafka) { <span class="btn-spinner"></span> }
-          Crear Tópico
-        </button>
-        <span style="color:#cbd5e1; margin:0 4px;">|</span>
-        <input type="text" [(ngModel)]="topicoEliminarNombre" placeholder="Tópico a eliminar" class="input clean-input" style="width:160px;" />
-        <button type="button" class="btn btn-secondary" (click)="eliminarTopicoDinamico()" [disabled]="enviandoKafka">
-          @if (enviandoKafka) { <span class="btn-spinner"></span> }
-          Eliminar
-        </button>
-      </div>
-    </div>
-
-    <!-- Feed en Vivo: Stream Analítico -->
-    <div style="margin-top:20px;">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px;">
         <div>
-          <span class="tiny-label">Eventos en Tiempo Real (&#64;KafkaListener: tcg.analytics.stream)</span>
-          <span class="tiny muted" style="margin-left:6px;">{{ eventosKafkaFiltrados.length }} mostrados</span>
-        </div>
-
-        <!-- Chips de Filtrado Rápido por Partición -->
-        <div class="filter-bar">
-          <button type="button" class="filter-chip" [class.active]="filtroParticion === 'TODAS'" (click)="seleccionarFiltroParticion('TODAS')">
-            Todas <span class="filter-count">{{ recentKafkaEvents.length }}</span>
-          </button>
-          <button type="button" class="filter-chip" [class.active]="filtroParticion === 0" (click)="seleccionarFiltroParticion(0)">
-            P0 <span class="filter-count">{{ kafkaMetrics?.partitionDistribution?.['partition_0'] || 0 }}</span>
-          </button>
-          <button type="button" class="filter-chip" [class.active]="filtroParticion === 1" (click)="seleccionarFiltroParticion(1)">
-            P1 <span class="filter-count">{{ kafkaMetrics?.partitionDistribution?.['partition_1'] || 0 }}</span>
-          </button>
-          <button type="button" class="filter-chip" [class.active]="filtroParticion === 2" (click)="seleccionarFiltroParticion(2)">
-            P2 <span class="filter-count">{{ kafkaMetrics?.partitionDistribution?.['partition_2'] || 0 }}</span>
-          </button>
-          <button type="button" class="terminal-toggle-btn" (click)="toggleConsolaTerminal()" title="Alternar Consola de Logs">
-            {{ mostrarConsolaTerminal ? 'Ocultar Consola' : 'Ver Consola Stream' }}
-          </button>
+          <h2 class="font-pixel" style="font-size: 12px; margin: 0 0 4px 0; color: #F8FAFC;">
+            BATALLA DE GIMNASIO KAFKA — EL TRÍO DE KANTO (3 BROKERS)
+          </h2>
+          <p class="font-telemetry" style="font-size: 16px; margin: 0; color: #94A3B8;">
+            @if (brokersOnlineCount === 3) {
+              QUÓRUM SALUDABLE • 3/3 ISR SINCRONIZADOS — min.insync.replicas=2 cumplido con holgura (RF=3)
+            } @else if (brokersOnlineCount === 2) {
+              1 BROKER DEBILITADO • FAILOVER AUTOMÁTICO ACTIVO — ¡Tolerancia a fallos preservada!
+            } @else {
+              CRÍTICO • QUÓRUM ROTO (&lt; min.insync.replicas=2) — Productores con acks=all en espera
+            }
+          </p>
         </div>
       </div>
 
-      <!-- Consola de Streaming en Vivo (Dark Terminal Widget) -->
-      @if (mostrarConsolaTerminal && recentKafkaEvents.length > 0) {
-        <div class="terminal-card">
-          <div class="terminal-header">
-            <div class="mac-dots">
-              <span class="mac-dot red"></span>
-              <span class="mac-dot yellow"></span>
-              <span class="mac-dot green"></span>
-            </div>
-            <span class="terminal-title">kafka-console-consumer --topic tcg.analytics.stream --from-beginning</span>
-            <span class="term-status-badge">LIVE STREAM</span>
-          </div>
-          <div class="terminal-body">
-            @for (ev of recentKafkaEvents.slice(0, 5); track ev.eventId) {
-              <div class="term-line">
-                <span class="term-time">[{{ ev.processedAt | date:'HH:mm:ss' }}]</span>
-                <span class="term-part" [class]="'term-p' + ev.partition">[P{{ ev.partition }}:#{{ ev.offset }}]</span>
-                <span class="term-key">key:{{ ev.orderId }}</span>
-                <span class="term-val">${{ ev.monto | number }}</span>
-                <span class="term-cat">cat:{{ ev.categoria }}</span>
-                <span class="term-ack">ACK(3x)</span>
-              </div>
-            }
-          </div>
-        </div>
-      }
+      <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+        <button type="button" class="gba-btn gba-btn-primary" (click)="enviarEventoAnalitico()" [disabled]="enviandoKafka">
+          ⚡ EMITIR 1 EVENTO
+        </button>
+        <button type="button" class="gba-btn" style="background: #EAB308; color: #000;" (click)="emitirRafaga()">
+          💥 RÁFAGA x5 ANALYTICS
+        </button>
+      </div>
+    </section>
 
-      @if (eventosKafkaFiltrados.length > 0) {
-        <div class="table-container">
-          <table class="table">
-            <thead>
-              <tr>
-                <th>ID Orden</th>
-                <th>Cliente</th>
-                <th>Categoría</th>
-                <th class="text-right">Monto</th>
-                <th class="text-center">Partición</th>
-                <th class="text-center">Latencia</th>
-                <th class="text-right">Offset</th>
-                <th class="text-right">Hora</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (ev of eventosKafkaPaginados; track ev.eventId) {
-                <tr>
-                  <td>
-                    <span class="mono-tag copyable" (click)="copiarId(ev.orderId, $event)" title="Hacer clic para copiar ID">
-                      {{ ev.orderId }}
-                      <svg class="copy-icon" width="12" height="12" viewBox="0 0 24 24" fill="none">
-                        <rect width="13" height="13" x="9" y="9" rx="2" stroke="currentColor" stroke-width="1.8"/>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" stroke="currentColor" stroke-width="1.8"/>
-                      </svg>
-                    </span>
-                  </td>
-                  <td>{{ ev.cliente }}</td>
-                  <td><span class="subtle-chip">{{ ev.categoria }}</span></td>
-                  <td class="text-right amount-cell">${{ ev.monto | number }}</td>
-                  <td class="text-center">
-                    <span class="pill-badge" [class.pill-p0]="ev.partition === 0" [class.pill-p1]="ev.partition === 1" [class.pill-p2]="ev.partition === 2">
-                      P{{ ev.partition }}
-                    </span>
-                  </td>
-                  <td class="text-center">
-                    <span class="latency-chip" title="Latencia nominal de streaming Kafka (< 50ms)">
-                      {{ calcularLatenciaMs($index) }} ms
-                    </span>
-                  </td>
-                  <td class="text-right"><span class="mono-tag">#{{ ev.offset }}</span></td>
-                  <td class="text-right tiny muted">{{ ev.processedAt | date:'mediumTime' }}</td>
-                </tr>
-              }
-            </tbody>
-          </table>
-        </div>
-
-        <!-- Barra de Paginación Dinámica (Streaming) -->
-        <div class="table-pagination-bar">
-          <div class="pagination-info">
-            <span>Página <strong>{{ paginaActualStream }}</strong> de <strong>{{ totalPaginasStream }}</strong> ({{ eventosKafkaFiltrados.length }} eventos)</span>
-          </div>
-          <div class="pagination-controls">
-            <label class="page-size-selector">
-              <span>Mostrar:</span>
-              <select [ngModel]="tamanoPaginaStream" (ngModelChange)="cambiarTamanoPaginaStream($event)">
-                <option [ngValue]="5">5</option>
-                <option [ngValue]="10">10</option>
-                <option [ngValue]="25">25</option>
-              </select>
-            </label>
-            <div class="page-btn-group">
-              <button
-                type="button"
-                class="page-nav-btn"
-                [disabled]="paginaActualStream <= 1"
-                (click)="cambiarPaginaStream(-1)"
-              >
-                Anterior
-              </button>
-              <button
-                type="button"
-                class="page-nav-btn"
-                [disabled]="paginaActualStream >= totalPaginasStream"
-                (click)="cambiarPaginaStream(1)"
-              >
-                Siguiente
-              </button>
+    <!-- Los 3 Brokers como Iniciales de Kanto en Boxes de Batalla Pokémon -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-bottom: 16px;">
+      
+      <!-- BROKER 1: BULBASAUR (PLANTA / :29092 / P0) -->
+      <article class="gba-dialog-box" [style.background]="activeBrokerIds.includes(1) ? '#F8FAFC' : '#E2E8F0'" 
+               [style.border-color]="activeBrokerIds.includes(1) ? '#10B981' : '#64748B'" style="border-width: 4px;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+          <div style="display: flex; gap: 10px; align-items: center;">
+            <img [src]="getPokemonGbaSprite(1)" alt="Bulbasaur" class="pixel-art" style="width: 54px; height: 54px;">
+            <div>
+              <span class="font-pixel" style="font-size: 11px; color: #101018; display: block;">BULBASAUR Lv.50</span>
+              <span class="font-pixel" style="font-size: 8px; color: #10B981;">TIPO PLANTA • P0 LEADER</span>
             </div>
           </div>
+          <span class="font-pixel" style="font-size: 8px; background: #10B981; color: #FFF; padding: 2px 6px; border: 1px solid #000; border-radius: 3px;">
+            :29092
+          </span>
         </div>
-      } @else {
-        <div class="empty-state-card">
-          <div class="empty-icon-wrapper">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12" stroke="#94a3b8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+
+        <!-- Barra HP estilo batalla -->
+        <div style="margin: 8px 0;">
+          <div style="display: flex; justify-content: space-between; font-size: 9px;" class="font-pixel">
+            <span>HP / ISR:</span>
+            <span>{{ activeBrokerIds.includes(1) ? '100% (EN LÍNEA)' : '0% (DEBILITADO)' }}</span>
           </div>
-          <p class="empty-title">Sin eventos para el filtro seleccionado</p>
-          <p class="empty-subtitle">No se encontraron eventos en la partición seleccionada.</p>
+          <div class="hp-gauge-container" style="margin-top: 4px;">
+            <div class="hp-gauge-fill" [class.hp-green]="activeBrokerIds.includes(1)" [class.hp-red]="!activeBrokerIds.includes(1)" 
+                 [style.width]="activeBrokerIds.includes(1) ? '100%' : '0%'"></div>
+          </div>
         </div>
-      }
+
+        <p class="font-telemetry" style="font-size: 16px; color: #334155; margin: 6px 0;">
+          Eventos en Partición 0: <strong>{{ kafkaMetrics?.partitionDistribution?.['partition_0'] || 0 }}</strong>
+        </p>
+
+        <button type="button" class="gba-btn" [class.gba-btn-danger]="activeBrokerIds.includes(1)" [class.gba-btn-heal]="!activeBrokerIds.includes(1)"
+                style="width: 100%; margin-top: 6px; justify-content: center;" (click)="simularCaosBroker(1)" [disabled]="simulandoCaos">
+          {{ activeBrokerIds.includes(1) ? '💀 DEBILITAR (STOP)' : '💊 REVIVIR (START)' }}
+        </button>
+      </article>
+
+      <!-- BROKER 2: CHARMANDER (FUEGO / :29093 / P1) -->
+      <article class="gba-dialog-box" [style.background]="activeBrokerIds.includes(2) ? '#F8FAFC' : '#E2E8F0'" 
+               [style.border-color]="activeBrokerIds.includes(2) ? '#FF5722' : '#64748B'" style="border-width: 4px;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+          <div style="display: flex; gap: 10px; align-items: center;">
+            <img [src]="getPokemonGbaSprite(4)" alt="Charmander" class="pixel-art" style="width: 54px; height: 54px;">
+            <div>
+              <span class="font-pixel" style="font-size: 11px; color: #101018; display: block;">CHARMANDER Lv.50</span>
+              <span class="font-pixel" style="font-size: 8px; color: #FF5722;">TIPO FUEGO • P1 LEADER</span>
+            </div>
+          </div>
+          <span class="font-pixel" style="font-size: 8px; background: #FF5722; color: #FFF; padding: 2px 6px; border: 1px solid #000; border-radius: 3px;">
+            :29093
+          </span>
+        </div>
+
+        <!-- Barra HP estilo batalla -->
+        <div style="margin: 8px 0;">
+          <div style="display: flex; justify-content: space-between; font-size: 9px;" class="font-pixel">
+            <span>HP / ISR:</span>
+            <span>{{ activeBrokerIds.includes(2) ? '100% (EN LÍNEA)' : '0% (DEBILITADO)' }}</span>
+          </div>
+          <div class="hp-gauge-container" style="margin-top: 4px;">
+            <div class="hp-gauge-fill" [class.hp-green]="activeBrokerIds.includes(2)" [class.hp-red]="!activeBrokerIds.includes(2)" 
+                 [style.width]="activeBrokerIds.includes(2) ? '100%' : '0%'"></div>
+          </div>
+        </div>
+
+        <p class="font-telemetry" style="font-size: 16px; color: #334155; margin: 6px 0;">
+          Eventos en Partición 1: <strong>{{ kafkaMetrics?.partitionDistribution?.['partition_1'] || 0 }}</strong>
+        </p>
+
+        <button type="button" class="gba-btn" [class.gba-btn-danger]="activeBrokerIds.includes(2)" [class.gba-btn-heal]="!activeBrokerIds.includes(2)"
+                style="width: 100%; margin-top: 6px; justify-content: center;" (click)="simularCaosBroker(2)" [disabled]="simulandoCaos">
+          {{ activeBrokerIds.includes(2) ? '💀 DEBILITAR (STOP)' : '💊 REVIVIR (START)' }}
+        </button>
+      </article>
+
+      <!-- BROKER 3: SQUIRTLE (AGUA / :29094 / P2) -->
+      <article class="gba-dialog-box" [style.background]="activeBrokerIds.includes(3) ? '#F8FAFC' : '#E2E8F0'" 
+               [style.border-color]="activeBrokerIds.includes(3) ? '#3B82F6' : '#64748B'" style="border-width: 4px;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+          <div style="display: flex; gap: 10px; align-items: center;">
+            <img [src]="getPokemonGbaSprite(7)" alt="Squirtle" class="pixel-art" style="width: 54px; height: 54px;">
+            <div>
+              <span class="font-pixel" style="font-size: 11px; color: #101018; display: block;">SQUIRTLE Lv.50</span>
+              <span class="font-pixel" style="font-size: 8px; color: #3B82F6;">TIPO AGUA • P2 LEADER</span>
+            </div>
+          </div>
+          <span class="font-pixel" style="font-size: 8px; background: #3B82F6; color: #FFF; padding: 2px 6px; border: 1px solid #000; border-radius: 3px;">
+            :29094
+          </span>
+        </div>
+
+        <!-- Barra HP estilo batalla -->
+        <div style="margin: 8px 0;">
+          <div style="display: flex; justify-content: space-between; font-size: 9px;" class="font-pixel">
+            <span>HP / ISR:</span>
+            <span>{{ activeBrokerIds.includes(3) ? '100% (EN LÍNEA)' : '0% (DEBILITADO)' }}</span>
+          </div>
+          <div class="hp-gauge-container" style="margin-top: 4px;">
+            <div class="hp-gauge-fill" [class.hp-green]="activeBrokerIds.includes(3)" [class.hp-red]="!activeBrokerIds.includes(3)" 
+                 [style.width]="activeBrokerIds.includes(3) ? '100%' : '0%'"></div>
+          </div>
+        </div>
+
+        <p class="font-telemetry" style="font-size: 16px; color: #334155; margin: 6px 0;">
+          Eventos en Partición 2: <strong>{{ kafkaMetrics?.partitionDistribution?.['partition_2'] || 0 }}</strong>
+        </p>
+
+        <button type="button" class="gba-btn" [class.gba-btn-danger]="activeBrokerIds.includes(3)" [class.gba-btn-heal]="!activeBrokerIds.includes(3)"
+                style="width: 100%; margin-top: 6px; justify-content: center;" (click)="simularCaosBroker(3)" [disabled]="simulandoCaos">
+          {{ activeBrokerIds.includes(3) ? '💀 DEBILITAR (STOP)' : '💊 REVIVIR (START)' }}
+        </button>
+      </article>
     </div>
 
-    <!-- Feed en Vivo: Stream Auditoría -->
-    @if (recentKafkaAudit.length > 0) {
-      <div style="margin-top:20px;">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-          <span class="tiny-label">Eventos de Auditoría (&#64;KafkaListener: tcg.audit.stream)</span>
-          <span class="tiny muted">{{ recentKafkaAudit.length }} auditados</span>
-        </div>
-        <div class="table-container">
-          <table class="table">
-            <thead>
-              <tr>
-                <th>ID Orden</th>
-                <th>Acción</th>
-                <th>Operador</th>
-                <th>Transición</th>
-                <th class="text-center">Partición</th>
-                <th class="text-right">Offset</th>
-                <th class="text-right">Hora</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (ev of eventosAuditPaginados; track ev.auditId) {
-                <tr>
-                  <td>
-                    <span class="mono-tag copyable" (click)="copiarId(ev.orderId, $event)" title="Hacer clic para copiar ID">
-                      {{ ev.orderId }}
-                      <svg class="copy-icon" width="12" height="12" viewBox="0 0 24 24" fill="none">
-                        <rect width="13" height="13" x="9" y="9" rx="2" stroke="currentColor" stroke-width="1.8"/>
-                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" stroke="currentColor" stroke-width="1.8"/>
-                      </svg>
-                    </span>
-                  </td>
-                  <td><span class="pill-badge pill-neutral">{{ ev.accion }}</span></td>
-                  <td>{{ ev.usuarioOperador }}</td>
-                  <td><span class="tiny muted">{{ ev.estadoAnterior }} → </span><strong>{{ ev.nuevoEstado }}</strong></td>
-                  <td class="text-center">
-                    <span class="pill-badge" [class.pill-p0]="ev.partition === 0" [class.pill-p1]="ev.partition === 1" [class.pill-p2]="ev.partition === 2">
-                      P{{ ev.partition }}
-                    </span>
-                  </td>
-                  <td class="text-right"><span class="mono-tag">#{{ ev.offset }}</span></td>
-                  <td class="text-right tiny muted">{{ ev.processedAt | date:'mediumTime' }}</td>
-                </tr>
-              }
-            </tbody>
-          </table>
-        </div>
+    <!-- Consola de Combate Pokémon en Tiempo Real -->
+    <section class="gba-dialog-box" style="margin-bottom: 16px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+        <span class="font-pixel" style="font-size: 10px; color: #101018;">CONSOLA DE COMBATE KAFKA STREAMING</span>
+        <span class="font-telemetry" style="font-size: 15px; color: #64748B;">TOTAL CONSUMIDO: {{ kafkaMetrics?.totalEventsConsumed || 0 }}</span>
+      </div>
+      <div style="background: #0B0E14; border: 2px solid #000; border-radius: 4px; padding: 10px; max-height: 140px; overflow-y: auto;">
+        @if (recentKafkaEvents.length === 0) {
+          <p class="font-telemetry" style="font-size: 16px; color: #64748B; margin: 0;">
+            Esperando eventos analíticos en el clúster... Haz clic en [ EMITIR 1 EVENTO ] o [ RÁFAGA x5 ANALYTICS ].
+          </p>
+        } @else {
+          @for (ev of recentKafkaEvents.slice(0, 5); track ev.eventId) {
+            <p class="font-telemetry" style="font-size: 16px; margin: 2px 0; color: #A3E635; line-height: 1.3;">
+              ▶ [{{ ev.processedAt ? ev.processedAt.slice(11, 19) : 'LIVE' }}] [P{{ ev.partition }}] {{ ev.categoria }}: ¡Evento #{{ ev.orderId }} procesado por el clúster!
+            </p>
+          }
+        }
+      </div>
+    </section>
 
-        <!-- Barra de Paginación Dinámica (Auditoría) -->
-        <div class="table-pagination-bar">
-          <div class="pagination-info">
-            <span>Página <strong>{{ paginaActualAudit }}</strong> de <strong>{{ totalPaginasAudit }}</strong> ({{ recentKafkaAudit.length }} registros)</span>
-          </div>
-          <div class="pagination-controls">
-            <label class="page-size-selector">
-              <span>Mostrar:</span>
-              <select [ngModel]="tamanoPaginaAudit" (ngModelChange)="cambiarTamanoPaginaAudit($event)">
-                <option [ngValue]="5">5</option>
-                <option [ngValue]="10">10</option>
-                <option [ngValue]="25">25</option>
-              </select>
-            </label>
-            <div class="page-btn-group">
-              <button
-                type="button"
-                class="page-nav-btn"
-                [disabled]="paginaActualAudit <= 1"
-                (click)="cambiarPaginaAudit(-1)"
-              >
-                Anterior
-              </button>
-              <button
-                type="button"
-                class="page-nav-btn"
-                [disabled]="paginaActualAudit >= totalPaginasAudit"
-                (click)="cambiarPaginaAudit(1)"
-              >
-                Siguiente
-              </button>
-            </div>
-          </div>
+    <!-- Expediente de Tópicos TCG -->
+    <section class="gba-dialog-dark" style="padding: 12px 16px;">
+      <span class="font-pixel" style="font-size: 10px; color: #F8D030; display: block; margin-bottom: 8px;">
+        EXPEDIENTE DE TÓPICOS APACHE KAFKA
+      </span>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px;">
+        <div style="background: #18202F; border: 2px solid #334155; padding: 8px 12px; border-radius: 4px;">
+          <strong class="font-pixel" style="font-size: 10px; color: #38BDF8;">tcg.analytics.stream</strong>
+          <p class="font-telemetry" style="font-size: 15px; color: #94A3B8; margin: 4px 0 0 0;">
+            Particiones: 3 • Factor Réplica: 3 • Retención: 24h • Grupo: tcg-analytics-group
+          </p>
+        </div>
+        <div style="background: #18202F; border: 2px solid #334155; padding: 8px 12px; border-radius: 4px;">
+          <strong class="font-pixel" style="font-size: 10px; color: #A855F7;">tcg.audit.stream</strong>
+          <p class="font-telemetry" style="font-size: 15px; color: #94A3B8; margin: 4px 0 0 0;">
+            Particiones: 3 • Factor Réplica: 3 • Retención: 7d • Política: compact,delete
+          </p>
         </div>
       </div>
-    }
-  </section>
+    </section>
+
+  </div>
 }
 
 <!-- ========================================================================= -->
-<!-- MODAL: TIMELINE INTERACTIVO DEL CICLO DE VIDA DEL PEDIDO                  -->
+<!-- PANTALLA 3: CENTRO POKÉMON DE RECUPERACIÓN (RABBITMQ RESILIENT MESH)       -->
 <!-- ========================================================================= -->
-@if (pedidoSeleccionadoParaTimeline) {
-  <div class="modal-backdrop" (click)="cerrarTimelinePedido()">
-    <div class="profile-modal-card" (click)="$event.stopPropagation()" style="max-width: 580px;">
-      <div class="modal-header">
-        <div style="display:flex; align-items:center; gap:12px;">
-          <div class="avatar-gradient" style="width:40px; height:40px; font-size:15px;">#{{ pedidoSeleccionadoParaTimeline.id }}</div>
-          <div>
-            <h2 style="margin:0; font-size:17px; font-weight:700; color:#0f172a;">
-              Trazabilidad de Orden #{{ pedidoSeleccionadoParaTimeline.id }}
-            </h2>
-            <span style="font-size:12px; color:#64748b;">
-              {{ pedidoSeleccionadoParaTimeline.cliente }} · ${{ pedidoSeleccionadoParaTimeline.total | number }}
+@if (tabActiva === 'rabbitmq') {
+  <div class="space-y-4">
+
+    <!-- Diálogo de la Enfermera Joy con Chansey -->
+    <section class="gba-dialog-box" style="display: flex; gap: 16px; align-items: center; margin-bottom: 16px; flex-wrap: wrap;">
+      <div style="flex-shrink: 0; background: #FFE4E6; border: 2px solid #000; border-radius: 6px; padding: 4px;">
+        <img [src]="chanseySprite" alt="Chansey Enfermera" class="pixel-art" style="width: 64px; height: 64px; object-fit: contain;">
+      </div>
+      <div style="flex: 1; min-width: 260px;">
+        <span class="font-pixel" style="font-size: 10px; color: #BE123C; display: block; margin-bottom: 4px;">
+          ENFERMERA JOY • CENTRO POKÉMON RABBITMQ
+        </span>
+        <p class="font-telemetry" style="font-size: 18px; margin: 0 0 10px 0; color: #0F172A; line-height: 1.2;">
+          “¡Bienvenido a la sala de emergencias AMQP! Nuestro clúster de 2 nodos espejo garantiza alta disponibilidad. Tienes <strong>{{ dlqMessages.length }}</strong> mensajes en la Dead Letter Queue.”
+          <span class="prompt-arrow font-pixel" style="font-size: 10px; color: #BE123C;">▼</span>
+        </p>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <button type="button" class="gba-btn gba-btn-heal" (click)="curarDlqJoy()" [disabled]="dlqMessages.length === 0">
+            <span>💉</span>
+            <span>USAR REVIVIR MÁXIMO (REINTENTAR DLQ: {{ dlqMessages.length }})</span>
+          </button>
+          <button type="button" class="gba-btn" (click)="enviarOrdenNominal()" [disabled]="enviandoRabbit">
+            <span>📦</span>
+            <span>ENVIAR ORDEN DIRECTA</span>
+          </button>
+          <button type="button" class="gba-btn gba-btn-danger" (click)="enviarOrdenConFallo()" [disabled]="enviandoRabbit">
+            <span>☠️</span>
+            <span>SIMULAR FALLO → DLQ</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Nodos del Clúster RabbitMQ -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-bottom: 16px;">
+      
+      <!-- NODO 1 -->
+      <article class="gba-dialog-dark" style="padding: 14px; border-width: 3px; border-color: #22C55E;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <span class="font-pixel" style="font-size: 11px; color: #22C55E;">NODO 1: rabbit1</span>
+          <span class="font-pixel" style="font-size: 8px; background: #22C55E; color: #000; padding: 2px 6px; border-radius: 3px;">
+            PUERTO 5672
+          </span>
+        </div>
+        <p class="font-telemetry" style="font-size: 16px; color: #94A3B8; margin: 0 0 6px 0;">
+          Modo: Clúster Quorum Primario • Management: :15672
+        </p>
+        <div class="hp-gauge-container">
+          <div class="hp-gauge-fill hp-green" style="width: 100%;"></div>
+        </div>
+      </article>
+
+      <!-- NODO 2 -->
+      <article class="gba-dialog-dark" style="padding: 14px; border-width: 3px; border-color: #22C55E;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <span class="font-pixel" style="font-size: 11px; color: #22C55E;">NODO 2: rabbit2</span>
+          <span class="font-pixel" style="font-size: 8px; background: #22C55E; color: #000; padding: 2px 6px; border-radius: 3px;">
+            PUERTO 5673
+          </span>
+        </div>
+        <p class="font-telemetry" style="font-size: 16px; color: #94A3B8; margin: 0 0 6px 0;">
+          Modo: Espejo Sincronizado (Mirrored) • Management: :15673
+        </p>
+        <div class="hp-gauge-container">
+          <div class="hp-gauge-fill hp-green" style="width: 100%;"></div>
+        </div>
+      </article>
+
+    </div>
+
+    <!-- Sala de Cuarentena (Dead Letter Queue DLQ) -->
+    <section class="gba-dialog-box" style="margin-bottom: 16px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <span class="font-pixel" style="font-size: 10px; color: #BE123C;">SALA DE CUARENTENA: DEAD LETTER QUEUE (DLQ)</span>
+        <span class="font-telemetry" style="font-size: 16px; color: #64748B;">MENSAJES ENVENENADOS: {{ dlqMessages.length }}</span>
+      </div>
+
+      @if (dlqMessages.length === 0) {
+        <p class="font-telemetry" style="font-size: 18px; color: #16A34A; margin: 10px 0; text-align: center;">
+          ✓ ¡No hay mensajes envenenados! Todas las colas están operando normalmente.
+        </p>
+      } @else {
+        <div style="max-height: 220px; overflow-y: auto;">
+          <table style="width: 100%; border-collapse: collapse; text-align: left;">
+            <thead>
+              <tr class="font-pixel" style="font-size: 9px; color: #0F172A; border-bottom: 2px solid #000;">
+                <th style="padding: 6px;">ID MENSAJE</th>
+                <th style="padding: 6px;">ORIGEN</th>
+                <th style="padding: 6px;">RAZÓN DE FALLO</th>
+                <th style="padding: 6px;">ACCIÓN</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (m of dlqMessages; track m.id) {
+                <tr class="font-telemetry" style="font-size: 16px; border-bottom: 1px solid #E2E8F0;">
+                  <td style="padding: 6px;">{{ m.id }}</td>
+                  <td style="padding: 6px;">{{ m.colaOrigen }}</td>
+                  <td style="padding: 6px; color: #DC2626;">{{ m.razon }}</td>
+                  <td style="padding: 6px;">
+                    <button type="button" class="gba-btn gba-btn-heal" style="font-size: 8px; padding: 4px 8px;" (click)="vaciarDlq()">
+                      REVIVIR
+                    </button>
+                  </td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+    </section>
+
+  </div>
+}
+
+<!-- ========================================================================= -->
+<!-- PANTALLA 4: FICHA DE ENTRENADOR GBA (AWS CLOUD & TELEMETRÍA)               -->
+<!-- ========================================================================= -->
+@if (tabActiva === 'entrenador' || tabActiva === 'dashboard') {
+  <div class="space-y-4">
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px;">
+      
+      <!-- Tarjeta de Entrenador Oficial Estilo GBA -->
+      <section style="background: linear-gradient(135deg, #F2D35B 0%, #DFB434 50%, #B98B1C 100%); border: 4px solid #101018; border-radius: 12px; padding: 8px; box-shadow: 4px 4px 0 #000;">
+        <div style="background: #F8F4E0; border: 3px solid #4B3F72; border-radius: 8px; padding: 14px; color: #181824;">
+          
+          <!-- Encabezado Ficha -->
+          <div style="background: #4B3F72; border: 2px solid #000; border-radius: 4px; padding: 8px 12px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <span class="font-pixel" style="font-size: 11px; color: #F8D030;">TRAINER CARD</span>
+            <span class="font-pixel" style="font-size: 9px; color: #FFF;">NO. 2026-EP6</span>
+          </div>
+
+          <!-- Nombres de los Alumnos -->
+          <div style="margin-bottom: 12px;">
+            <span class="font-pixel" style="font-size: 8px; color: #64748B; display: block;">ENTRENADORES:</span>
+            <h3 class="font-pixel" style="font-size: 12px; color: #0F172A; margin: 4px 0;">
+              PATRICIO QUILODRÁN &amp; SEBASTIAN DINAMARCA
+            </h3>
+            <span class="font-telemetry" style="font-size: 16px; color: #475569;">
+              Duoc UC • DSY1107 Desarrollo Cloud Native I
             </span>
           </div>
-        </div>
-        <button type="button" class="close-btn" (click)="cerrarTimelinePedido()">×</button>
-      </div>
 
-      <!-- Stepper Vertical de Arquitectura -->
-      <div class="order-timeline" style="margin-top:16px;">
-        <div class="timeline-step done">
-          <div class="step-marker">1</div>
-          <div class="step-content">
-            <strong>1. Autenticación y Autorización IDaaS</strong>
-            <p>Petición validada mediante Bearer JWT con Microsoft Entra ID (Audience y Scopes nominales).</p>
-            <span class="mono-tag">OAuth 2.0 · Spring Security Resource Server</span>
+          <!-- Medallas de Gimnasio Cloud -->
+          <div style="margin-top: 14px;">
+            <span class="font-pixel" style="font-size: 9px; color: #4B3F72; display: block; margin-bottom: 8px;">
+              MEDALLAS DE GIMNASIO CLOUD (6/6):
+            </span>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px;">
+              <div class="gba-dialog-dark" style="padding: 6px; text-align: center; font-size: 8px;" class="font-pixel">
+                ⛰️ ROCA<br><span style="color: #94A3B8; font-size: 7px;">AWS EC2</span>
+              </div>
+              <div class="gba-dialog-dark" style="padding: 6px; text-align: center; font-size: 8px;" class="font-pixel">
+                💧 CASCADA<br><span style="color: #94A3B8; font-size: 7px;">API GW</span>
+              </div>
+              <div class="gba-dialog-dark" style="padding: 6px; text-align: center; font-size: 8px;" class="font-pixel">
+                ⚡ TRUENO<br><span style="color: #94A3B8; font-size: 7px;">KAFKA (3)</span>
+              </div>
+              <div class="gba-dialog-dark" style="padding: 6px; text-align: center; font-size: 8px;" class="font-pixel">
+                🌈 ARCOÍRIS<br><span style="color: #94A3B8; font-size: 7px;">RABBITMQ</span>
+              </div>
+              <div class="gba-dialog-dark" style="padding: 6px; text-align: center; font-size: 8px;" class="font-pixel">
+                👻 ALMA<br><span style="color: #94A3B8; font-size: 7px;">POSTGRES</span>
+              </div>
+              <div class="gba-dialog-dark" style="padding: 6px; text-align: center; font-size: 8px;" class="font-pixel">
+                🛡️ PANTANO<br><span style="color: #94A3B8; font-size: 7px;">ENTRA ID</span>
+              </div>
+            </div>
           </div>
+
+        </div>
+      </section>
+
+      <!-- Telemetría de Servidor AWS EC2 & Decodificador JWT -->
+      <section class="gba-dialog-dark" style="padding: 14px 18px;">
+        <span class="font-pixel" style="font-size: 10px; color: #F8D030; display: block; margin-bottom: 8px;">
+          INFRAESTRUCTURA AWS CLOUD (EC2 + API GATEWAY)
+        </span>
+
+        <p class="font-telemetry" style="font-size: 16px; color: #CBD4EC; margin: 4px 0;">
+          Host Público EC2: <strong>13.221.177.55</strong> (us-east-1)
+        </p>
+        <p class="font-telemetry" style="font-size: 16px; color: #CBD4EC; margin: 4px 0;">
+          API Gateway: <strong>6cmzp83q6h.execute-api.us-east-1.amazonaws.com</strong>
+        </p>
+
+        <div style="margin: 12px 0;">
+          <button type="button" class="gba-btn gba-btn-primary" (click)="probarPingGateway()">
+            📡 PROBAR LATENCIA GATEWAY
+          </button>
+          <p class="font-telemetry" style="font-size: 15px; color: #22C55E; margin-top: 6px;">
+            {{ pingLatencia }}
+          </p>
         </div>
 
-        <div class="timeline-step done">
-          <div class="step-marker">2</div>
-          <div class="step-content">
-            <strong>2. Encolado Asíncrono en RabbitMQ</strong>
-            <p>Mensaje despachado a <code>orders.exchange</code> (Direct) hacia <code>orders.queue</code> con TTL 30s.</p>
-            <span class="mono-tag">RoutingKey: orders.nominal · DLX: orders.dlx</span>
-          </div>
+        <div style="border-top: 1px solid #334155; padding-top: 10px; margin-top: 10px;">
+          <span class="font-pixel" style="font-size: 9px; color: #38BDF8; display: block; margin-bottom: 4px;">
+            AUTENTICACIÓN JWT (MICROSOFT ENTRA ID):
+          </span>
+          <p class="font-telemetry" style="font-size: 15px; color: #94A3B8; margin: 2px 0;">
+            Algoritmo: RS256 • Tenant: 4531cbe0-83c7-406d-a972-e6302b1fb7d1
+          </p>
+          <p class="font-telemetry" style="font-size: 15px; color: #94A3B8; margin: 2px 0;">
+            Estado: {{ autenticado ? 'SESIÓN ACTIVA CON TOKEN JWT VÁLIDO' : 'MODO LOCAL / DEMO ACTIVO' }}
+          </p>
         </div>
+      </section>
 
-        <div class="timeline-step done">
-          <div class="step-marker">3</div>
-          <div class="step-content">
-            <strong>3. Procesamiento y ACK de Worker</strong>
-            <p>El consumidor AMQP procesa la transacción de negocio y confirma el ACK al broker RabbitMQ.</p>
-            <span class="mono-tag">RabbitListener · Retry Policy nominal</span>
-          </div>
-        </div>
-
-        <div class="timeline-step done">
-          <div class="step-marker">4</div>
-          <div class="step-content">
-            <strong>4. Streaming Distribuido en Apache Kafka</strong>
-            <p>Evento emitido asíncronamente con key <code>ORD-{{ pedidoSeleccionadoParaTimeline.id }}</code> balanceado a una de las 3 particiones.</p>
-            <span class="mono-tag">Topic: tcg.analytics.stream (3P / 3R / acks=all)</span>
-          </div>
-        </div>
-
-        <div class="timeline-step active">
-          <div class="step-marker">5</div>
-          <div class="step-content">
-            <strong>5. Consumo Analítico y Telemetría en Vivo</strong>
-            <p>El grupo <code>tcg-analytics-group</code> con 3 hilos concurrentes ingiere el evento y actualiza métricas.</p>
-            <span class="mono-tag">&#64;KafkaListener · Consumer Group nominal</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="modal-actions" style="margin-top:16px;">
-        <button type="button" class="btn btn-secondary" (click)="cerrarTimelinePedido()">Cerrar</button>
-      </div>
     </div>
+
   </div>
 }
