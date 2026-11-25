@@ -8,7 +8,7 @@ export interface AppNotification {
   tipo: 'success' | 'error' | 'info' | 'warning';
   fecha: Date;
   leida: boolean;
-  categoria?: 'KAFKA' | 'RABBITMQ' | 'SISTEMA' | 'PEDIDOS';
+  categoria?: 'KAFKA' | 'RABBITMQ' | 'SISTEMA' | 'PEDIDOS' | 'CARTAS';
 }
 
 export interface ToastItem {
@@ -27,7 +27,7 @@ export class NotificationService {
     {
       id: 1,
       titulo: 'Apache Kafka Conectado',
-      mensaje: 'Clúster de 3 brokers online con tópicos pedidos.analytics.stream y pedidos.audit.stream.',
+      mensaje: 'Clúster de 3 brokers online con tópicos tcg.analytics.stream y tcg.audit.stream.',
       tipo: 'success',
       fecha: new Date(),
       leida: false,
@@ -66,7 +66,7 @@ export class NotificationService {
     return this.notificationsSubject.value.filter((n) => !n.leida).length;
   }
 
-  notify(titulo: string, mensaje: string, tipo: 'success' | 'error' | 'info' = 'success', categoria: 'KAFKA' | 'RABBITMQ' | 'SISTEMA' | 'PEDIDOS' = 'SISTEMA'): void {
+  notify(titulo: string, mensaje: string, tipo: 'success' | 'error' | 'info' = 'success', categoria: 'KAFKA' | 'RABBITMQ' | 'SISTEMA' | 'PEDIDOS' | 'CARTAS' = 'SISTEMA'): void {
     const id = ++this.seq + 10;
     const nueva: AppNotification = {
       id,

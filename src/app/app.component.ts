@@ -6,7 +6,7 @@ import { MsalBroadcastService, MsalService } from '@azure/msal-angular';
 import { InteractionStatus } from '@azure/msal-browser';
 import { filter } from 'rxjs';
 import { environment } from '../environments/environment';
-import { PedidosService } from './pedidos/pedidos.service';
+import { CartasService } from './cartas/cartas.service';
 import { NotificationService } from './shared/notification.service';
 
 @Component({
@@ -20,10 +20,10 @@ export class AppComponent implements OnInit {
   private readonly msal = inject(MsalService);
   private readonly broadcast = inject(MsalBroadcastService);
   private readonly router = inject(Router);
-  private readonly pedidosService = inject(PedidosService);
+  private readonly cartasService = inject(CartasService);
   readonly notificationService = inject(NotificationService);
 
-  totalPedidos = 3;
+  totalOrdenes = 3;
 
   autenticado = false;
   usuario = 'Patricio';
@@ -106,13 +106,13 @@ export class AppComponent implements OnInit {
       .pipe(filter((status) => status === InteractionStatus.None))
       .subscribe(() => this.syncSession());
 
-    this.cargarContadorPedidos();
+    this.cargarContadorOrdenes();
   }
 
-  cargarContadorPedidos(): void {
-    this.pedidosService.listar().subscribe({
-      next: (res) => this.totalPedidos = res.length,
-      error: () => this.totalPedidos = this.pedidosService.demo.length
+  cargarContadorOrdenes(): void {
+    this.cartasService.listarOrdenes().subscribe({
+      next: (res) => this.totalOrdenes = res.length,
+      error: () => this.totalOrdenes = 0
     });
   }
 
@@ -156,7 +156,7 @@ export class AppComponent implements OnInit {
   }
 
   buscar(): void {
-    this.router.navigate(['/pedidos']);
+    this.router.navigate(['/cartas']);
   }
 
   get inicial(): string {

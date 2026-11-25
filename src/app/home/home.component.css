@@ -1319,3 +1319,10 @@
   cursor: not-allowed;
   background: #f8fafc;
 }
+
+/* Brokers Pokemon: Bulbasaur / Charmander / Squirtle */
+.broker-card.poke-1 { border-top: 4px solid #78c850; }
+.broker-card.poke-2 { border-top: 4px solid #f08030; }
+.broker-card.poke-3 { border-top: 4px solid #6890f0; }
+.poke-sprite { width: 34px; height: 34px; image-rendering: pixelated; vertical-align: middle; margin-right: 2px; }
+.broker-badge small { font-weight: 500; opacity: 0.6; margin-left: 4px; font-size: 10px; }

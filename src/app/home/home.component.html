@@ -23,10 +23,10 @@
       <div>
         <span class="subtle-chip">Plataforma Cloud Native</span>
         <h1 style="margin: 8px 0 6px 0; font-size: 24px; font-weight: 700; color: #0f172a; letter-spacing: -0.02em;">
-          Pedidos360
+          PokéVault TCG
         </h1>
         <p style="color: #64748b; font-size: 13px; max-width: 620px; margin: 0 0 16px 0; line-height: 1.5;">
-          Sistema de gestión desacoplado que integra autenticación JWT con Microsoft Entra ID, mensajería asíncrona con RabbitMQ y streaming analítico en tiempo real con Apache Kafka.
+          Tienda de cartas Pokémon TCG desacoplada que integra autenticación JWT con Microsoft Entra ID, mensajería asíncrona con RabbitMQ y streaming analítico en tiempo real con Apache Kafka.
         </p>
         <div style="display:flex; gap:8px; flex-wrap:wrap;">
           <button type="button" class="btn btn-primary" (click)="seleccionarTab('dashboard')">
@@ -66,13 +66,13 @@
       <span class="module-link">Abrir módulo →</span>
     </article>
 
-    <article class="card pad module-card" routerLink="/pedidos">
+    <article class="card pad module-card" routerLink="/cartas">
       <div>
         <span class="tiny-label">Operación</span>
-        <h3 class="module-title">Gestión de Pedidos</h3>
-        <p class="module-desc">Consulta, registro y filtrado de órdenes protegidas con token JWT.</p>
+        <h3 class="module-title">Catálogo de Cartas</h3>
+        <p class="module-desc">Compra de cartas y apertura de sobres con órdenes protegidas por JWT (Entra ID).</p>
       </div>
-      <span class="module-link">Gestionar pedidos →</span>
+      <span class="module-link">Ver catálogo →</span>
     </article>
 
     <article class="card pad module-card" (click)="seleccionarTab('rabbitmq')">
@@ -101,7 +101,7 @@
       <a href="http://localhost:8085" target="_blank" class="admin-chip">Kafka-UI (:8085) ↗</a>
       <a href="http://localhost:15672" target="_blank" class="admin-chip">RabbitMQ Nodo 1 (:15672) ↗</a>
       <a href="http://localhost:15673" target="_blank" class="admin-chip">RabbitMQ Nodo 2 (:15673) ↗</a>
-      <a href="http://localhost:8080/h2-console" target="_blank" class="admin-chip">H2 Database (:8080) ↗</a>
+      <a href="http://localhost:8080/api/public/cartas" target="_blank" class="admin-chip">API Cartas (:8080) ↗</a>
     </div>
   </section>
 }
@@ -120,8 +120,8 @@
 
   <section class="kpis" style="margin-bottom:16px;">
     <article class="card kpi">
-      <p class="tiny">Pedidos totales</p>
-      <strong>{{ pedidos.length }}</strong>
+      <p class="tiny">Órdenes totales</p>
+      <strong>{{ ordenes.length }}</strong>
       <span class="tiny muted">Base de datos</span>
     </article>
     <article class="card kpi">
@@ -239,8 +239,8 @@
 
     <article class="card pad">
       <div class="card-head" style="margin-bottom:12px;">
-        <h2 class="section-title">Últimos Pedidos</h2>
-        <a routerLink="/pedidos" class="btn btn-ghost" style="font-size:12px;">Ver todos →</a>
+        <h2 class="section-title">Últimas Órdenes</h2>
+        <a routerLink="/cartas" class="btn btn-ghost" style="font-size:12px;">Ver todos →</a>
       </div>
       <table class="table">
         <thead>
@@ -252,8 +252,8 @@
           </tr>
         </thead>
         <tbody>
-          @for (pedido of pedidos; track pedido.id) {
-            <tr (click)="abrirTimelinePedido(pedido)" class="clickable-row" title="Ver ciclo de vida del pedido">
+          @for (pedido of ordenes; track pedido.id) {
+            <tr (click)="abrirTimelinePedido(pedido)" class="clickable-row" title="Ver ciclo de vida de la orden">
               <td><span class="mono-tag">#{{ pedido.id }}</span></td>
               <td><strong>{{ pedido.cliente }}</strong></td>
               <td><span [class]="claseEstado(pedido.estado)">{{ etiquetaEstado(pedido.estado) }}</span></td>
@@ -272,7 +272,7 @@
         <h2 class="section-title">Actividad Mensual</h2>
         <span class="tiny muted">Últimos 7 meses</span>
       </div>
-      <svg class="chart" viewBox="0 0 520 168" role="img" aria-label="Pedidos por mes">
+      <svg class="chart" viewBox="0 0 520 168" role="img" aria-label="Órdenes por mes">
         <line x1="24" y1="36" x2="500" y2="36" stroke="#f1f5f9"/>
         <line x1="24" y1="84" x2="500" y2="84" stroke="#f1f5f9"/>
         <line x1="24" y1="132" x2="500" y2="132" stroke="#e2e8f0"/>
@@ -305,7 +305,7 @@
     <!-- Colas Principales -->
     <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(230px, 1fr)); gap:10px; margin-bottom:16px;">
       <div class="clean-stat-box">
-        <span class="tiny-label">Cola 1: Pedidos</span>
+        <span class="tiny-label">Cola 1: Órdenes</span>
         <strong class="clean-stat-value">orders.queue</strong>
         <span class="tiny muted">Direct · TTL 30s · DLQ orders.dlq</span>
       </div>
@@ -317,7 +317,7 @@
       <div class="clean-stat-box">
         <span class="tiny-label">Cola 3: Eventos</span>
         <strong class="clean-stat-value">events.topic.queue</strong>
-        <span class="tiny muted">Topic (pedidos.*) · TTL 60s · DLQ events.dlq</span>
+        <span class="tiny muted">Topic (tcg.*) · TTL 60s · DLQ events.dlq</span>
       </div>
     </div>
 
@@ -325,7 +325,7 @@
     <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px;">
       <button type="button" class="btn btn-primary" (click)="enviarOrdenNominal()" [disabled]="enviandoRabbit">
         @if (enviandoRabbit) { <span class="btn-spinner"></span> }
-        Enviar Pedido Normal
+        Comprar Carta (ACK nominal)
       </button>
       <button type="button" class="btn btn-secondary" (click)="enviarOrdenConFallo()" [disabled]="enviandoRabbit" style="color:#dc2626;">
         @if (enviandoRabbit) { <span class="btn-spinner"></span> }
@@ -337,7 +337,7 @@
       </button>
       <button type="button" class="btn btn-secondary" (click)="enviarEventoTopicDemo()" [disabled]="enviandoRabbit">
         @if (enviandoRabbit) { <span class="btn-spinner"></span> }
-        Evento Topic (pedidos.despachado)
+        Evento Topic (tcg.despachado)
       </button>
     </div>
 
@@ -463,9 +463,9 @@
 
     <!-- Widget de Clúster: Tolerancia a Fallos y Estado de 3 Brokers (EP5) -->
     <div class="broker-cluster-bar" style="margin-bottom:16px;">
-      <div class="broker-card" [class.broker-down]="brokerCaidoId === 1 || !activeBrokerIds.includes(1)">
+      <div class="broker-card poke-1" [class.broker-down]="brokerCaidoId === 1 || !activeBrokerIds.includes(1)">
         <div class="broker-card-head">
-          <span class="broker-badge">Broker 1</span>
+          <span class="broker-badge"><img class="poke-sprite" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png" alt="Bulbasaur"> Bulbasaur <small>Broker 1</small></span>
           <span class="broker-status" [class.online]="brokerCaidoId !== 1 && activeBrokerIds.includes(1)">{{ (brokerCaidoId === 1 || !activeBrokerIds.includes(1)) ? 'Failover' : 'Leader P0' }}</span>
         </div>
         <div class="broker-info">
@@ -477,9 +477,9 @@
         </button>
       </div>
 
-      <div class="broker-card" [class.broker-down]="brokerCaidoId === 2 || !activeBrokerIds.includes(2)">
+      <div class="broker-card poke-2" [class.broker-down]="brokerCaidoId === 2 || !activeBrokerIds.includes(2)">
         <div class="broker-card-head">
-          <span class="broker-badge">Broker 2</span>
+          <span class="broker-badge"><img class="poke-sprite" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/4.png" alt="Charmander"> Charmander <small>Broker 2</small></span>
           <span class="broker-status" [class.online]="brokerCaidoId !== 2 && activeBrokerIds.includes(2)">{{ (brokerCaidoId === 2 || !activeBrokerIds.includes(2)) ? 'Failover' : 'Leader P1' }}</span>
         </div>
         <div class="broker-info">
@@ -491,9 +491,9 @@
         </button>
       </div>
 
-      <div class="broker-card" [class.broker-down]="brokerCaidoId === 3 || !activeBrokerIds.includes(3)">
+      <div class="broker-card poke-3" [class.broker-down]="brokerCaidoId === 3 || !activeBrokerIds.includes(3)">
         <div class="broker-card-head">
-          <span class="broker-badge">Broker 3</span>
+          <span class="broker-badge"><img class="poke-sprite" src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/7.png" alt="Squirtle"> Squirtle <small>Broker 3</small></span>
           <span class="broker-status" [class.online]="brokerCaidoId !== 3 && activeBrokerIds.includes(3)">{{ (brokerCaidoId === 3 || !activeBrokerIds.includes(3)) ? 'Failover' : 'Leader P2' }}</span>
         </div>
         <div class="broker-info">
@@ -510,13 +510,13 @@
     <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(230px, 1fr)); gap:10px; margin-bottom:16px;">
       <div class="clean-stat-box">
         <span class="tiny-label">Tópico 1: Analítica</span>
-        <strong class="clean-stat-value">pedidos.analytics.stream</strong>
+        <strong class="clean-stat-value">tcg.analytics.stream</strong>
         <span class="tiny muted">3 Particiones · 3 Réplicas · Retención 24h</span>
       </div>
 
       <div class="clean-stat-box">
         <span class="tiny-label">Tópico 2: Auditoría</span>
-        <strong class="clean-stat-value">pedidos.audit.stream</strong>
+        <strong class="clean-stat-value">tcg.audit.stream</strong>
         <span class="tiny muted">3 Particiones · 3 Réplicas · Retención 7 días</span>
       </div>
 
@@ -633,7 +633,7 @@
     <div style="margin-top:20px;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px;">
         <div>
-          <span class="tiny-label">Eventos en Tiempo Real (&#64;KafkaListener: pedidos.analytics.stream)</span>
+          <span class="tiny-label">Eventos en Tiempo Real (&#64;KafkaListener: tcg.analytics.stream)</span>
           <span class="tiny muted" style="margin-left:6px;">{{ eventosKafkaFiltrados.length }} mostrados</span>
         </div>
 
@@ -666,7 +666,7 @@
               <span class="mac-dot yellow"></span>
               <span class="mac-dot green"></span>
             </div>
-            <span class="terminal-title">kafka-console-consumer --topic pedidos.analytics.stream --from-beginning</span>
+            <span class="terminal-title">kafka-console-consumer --topic tcg.analytics.stream --from-beginning</span>
             <span class="term-status-badge">LIVE STREAM</span>
           </div>
           <div class="terminal-body">
@@ -781,7 +781,7 @@
     @if (recentKafkaAudit.length > 0) {
       <div style="margin-top:20px;">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-          <span class="tiny-label">Eventos de Auditoría (&#64;KafkaListener: pedidos.audit.stream)</span>
+          <span class="tiny-label">Eventos de Auditoría (&#64;KafkaListener: tcg.audit.stream)</span>
           <span class="tiny muted">{{ recentKafkaAudit.length }} auditados</span>
         </div>
         <div class="table-container">
@@ -919,7 +919,7 @@
           <div class="step-content">
             <strong>4. Streaming Distribuido en Apache Kafka</strong>
             <p>Evento emitido asíncronamente con key <code>ORD-{{ pedidoSeleccionadoParaTimeline.id }}</code> balanceado a una de las 3 particiones.</p>
-            <span class="mono-tag">Topic: pedidos.analytics.stream (3P / 3R / acks=all)</span>
+            <span class="mono-tag">Topic: tcg.analytics.stream (3P / 3R / acks=all)</span>
           </div>
         </div>
 
@@ -927,7 +927,7 @@
           <div class="step-marker">5</div>
           <div class="step-content">
             <strong>5. Consumo Analítico y Telemetría en Vivo</strong>
-            <p>El grupo <code>pedidos-analytics-group</code> con 3 hilos concurrentes ingiere el evento y actualiza métricas.</p>
+            <p>El grupo <code>tcg-analytics-group</code> con 3 hilos concurrentes ingiere el evento y actualiza métricas.</p>
             <span class="mono-tag">&#64;KafkaListener · Consumer Group nominal</span>
           </div>
         </div>

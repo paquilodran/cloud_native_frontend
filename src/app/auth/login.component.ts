@@ -21,8 +21,8 @@ export class LoginComponent {
     });
   }
 
-  irAPedidos(): void {
-    this.router.navigate(['/pedidos']);
+  irACartas(): void {
+    this.router.navigate(['/cartas']);
   }
 
   get yaAutenticado(): boolean {

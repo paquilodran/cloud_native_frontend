@@ -1,0 +1,139 @@
+<section class="hero">
+  <div>
+    <span class="hero-chip">Pokemon TCG · Set Base</span>
+    <h1>Catálogo de cartas</h1>
+    <p>Compra cartas sueltas o abre un sobre. Cada orden se guarda en PostgreSQL y viaja por RabbitMQ y Kafka.</p>
+  </div>
+  <div class="hero-actions">
+    <button type="button" class="btn btn-pack" (click)="abrirSobre()" [disabled]="procesando()">
+      Abrir sobre · 5 cartas · $5.000
+    </button>
+    <span class="tiny">{{ autenticado ? 'Entrenador: ' + entrenador : 'Inicia sesión para registrar órdenes en el backend' }}</span>
+  </div>
+</section>
+
+<section class="card filters">
+  <input class="input" [(ngModel)]="busqueda" (ngModelChange)="filtrar()" placeholder="Buscar carta por nombre...">
+  <select class="select" [(ngModel)]="tipoFiltro" (ngModelChange)="filtrar()">
+    <option value="">Todos los tipos</option>
+    @for (t of tipos; track t) {
+      <option [value]="t">{{ t }}</option>
+    }
+  </select>
+  <select class="select" [(ngModel)]="rarezaFiltro" (ngModelChange)="filtrar()">
+    <option value="">Todas las rarezas</option>
+    @for (r of rarezas; track r) {
+      <option [value]="r">{{ r }}</option>
+    }
+  </select>
+  <span class="tiny count">{{ filtradas.length }} cartas</span>
+</section>
+
+@if (cargando()) {
+  <p class="muted center">Cargando catálogo...</p>
+} @else if (paginaItems.length === 0) {
+  <p class="muted center">No hay cartas con esos filtros.</p>
+} @else {
+  <section class="grid">
+    @for (carta of paginaItems; track carta.id) {
+      <article class="tcg-card" [class.holo]="esHolo(carta.rareza)" [style.--tipo]="colorTipo(carta.tipo)" (click)="verDetalle(carta)">
+        <div class="art">
+          @if (carta.imagenUrl) {
+            <img [src]="carta.imagenUrl" [alt]="carta.nombre" loading="lazy" (error)="ocultarImagen($event)">
+          }
+        </div>
+        <div class="meta">
+          <strong>{{ carta.nombre }}</strong>
+          <span class="type-pill">{{ carta.tipo }}</span>
+        </div>
+        <div class="meta sub">
+          <span>{{ carta.rareza }}</span>
+          <span>{{ carta.hp ? 'HP ' + carta.hp : '' }}</span>
+        </div>
+        <div class="buy">
+          <span class="price">${{ carta.precio | number }}</span>
+          <button type="button" class="btn btn-primary mini" (click)="verDetalle(carta); $event.stopPropagation()">Comprar</button>
+        </div>
+      </article>
+    }
+  </section>
+
+  <div class="pager">
+    <button type="button" class="btn btn-secondary mini" (click)="cambiarPagina(-1)" [disabled]="pagina === 1">Anterior</button>
+    <span class="tiny">Página {{ pagina }} de {{ totalPaginas }}</span>
+    <button type="button" class="btn btn-secondary mini" (click)="cambiarPagina(1)" [disabled]="pagina === totalPaginas">Siguiente</button>
+  </div>
+}
+
+<section class="card orders">
+  <div class="orders-head">
+    <h2>Mis órdenes recientes</h2>
+    <span class="tiny">Persistidas en PostgreSQL · eventos en RabbitMQ y Kafka</span>
+  </div>
+  <table class="table">
+    <thead>
+      <tr><th>#</th><th>Detalle</th><th>Cant.</th><th>Total</th><th>Estado</th><th>Fecha</th></tr>
+    </thead>
+    <tbody>
+      @for (o of ordenes(); track o.id) {
+        <tr>
+          <td>#{{ o.id }}</td>
+          <td class="detail">{{ o.cartaNombre }}</td>
+          <td>{{ o.cantidad }}</td>
+          <td>${{ o.total | number }}</td>
+          <td><span [class]="claseEstado(o.estado)">{{ etiquetaEstado(o.estado) }}</span></td>
+          <td class="tiny">{{ o.fecha | date:'short' }}</td>
+        </tr>
+      } @empty {
+        <tr><td colspan="6" class="empty">Aún no hay órdenes. Compra una carta o abre un sobre.</td></tr>
+      }
+    </tbody>
+  </table>
+</section>
+
+@if (cartaDetalle(); as carta) {
+  <div class="backdrop" (click)="cerrarModales()">
+    <div class="modal detail-modal" (click)="$event.stopPropagation()">
+      <div class="detail-art" [style.--tipo]="colorTipo(carta.tipo)" [class.holo]="esHolo(carta.rareza)">
+        @if (carta.imagenUrl) {
+          <img [src]="carta.imagenUrl" [alt]="carta.nombre" (error)="ocultarImagen($event)">
+        }
+      </div>
+      <div class="detail-info">
+        <h2>{{ carta.nombre }}</h2>
+        <p class="tiny">{{ carta.tipo }} · {{ carta.rareza }} {{ carta.hp ? '· HP ' + carta.hp : '' }}</p>
+        <p class="price big">${{ carta.precio | number }}</p>
+        <label class="tiny">Cantidad</label>
+        <input class="input" type="number" min="1" max="20" [ngModel]="cantidad()" (ngModelChange)="cantidad.set($event)">
+        <p class="tiny">Total: ${{ carta.precio * (cantidad() || 1) | number }}</p>
+        <div class="detail-actions">
+          <button type="button" class="btn btn-secondary" (click)="cerrarModales()">Cancelar</button>
+          <button type="button" class="btn btn-primary" (click)="comprar(carta)" [disabled]="procesando()">
+            {{ procesando() ? 'Procesando...' : 'Confirmar compra' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+}
+
+@if (sobreAbierto(); as sobre) {
+  <div class="backdrop" (click)="cerrarModales()">
+    <div class="modal pack-modal" (click)="$event.stopPropagation()">
+      <h2>¡Sobre abierto!</h2>
+      <p class="tiny">5 eventos publicados en Kafka, repartidos entre las 3 particiones.</p>
+      <div class="pack-grid">
+        @for (c of sobre; track $index) {
+          <div class="pack-card" [class.holo]="esHolo(c.rareza)" [style.--tipo]="colorTipo(c.tipo)" [style.animation-delay]="($index * 0.15) + 's'">
+            @if (c.imagenUrl) {
+              <img [src]="c.imagenUrl" [alt]="c.nombre" (error)="ocultarImagen($event)">
+            }
+            <strong>{{ c.nombre }}</strong>
+            <span class="tiny">{{ c.rareza }}</span>
+          </div>
+        }
+      </div>
+      <button type="button" class="btn btn-primary" (click)="cerrarModales()">Guardar en colección</button>
+    </div>
+  </div>
+}

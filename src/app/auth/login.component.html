@@ -6,14 +6,14 @@
           <path d="M7 17a5 5 0 0 1-.7-9.95A6 6 0 0 1 17.8 10H18a4 4 0 0 1 0 8H7Z" stroke="#2563EB" stroke-width="1.8"/>
         </svg>
       </span>
-      Pedidos360
+      PokéVault TCG
     </div>
-    <h1>Gestión de pedidos</h1>
+    <h1>Gestión de cartas</h1>
     <p class="muted">Cloud Native</p>
 
     @if (yaAutenticado) {
       <p class="auth-ok"><i class="dot dot-ok"></i> Autenticación activa · JWT activo</p>
-      <button type="button" class="btn btn-primary big" (click)="irAPedidos()">Ir a pedidos</button>
+      <button type="button" class="btn btn-primary big" (click)="irACartas()">Ir a cartas</button>
     } @else {
       <button type="button" class="btn btn-primary big" (click)="login()" [disabled]="!configurado">
         <span class="ms">

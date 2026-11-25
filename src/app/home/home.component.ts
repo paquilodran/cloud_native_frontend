@@ -4,8 +4,8 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { MsalService } from '@azure/msal-angular';
 import { environment } from '../../environments/environment';
-import { Pedido } from '../pedidos/pedido.model';
-import { PedidosService } from '../pedidos/pedidos.service';
+import { Orden } from '../cartas/carta.model';
+import { CartasService } from '../cartas/cartas.service';
 import { claseEstado, etiquetaEstado } from '../shared/estado-visual';
 import { DlqEntry, RabbitMQService, TopologyStatus } from '../shared/rabbitmq.service';
 import {
@@ -35,7 +35,7 @@ export interface ToastNotification {
 })
 export class HomeComponent implements OnInit, OnDestroy {
   private readonly msal = inject(MsalService);
-  private readonly pedidosService = inject(PedidosService);
+  private readonly cartasService = inject(CartasService);
   private readonly rabbitMQService = inject(RabbitMQService);
   private readonly kafkaService = inject(KafkaService);
   private readonly route = inject(ActivatedRoute);
@@ -79,7 +79,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   activeBrokerIds: number[] = [1, 2, 3];
 
   // Modales interactivos
-  pedidoSeleccionadoParaTimeline: Pedido | null = null;
+  pedidoSeleccionadoParaTimeline: Orden | null = null;
   idCopiado: string | null = null;
 
   copiarId(id: string, event: Event): void {
@@ -93,13 +93,13 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   // Formulario creacion dinamica de topico Kafka (Microservicio Administrador EP5)
-  nuevoTopicoNombre = 'pedidos.promociones.stream';
+  nuevoTopicoNombre = 'tcg.promociones.stream';
   nuevoTopicoParticiones = 3;
   nuevoTopicoReplicas = 3;
   nuevoTopicoRetencion = 86400000;
-  topicoEliminarNombre = 'pedidos.promociones.stream';
+  topicoEliminarNombre = 'tcg.promociones.stream';
 
-  pedidos: Pedido[] = [];
+  ordenes: Orden[] = [];
   claims: TokenClaims | null = null;
   readonly etiquetaEstado = etiquetaEstado;
   readonly claseEstado = claseEstado;
@@ -119,7 +119,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   get creadosHoy(): number {
     const hoy = new Date().toISOString().slice(0, 10);
-    return this.pedidos.filter((pedido) => pedido.fecha?.startsWith(hoy)).length;
+    return this.ordenes.filter((orden) => orden.fecha?.startsWith(hoy)).length;
   }
 
   get chartPoints(): string {
@@ -270,7 +270,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `pedidos360_kafka_stream_${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.${extension}`;
+    a.download = `pokevault_kafka_stream_${new Date().toISOString().slice(0, 19).replace(/:/g, '-')}.${extension}`;
     a.click();
     URL.revokeObjectURL(url);
 
@@ -282,6 +282,10 @@ export class HomeComponent implements OnInit, OnDestroy {
     );
   }
 
+  brokerNombre(id: number): string {
+    return ["Bulbasaur", "Charmander", "Squirtle"][id - 1] ?? `Broker ${id}`;
+  }
+
   simularCaosBroker(brokerId: number): void {
     if (this.simulandoCaos) return;
     this.simulandoCaos = true;
@@ -289,7 +293,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     this.notificationService.notify(
       'Prueba de Resiliencia Iniciada',
-      `Simulando desconexión de Broker ${brokerId} (Alta Disponibilidad).`,
+      `Simulando desconexión de ${this.brokerNombre(brokerId)} (Broker ${brokerId}, Alta Disponibilidad).`,
       'info',
       'KAFKA'
     );
@@ -298,7 +302,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       this.notificationService.notify(
         'Failover Exitoso (ISR Activo)',
-        `Particiones rebalanceadas en Broker ${brokerId === 1 ? 2 : 1} sin pérdida de mensajes (min.insync.replicas=2 nominal).`,
+        `Particiones rebalanceadas en ${this.brokerNombre(brokerId === 1 ? 2 : 1)} sin pérdida de mensajes (min.insync.replicas=2 nominal).`,
         'success',
         'KAFKA'
       );
@@ -309,14 +313,14 @@ export class HomeComponent implements OnInit, OnDestroy {
       this.simulandoCaos = false;
       this.notificationService.notify(
         'Broker Recuperado',
-        `Broker ${brokerId} sincronizado nuevamente con el ensemble de Zookeeper.`,
+        `${this.brokerNombre(brokerId)} sincronizado nuevamente con el ensemble de Zookeeper.`,
         'info',
         'KAFKA'
       );
     }, 6000);
   }
 
-  abrirTimelinePedido(p: Pedido): void {
+  abrirTimelinePedido(p: Orden): void {
     this.pedidoSeleccionadoParaTimeline = p;
   }
 
@@ -339,13 +343,11 @@ export class HomeComponent implements OnInit, OnDestroy {
       }
     });
 
-    if (!this.autenticado) {
-      this.pedidos = this.pedidosService.demo;
-    } else {
-      this.pedidosService.listar().subscribe({
-        next: (data) => this.pedidos = data,
-        error: () => this.pedidos = this.pedidosService.demo
-      });
+    this.cartasService.listarOrdenes().subscribe({
+      next: (data) => this.ordenes = data,
+      error: () => this.ordenes = []
+    });
+    if (this.autenticado) {
       this.cargarClaims();
     }
 
@@ -482,15 +484,15 @@ export class HomeComponent implements OnInit, OnDestroy {
   enviarEventoTopicDemo(): void {
     this.enviandoRabbit = true;
     this.errorRabbit = null;
-    this.rabbitMQService.enviarEventoTopic('pedidos.despachado', {
+    this.rabbitMQService.enviarEventoTopic('tcg.despachado', {
       entidad: 'PEDIDO',
       accion: 'DESPACHADO',
       payload: '{"guia": "GD-2026-X", "transportista": "Chilexpress"}'
     }).subscribe({
       next: () => {
         this.enviandoRabbit = false;
-        this.ultimoEnvioRabbit = `[TopicExchange] Evento publicado con routingKey 'pedidos.despachado' hacia 'events.topic.queue'.`;
-        this.mostrarToast('Evento publicado con routingKey pedidos.despachado', 'success');
+        this.ultimoEnvioRabbit = `[TopicExchange] Evento publicado con routingKey 'tcg.despachado' hacia 'events.topic.queue'.`;
+        this.mostrarToast('Evento publicado con routingKey tcg.despachado', 'success');
       },
       error: () => {
         this.enviandoRabbit = false;
@@ -638,7 +640,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     }).subscribe({
       next: (res) => {
         this.enviandoKafka = false;
-        this.ultimoEnvioKafka = `[Kafka Tópico 2] Evento emitido a '${res.topic}' [Key: ORD-${rnd}, Accion: AUDITORIA_PAGO]. Consumer Group: pedidos-audit-group.`;
+        this.ultimoEnvioKafka = `[Kafka Tópico 2] Evento emitido a '${res.topic}' [Key: ORD-${rnd}, Accion: AUDITORIA_PAGO]. Consumer Group: tcg-audit-group.`;
         this.mostrarToast(`Evento auditoría emitido: ORD-${rnd} [AUDITORIA_PAGO]`, 'info');
         setTimeout(() => this.cargarEventosKafka(), 800);
       },
