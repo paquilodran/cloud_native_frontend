@@ -1,413 +1,336 @@
 <!-- ========================================================================= -->
-<!-- MATRIX VAULT — PANEL DE CONTROL CLOUD-NATIVE (4 PANTALLAS)               -->
+<!-- VISTA 1: INICIO — HERO FULL-BLEED "Enter the MATRIX" (IMAGEN COMPLETA)    -->
 <!-- ========================================================================= -->
+@if (tabActiva === 'inicio') {
+  <section class="full-matrix-hero" aria-label="Enter the Matrix">
+    <!-- Imagen completa sin recortes (contain + fusión oscura con lluvia de código) -->
+    <div class="fmh-photo" aria-hidden="true"></div>
+    <div class="fmh-blinds" aria-hidden="true"></div>
+    <div class="fmh-axis" aria-hidden="true"></div>
+    <div class="fmh-flare" aria-hidden="true"></div>
 
-<!-- Barra de Misiones Rápidas de Demostración (1 Clic) -->
-<section class="m-panel missions-bar" aria-label="Acciones rápidas de demostración">
-  <div class="missions-label">
-    <span class="m-mono missions-tag">// MISIONES RÁPIDAS</span>
-    <span class="missions-sub">Prueba todo el ecosistema distribuido con 1 clic:</span>
-  </div>
-  <div class="missions-actions">
-    <button type="button" class="m-btn m-btn-sm" (click)="seleccionarTab('mochila')">
-      ▶ 1. TICKETS MATRIX
-    </button>
-    <button type="button" class="m-btn m-btn-sm" (click)="seleccionarTab('kafka'); emitirRafaga()">
-      ⚡ 2. RÁFAGA KAFKA x5
-    </button>
-    <button type="button" class="m-btn m-btn-sm m-btn-danger" (click)="seleccionarTab('kafka'); simularCaosBroker(1)">
-      ⬢ 3. APAGAR NODE-01 (ROJO)
-    </button>
-    <button type="button" class="m-btn m-btn-sm" (click)="seleccionarTab('rabbitmq'); curarDlqJoy()">
-      ↻ 4. CURAR DLQ
-    </button>
-  </div>
-</section>
+    <div class="fmh-inner">
+      <div class="fmh-center">
+        <div class="fmh-titles">
+          <p class="fmh-kicker">Enter the</p>
+          <h1 class="fmh-title">MATRIX</h1>
+        </div>
+
+        <div class="fmh-actions">
+          <button type="button" class="fmh-cta" (click)="seleccionarTab('taquilla')">
+            <span class="fmh-cta-label">Comprar tickets</span>
+            <span class="fmh-circle" aria-hidden="true">▶</span>
+          </button>
+
+          <button type="button" class="fmh-cta" (click)="seleccionarTab('mensajeria')">
+            <span class="fmh-cta-label">Clúster Kafka &amp; RabbitMQ</span>
+            <span class="fmh-circle" aria-hidden="true">❖</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Barra discreta de arquitectura end-to-end al pie del hero -->
+      <footer class="fmh-arch-strip m-mono" aria-label="Flujo arquitectónico en vivo">
+        <span class="arch-node">1. ENTRA ID (JWT)</span>
+        <span class="arch-arrow">→</span>
+        <span class="arch-node">2. API GATEWAY AWS</span>
+        <span class="arch-arrow">→</span>
+        <span class="arch-node">3. POSTGRESQL 16</span>
+        <span class="arch-arrow">→</span>
+        <span class="arch-node">4. RABBITMQ (2 NODOS + DLQ)</span>
+        <span class="arch-arrow">→</span>
+        <span class="arch-node" [class.arch-warn]="brokersOnlineCount === 2" [class.arch-danger]="brokersOnlineCount < 2">
+          5. KAFKA ({{ brokersOnlineCount }}/3 ISR)
+        </span>
+      </footer>
+    </div>
+  </section>
+}
 
 <!-- ========================================================================= -->
-<!-- PANTALLA 1: CATÁLOGO / ÓRDENES                                            -->
+<!-- VISTA 2: TAQUILLA / ÓRDENES + RASTREADOR END-TO-END                       -->
 <!-- ========================================================================= -->
-@if (tabActiva === 'mochila' || tabActiva === 'inicio') {
+@if (tabActiva === 'taquilla' || tabActiva === 'mochila') {
   <app-cartas></app-cartas>
 }
 
 <!-- ========================================================================= -->
-<!-- PANTALLA 2: CLÚSTER APACHE KAFKA (3 BROKERS → 3 BANDAS DE LLUVIA MATRIX)  -->
+<!-- VISTA 3: KAFKA & RABBITMQ (MENSAJERÍA Y STREAMING UNIFICADOS)             -->
 <!-- ========================================================================= -->
-@if (tabActiva === 'kafka') {
+@if (tabActiva === 'mensajeria' || tabActiva === 'kafka' || tabActiva === 'rabbitmq') {
   <div class="section-stack">
 
-    <!-- Panel de Quórum -->
-    <section
-      class="m-panel quorum-panel"
-      [class.m-panel-warn]="brokersOnlineCount === 2"
-      [class.m-panel-danger]="brokersOnlineCount < 2"
-    >
-      <div class="quorum-info">
-        <span
-          class="m-badge"
-          [class.m-badge-warn]="brokersOnlineCount === 2"
-          [class.m-badge-danger]="brokersOnlineCount < 2"
+    <!-- Sub-selector limpio: Kafka vs RabbitMQ + Links oficiales -->
+    <div class="m-panel subtabs-bar">
+      <div class="subtabs-group" role="tablist" aria-label="Módulos de mensajería">
+        <button
+          type="button"
+          role="tab"
+          class="m-btn"
+          [class.m-btn-primary]="subTabMensajeria === 'kafka'"
+          [attr.aria-selected]="subTabMensajeria === 'kafka'"
+          (click)="subTabMensajeria = 'kafka'"
         >
-          <span
-            class="m-dot"
-            [class.m-dot-warn]="brokersOnlineCount === 2"
-            [class.m-dot-danger]="brokersOnlineCount < 2"
-          ></span>
-          ISR {{ brokersOnlineCount }}/3
-        </span>
-        <div>
-          <h2 class="m-display section-title">CLÚSTER APACHE KAFKA // 3 BROKERS</h2>
-          <p class="section-desc">
-            @if (brokersOnlineCount === 3) {
-              Quórum saludable (3/3 ISR). Todas las columnas de la lluvia Matrix corren en verde. Apaga un nodo para ver su banda teñirse de rojo.
-            } @else if (brokersOnlineCount === 2) {
-              Failover automático activo (2/3 ISR). El clúster mantiene min.insync.replicas=2 sin pérdida de mensajes; 1 banda del fondo corre en rojo.
-            } @else {
-              ALERTA CRÍTICA (&lt; 2 ISR): Quórum comprometido. Reactiva al menos 2 brokers para restablecer la replicación nominal.
-            }
-          </p>
-        </div>
+          ⚡ APACHE KAFKA ({{ brokersOnlineCount }}/3 ISR)
+        </button>
+        <button
+          type="button"
+          role="tab"
+          class="m-btn"
+          [class.m-btn-primary]="subTabMensajeria === 'rabbitmq'"
+          [attr.aria-selected]="subTabMensajeria === 'rabbitmq'"
+          (click)="subTabMensajeria = 'rabbitmq'"
+        >
+          ↻ RABBITMQ (DLQ: {{ dlqMessages.length }})
+        </button>
       </div>
 
-      <div class="quorum-actions">
-        <button type="button" class="m-btn m-btn-primary" (click)="enviarEventoAnalitico()" [disabled]="enviandoKafka">
-          ▶ EMITIR 1 EVENTO
-        </button>
-        <button type="button" class="m-btn" (click)="emitirRafaga()">
-          ⚡ RÁFAGA x5 (P0/P1/P2)
-        </button>
+      <div class="subtabs-links">
+        <a href="http://localhost:8085" target="_blank" rel="noopener" class="m-btn m-btn-sm">KAFKA-UI :8085 ↗</a>
+        <a href="http://localhost:15672" target="_blank" rel="noopener" class="m-btn m-btn-sm">RABBITMQ :15672 ↗</a>
       </div>
-    </section>
-
-    <!-- 3 Tarjetas de Broker (Banda Izquierda, Centro y Derecha) -->
-    <div class="brokers-grid">
-      <!-- BROKER 1 -->
-      <article class="m-panel broker-card" [class.m-panel-danger]="!activeBrokerIds.includes(1)">
-        <div class="broker-head">
-          <div>
-            <span class="m-mono broker-band">BANDA IZQUIERDA // P0 LEADER</span>
-            <h3 class="broker-name">NODE-01 // ZION</h3>
-          </div>
-          <span class="m-badge" [class.m-badge-danger]="!activeBrokerIds.includes(1)">
-            {{ activeBrokerIds.includes(1) ? 'ONLINE :29092' : 'NODE OFFLINE' }}
-          </span>
-        </div>
-
-        <div class="broker-meter-block">
-          <div class="meter-row m-mono">
-            <span>ESTADO ISR</span>
-            <span [class.text-danger]="!activeBrokerIds.includes(1)">
-              {{ activeBrokerIds.includes(1) ? '100% SINCRONIZADO' : '0% DESCONECTADO' }}
-            </span>
-          </div>
-          <div class="m-meter">
-            <div class="m-meter-fill" [class.offline]="!activeBrokerIds.includes(1)" [style.width]="activeBrokerIds.includes(1) ? '100%' : '12%'"></div>
-          </div>
-        </div>
-
-        <div class="broker-stat">
-          <span>Eventos en Partición 0</span>
-          <strong class="m-mono">{{ kafkaMetrics?.partitionDistribution?.['partition_0'] || 0 }}</strong>
-        </div>
-
-        <button
-          type="button"
-          class="m-btn broker-toggle-btn"
-          [class.m-btn-danger]="activeBrokerIds.includes(1)"
-          [class.m-btn-primary]="!activeBrokerIds.includes(1)"
-          (click)="simularCaosBroker(1)"
-        >
-          {{ activeBrokerIds.includes(1) ? '■ APAGAR BROKER 1' : '▶ ENCENDER BROKER 1' }}
-        </button>
-      </article>
-
-      <!-- BROKER 2 -->
-      <article class="m-panel broker-card" [class.m-panel-danger]="!activeBrokerIds.includes(2)">
-        <div class="broker-head">
-          <div>
-            <span class="m-mono broker-band">BANDA CENTRAL // P1 LEADER</span>
-            <h3 class="broker-name">NODE-02 // NEBUCHADNEZZAR</h3>
-          </div>
-          <span class="m-badge" [class.m-badge-danger]="!activeBrokerIds.includes(2)">
-            {{ activeBrokerIds.includes(2) ? 'ONLINE :29093' : 'NODE OFFLINE' }}
-          </span>
-        </div>
-
-        <div class="broker-meter-block">
-          <div class="meter-row m-mono">
-            <span>ESTADO ISR</span>
-            <span [class.text-danger]="!activeBrokerIds.includes(2)">
-              {{ activeBrokerIds.includes(2) ? '100% SINCRONIZADO' : '0% DESCONECTADO' }}
-            </span>
-          </div>
-          <div class="m-meter">
-            <div class="m-meter-fill" [class.offline]="!activeBrokerIds.includes(2)" [style.width]="activeBrokerIds.includes(2) ? '100%' : '12%'"></div>
-          </div>
-        </div>
-
-        <div class="broker-stat">
-          <span>Eventos en Partición 1</span>
-          <strong class="m-mono">{{ kafkaMetrics?.partitionDistribution?.['partition_1'] || 0 }}</strong>
-        </div>
-
-        <button
-          type="button"
-          class="m-btn broker-toggle-btn"
-          [class.m-btn-danger]="activeBrokerIds.includes(2)"
-          [class.m-btn-primary]="!activeBrokerIds.includes(2)"
-          (click)="simularCaosBroker(2)"
-        >
-          {{ activeBrokerIds.includes(2) ? '■ APAGAR BROKER 2' : '▶ ENCENDER BROKER 2' }}
-        </button>
-      </article>
-
-      <!-- BROKER 3 -->
-      <article class="m-panel broker-card" [class.m-panel-danger]="!activeBrokerIds.includes(3)">
-        <div class="broker-head">
-          <div>
-            <span class="m-mono broker-band">BANDA DERECHA // P2 LEADER</span>
-            <h3 class="broker-name">NODE-03 // CONSTRUCT</h3>
-          </div>
-          <span class="m-badge" [class.m-badge-danger]="!activeBrokerIds.includes(3)">
-            {{ activeBrokerIds.includes(3) ? 'ONLINE :29094' : 'NODE OFFLINE' }}
-          </span>
-        </div>
-
-        <div class="broker-meter-block">
-          <div class="meter-row m-mono">
-            <span>ESTADO ISR</span>
-            <span [class.text-danger]="!activeBrokerIds.includes(3)">
-              {{ activeBrokerIds.includes(3) ? '100% SINCRONIZADO' : '0% DESCONECTADO' }}
-            </span>
-          </div>
-          <div class="m-meter">
-            <div class="m-meter-fill" [class.offline]="!activeBrokerIds.includes(3)" [style.width]="activeBrokerIds.includes(3) ? '100%' : '12%'"></div>
-          </div>
-        </div>
-
-        <div class="broker-stat">
-          <span>Eventos en Partición 2</span>
-          <strong class="m-mono">{{ kafkaMetrics?.partitionDistribution?.['partition_2'] || 0 }}</strong>
-        </div>
-
-        <button
-          type="button"
-          class="m-btn broker-toggle-btn"
-          [class.m-btn-danger]="activeBrokerIds.includes(3)"
-          [class.m-btn-primary]="!activeBrokerIds.includes(3)"
-          (click)="simularCaosBroker(3)"
-        >
-          {{ activeBrokerIds.includes(3) ? '■ APAGAR BROKER 3' : '▶ ENCENDER BROKER 3' }}
-        </button>
-      </article>
     </div>
 
-    <!-- Consola de Streaming en Tiempo Real -->
-    <section class="m-panel console-panel">
-      <div class="console-head">
-        <span class="m-mono console-title">TERMINAL DE STREAMING // EN VIVO</span>
-        <span class="m-badge">TOTAL CONSUMIDOS: {{ kafkaMetrics?.totalEventsConsumed || 0 }}</span>
-      </div>
-      <div class="console-log m-code">
-        @if (recentKafkaEvents.length === 0) {
-          <p class="log-empty">Esperando eventos en tcg.analytics.stream... Pulsa [ EMITIR 1 EVENTO ] o [ RÁFAGA x5 ].</p>
-        } @else {
-          @for (ev of recentKafkaEvents.slice(0, 6); track ev.eventId) {
-            <p class="log-line">
-              <span class="log-ts">[{{ ev.processedAt ? ev.processedAt.slice(11, 19) : 'LIVE' }}]</span>
-              <span class="log-part">[P{{ ev.partition }}]</span>
-              <span>{{ ev.categoria }} :: Orden #{{ ev.orderId }} procesada (${{ ev.monto | number }})</span>
+    <!-- SUB-VISTA A: APACHE KAFKA (3 BROKERS → 3 BANDAS DE LLUVIA MATRIX) -->
+    @if (subTabMensajeria === 'kafka') {
+      <section
+        class="m-panel quorum-panel"
+        [class.m-panel-warn]="brokersOnlineCount === 2"
+        [class.m-panel-danger]="brokersOnlineCount < 2"
+      >
+        <div class="quorum-info">
+          <span
+            class="m-badge"
+            [class.m-badge-warn]="brokersOnlineCount === 2"
+            [class.m-badge-danger]="brokersOnlineCount < 2"
+          >
+            <span class="m-dot" [class.m-dot-warn]="brokersOnlineCount === 2" [class.m-dot-danger]="brokersOnlineCount < 2"></span>
+            ISR {{ brokersOnlineCount }}/3
+          </span>
+          <div>
+            <h2 class="m-display section-title">CLÚSTER APACHE KAFKA // 3 BROKERS (RF=3)</h2>
+            <p class="section-desc">
+              @if (brokersOnlineCount === 3) {
+                Quórum saludable (3/3 ISR). Apaga cualquier broker abajo para teñir de rojo solo su banda de la lluvia Matrix.
+              } @else if (brokersOnlineCount === 2) {
+                Failover activo (2/3 ISR). Se mantiene min.insync.replicas=2 sin pérdida de mensajes; 1 banda del fondo corre en rojo.
+              } @else {
+                Quórum crítico (&lt; 2 ISR). Reactiva al menos 2 brokers para restaurar replicación nominal.
+              }
             </p>
-          }
+          </div>
+        </div>
+
+        <div class="quorum-actions">
+          <button type="button" class="m-btn m-btn-primary" (click)="enviarEventoAnalitico()" [disabled]="enviandoKafka">
+            ▶ EMITIR 1 EVENTO
+          </button>
+          <button type="button" class="m-btn" (click)="emitirRafaga()">
+            ⚡ RÁFAGA x5 (P0/P1/P2)
+          </button>
+        </div>
+      </section>
+
+      <div class="brokers-grid">
+        @for (b of [
+          { id: 1, name: 'NODE-01 // ZION', band: 'BANDA IZQUIERDA · P0 LEADER', port: ':29092', partKey: 'partition_0' },
+          { id: 2, name: 'NODE-02 // NEBUCHADNEZZAR', band: 'BANDA CENTRAL · P1 LEADER', port: ':29093', partKey: 'partition_1' },
+          { id: 3, name: 'NODE-03 // CONSTRUCT', band: 'BANDA DERECHA · P2 LEADER', port: ':29094', partKey: 'partition_2' }
+        ]; track b.id) {
+          <article class="m-panel broker-card" [class.m-panel-danger]="!activeBrokerIds.includes(b.id)">
+            <div class="broker-head">
+              <div>
+                <span class="m-mono broker-band">{{ b.band }}</span>
+                <h3 class="broker-name">{{ b.name }}</h3>
+              </div>
+              <span class="m-badge" [class.m-badge-danger]="!activeBrokerIds.includes(b.id)">
+                {{ activeBrokerIds.includes(b.id) ? 'ONLINE ' + b.port : 'NODE OFFLINE' }}
+              </span>
+            </div>
+
+            <div class="broker-meter-block">
+              <div class="meter-row m-mono">
+                <span>ESTADO ISR</span>
+                <span [class.text-danger]="!activeBrokerIds.includes(b.id)">
+                  {{ activeBrokerIds.includes(b.id) ? '100% SINCRONIZADO' : '0% DESCONECTADO' }}
+                </span>
+              </div>
+              <div class="m-meter">
+                <div class="m-meter-fill" [class.offline]="!activeBrokerIds.includes(b.id)" [style.width]="activeBrokerIds.includes(b.id) ? '100%' : '10%'"></div>
+              </div>
+            </div>
+
+            <div class="broker-stat">
+              <span>Eventos Partición {{ b.id - 1 }}</span>
+              <strong class="m-mono">{{ kafkaMetrics?.partitionDistribution?.[b.partKey] || 0 }}</strong>
+            </div>
+
+            <button
+              type="button"
+              class="m-btn broker-toggle-btn"
+              [class.m-btn-danger]="activeBrokerIds.includes(b.id)"
+              [class.m-btn-primary]="!activeBrokerIds.includes(b.id)"
+              (click)="simularCaosBroker(b.id)"
+            >
+              {{ activeBrokerIds.includes(b.id) ? '■ APAGAR BROKER ' + b.id : '▶ ENCENDER BROKER ' + b.id }}
+            </button>
+          </article>
         }
       </div>
-    </section>
 
-    <!-- Tópicos Kafka -->
-    <section class="m-panel topics-panel">
-      <h3 class="m-mono topics-title">TÓPICOS ACTIVOS (RF=3 // 3 PARTICIONES)</h3>
-      <div class="topics-grid">
-        <div class="topic-item">
-          <strong class="m-mono topic-name">tcg.analytics.stream</strong>
-          <p class="topic-meta">Particiones: 3 · Réplicas: 3 · Retención: 24h · Grupo: tcg-analytics-group</p>
+      <section class="m-panel console-panel">
+        <div class="console-head">
+          <span class="m-mono console-title">TERMINAL DE STREAMING // EN VIVO</span>
+          <span class="m-badge">TOTAL CONSUMIDOS: {{ kafkaMetrics?.totalEventsConsumed || 0 }}</span>
         </div>
-        <div class="topic-item">
-          <strong class="m-mono topic-name">tcg.audit.stream</strong>
-          <p class="topic-meta">Particiones: 3 · Réplicas: 3 · Retención: 7d · Política: compact,delete</p>
+        <div class="console-log m-code">
+          @if (recentKafkaEvents.length === 0) {
+            <p class="log-empty">Esperando eventos... Emite una compra en Taquilla o pulsa [ RÁFAGA x5 ].</p>
+          } @else {
+            @for (ev of recentKafkaEvents.slice(0, 6); track ev.eventId) {
+              <p class="log-line">
+                <span class="log-ts">[{{ ev.processedAt ? ev.processedAt.slice(11, 19) : 'LIVE' }}]</span>
+                <span class="log-part">[P{{ ev.partition }}]</span>
+                <span>{{ ev.categoria }} :: Orden #{{ ev.orderId }} procesada (${{ ev.monto | number }})</span>
+              </p>
+            }
+          }
         </div>
-      </div>
-    </section>
-  </div>
-}
+      </section>
 
-<!-- ========================================================================= -->
-<!-- PANTALLA 3: RABBITMQ RESILIENT MESH & DEAD LETTER QUEUE                   -->
-<!-- ========================================================================= -->
-@if (tabActiva === 'rabbitmq') {
-  <div class="section-stack">
-
-    <section class="m-panel quorum-panel">
-      <div class="quorum-info">
-        <span class="m-badge" [class.m-badge-danger]="dlqMessages.length > 0">
-          DLQ: {{ dlqMessages.length }}
-        </span>
-        <div>
-          <h2 class="m-display section-title">RABBITMQ // CLÚSTER AMQP (2 NODOS)</h2>
-          <p class="section-desc">
-            Clúster espejo activo-activo con Dead Letter Exchange (DLX) y reintento controlado de mensajes en cuarentena.
-          </p>
-        </div>
-      </div>
-
-      <div class="quorum-actions">
-        <button type="button" class="m-btn m-btn-primary" (click)="enviarOrdenNominal()" [disabled]="enviandoRabbit">
-          ▶ ENVIAR ORDEN
-        </button>
-        <button type="button" class="m-btn m-btn-danger" (click)="enviarOrdenConFallo()" [disabled]="enviandoRabbit">
-          ■ SIMULAR FALLO → DLQ
-        </button>
-        <button type="button" class="m-btn m-btn-warn" (click)="curarDlqJoy()" [disabled]="dlqMessages.length === 0">
-          ↻ REINTENTAR DLQ ({{ dlqMessages.length }})
-        </button>
-      </div>
-    </section>
-
-    <div class="nodes-grid">
-      <article class="m-panel broker-card">
-        <div class="broker-head">
-          <div>
-            <span class="m-mono broker-band">NODO PRIMARIO</span>
-            <h3 class="broker-name">rabbit1</h3>
+      <section class="m-panel topics-panel">
+        <h3 class="m-mono topics-title">TÓPICOS KAFKA CONFIGURADOS</h3>
+        <div class="topics-grid">
+          <div class="topic-item">
+            <strong class="m-mono topic-name">tcg.analytics.stream</strong>
+            <p class="topic-meta">3 Particiones · RF=3 · Retención 24h · delete · Grupo: tcg-analytics-group</p>
           </div>
-          <span class="m-badge">AMQP :5672</span>
-        </div>
-        <p class="section-desc">Quórum activo · Panel Management en :15672</p>
-        <div class="m-meter"><div class="m-meter-fill" style="width: 100%"></div></div>
-      </article>
-
-      <article class="m-panel broker-card">
-        <div class="broker-head">
-          <div>
-            <span class="m-mono broker-band">NODO ESPEJO</span>
-            <h3 class="broker-name">rabbit2</h3>
+          <div class="topic-item">
+            <strong class="m-mono topic-name">tcg.audit.stream</strong>
+            <p class="topic-meta">3 Particiones · RF=3 · Retención 7d · compact,delete · Grupo: tcg-audit-group</p>
           </div>
-          <span class="m-badge">AMQP :5673</span>
         </div>
-        <p class="section-desc">Alta disponibilidad sincronizada · Panel Management en :15673</p>
-        <div class="m-meter"><div class="m-meter-fill" style="width: 100%"></div></div>
-      </article>
-    </div>
+      </section>
+    }
 
-    <section class="m-panel console-panel">
-      <div class="console-head">
-        <span class="m-mono console-title">DEAD LETTER QUEUE (CUARENTENA AMQP)</span>
-        <span class="m-badge" [class.m-badge-danger]="dlqMessages.length > 0">
-          {{ dlqMessages.length }} EN ESPERA
-        </span>
+    <!-- SUB-VISTA B: RABBITMQ (2 NODOS + DLQ) -->
+    @if (subTabMensajeria === 'rabbitmq') {
+      <section class="m-panel quorum-panel">
+        <div class="quorum-info">
+          <span class="m-badge" [class.m-badge-danger]="dlqMessages.length > 0">DLQ: {{ dlqMessages.length }}</span>
+          <div>
+            <h2 class="m-display section-title">RABBITMQ // CLÚSTER AMQP (2 NODOS + DLQ)</h2>
+            <p class="section-desc">
+              Mensajería transaccional de órdenes. Si un mensaje falla, se aísla en la Dead Letter Queue para reintentarlo sin pérdida.
+            </p>
+          </div>
+        </div>
+
+        <div class="quorum-actions">
+          <button type="button" class="m-btn m-btn-primary" (click)="enviarOrdenNominal()" [disabled]="enviandoRabbit">
+            ▶ ENVIAR ORDEN
+          </button>
+          <button type="button" class="m-btn m-btn-danger" (click)="enviarOrdenConFallo()" [disabled]="enviandoRabbit">
+            ■ SIMULAR FALLO → DLQ
+          </button>
+          <button type="button" class="m-btn m-btn-warn" (click)="curarDlqJoy()" [disabled]="dlqMessages.length === 0">
+            ↻ REINTENTAR DLQ ({{ dlqMessages.length }})
+          </button>
+        </div>
+      </section>
+
+      <div class="nodes-grid">
+        <article class="m-panel broker-card">
+          <div class="broker-head">
+            <div>
+              <span class="m-mono broker-band">NODO PRIMARIO</span>
+              <h3 class="broker-name">rabbit1</h3>
+            </div>
+            <span class="m-badge">AMQP :5672</span>
+          </div>
+          <p class="section-desc">Quórum activo · Management :15672</p>
+          <div class="m-meter"><div class="m-meter-fill" style="width: 100%"></div></div>
+        </article>
+
+        <article class="m-panel broker-card">
+          <div class="broker-head">
+            <div>
+              <span class="m-mono broker-band">NODO ESPEJO</span>
+              <h3 class="broker-name">rabbit2</h3>
+            </div>
+            <span class="m-badge">AMQP :5673</span>
+          </div>
+          <p class="section-desc">Sincronización espejo · Management :15673</p>
+          <div class="m-meter"><div class="m-meter-fill" style="width: 100%"></div></div>
+        </article>
       </div>
 
-      @if (dlqMessages.length === 0) {
-        <p class="dlq-ok">✓ Sin mensajes fallidos. Todas las colas AMQP operan normalmente.</p>
-      } @else {
-        <div class="table-wrap">
-          <table class="m-table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>COLA ORIGEN</th>
-                <th>MOTIVO</th>
-                <th>ACCIÓN</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (m of dlqMessages; track m.id) {
+      <section class="m-panel console-panel">
+        <div class="console-head">
+          <span class="m-mono console-title">DEAD LETTER QUEUE (CUARENTENA AMQP)</span>
+          <span class="m-badge" [class.m-badge-danger]="dlqMessages.length > 0">{{ dlqMessages.length }} EN ESPERA</span>
+        </div>
+
+        @if (dlqMessages.length === 0) {
+          <p class="dlq-ok">✓ Sin mensajes fallidos. Todas las colas operan normalmente.</p>
+        } @else {
+          <div class="table-wrap">
+            <table class="m-table">
+              <thead>
                 <tr>
-                  <td class="m-mono">{{ m.id }}</td>
-                  <td class="m-mono">{{ m.colaOrigen }}</td>
-                  <td class="text-danger">{{ m.razon }}</td>
-                  <td>
-                    <button type="button" class="m-btn m-btn-sm m-btn-primary" (click)="vaciarDlq()">
-                      ↻ REINTENTAR
-                    </button>
-                  </td>
+                  <th>ID</th>
+                  <th>COLA ORIGEN</th>
+                  <th>MOTIVO</th>
+                  <th>ACCIÓN</th>
                 </tr>
-              }
-            </tbody>
-          </table>
-        </div>
-      }
-    </section>
+              </thead>
+              <tbody>
+                @for (m of dlqMessages; track m.id) {
+                  <tr>
+                    <td class="m-mono">{{ m.id }}</td>
+                    <td class="m-mono">{{ m.colaOrigen }}</td>
+                    <td class="text-danger">{{ m.razon }}</td>
+                    <td>
+                      <button type="button" class="m-btn m-btn-sm m-btn-primary" (click)="vaciarDlq()">↻ REINTENTAR</button>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </section>
+    }
   </div>
 }
 
 <!-- ========================================================================= -->
-<!-- PANTALLA 4: SISTEMA AWS / JWT / EQUIPO                                    -->
+<!-- VISTA 4: PERFIL ENTRA ID & INFRAESTRUCTURA AWS                            -->
 <!-- ========================================================================= -->
-@if (tabActiva === 'entrenador' || tabActiva === 'dashboard') {
+@if (tabActiva === 'sistema' || tabActiva === 'entrenador' || tabActiva === 'dashboard') {
   <div class="system-grid">
 
     <section class="m-panel sys-card">
       <div class="console-head">
-        <span class="m-mono console-title">OPERADORES // DUOC UC DSY1107</span>
-        <span class="m-badge">EP5 / EP6</span>
+        <span class="m-mono console-title">SEGURIDAD // MICROSOFT ENTRA ID (JWT)</span>
+        <span class="m-badge" [class.m-badge-warn]="!autenticado">{{ autenticado ? 'AUTENTICADO' : 'MODO DEMO' }}</span>
       </div>
+
       <h2 class="m-display sys-names">PATRICIO QUILODRÁN &amp; SEBASTIAN DINAMARCA</h2>
-      <p class="section-desc">Arquitectura Cloud Native desplegada con Terraform IaC, Docker Compose, Kafka, RabbitMQ y Entra ID.</p>
+      <p class="section-desc">Duoc UC · DSY1107 Desarrollo Cloud Native I (EP5 / EP6).</p>
 
-      <div class="badges-grid">
-        <div class="sys-badge-box">
-          <span class="m-mono sys-badge-k">AWS EC2</span>
-          <span class="sys-badge-v">us-east-1</span>
-        </div>
-        <div class="sys-badge-box">
-          <span class="m-mono sys-badge-k">API GATEWAY</span>
-          <span class="sys-badge-v">HTTP Proxy</span>
-        </div>
-        <div class="sys-badge-box">
-          <span class="m-mono sys-badge-k">APACHE KAFKA</span>
-          <span class="sys-badge-v">3 Brokers RF=3</span>
-        </div>
-        <div class="sys-badge-box">
-          <span class="m-mono sys-badge-k">RABBITMQ</span>
-          <span class="sys-badge-v">2 Nodos + DLQ</span>
-        </div>
-        <div class="sys-badge-box">
-          <span class="m-mono sys-badge-k">POSTGRESQL</span>
-          <span class="sys-badge-v">v16 Persistente</span>
-        </div>
-        <div class="sys-badge-box">
-          <span class="m-mono sys-badge-k">ENTRA ID</span>
-          <span class="sys-badge-v">OAuth2 / JWT</span>
-        </div>
-      </div>
-    </section>
-
-    <section class="m-panel sys-card">
-      <div class="console-head">
-        <span class="m-mono console-title">TELEMETRÍA AWS &amp; SEGURIDAD JWT</span>
-        <span class="m-badge">ONLINE</span>
-      </div>
-
-      <div class="sys-kv">
-        <span>EC2 Public IP</span>
-        <strong class="m-mono">44.195.35.138</strong>
-      </div>
-      <div class="sys-kv">
-        <span>API Gateway</span>
-        <strong class="m-mono">6cmzp83q6h.execute-api.us-east-1.amazonaws.com</strong>
-      </div>
       <div class="sys-kv">
         <span>Tenant Entra ID</span>
         <strong class="m-mono">4531cbe0-83c7-406d-a972-e6302b1fb7d1</strong>
       </div>
       <div class="sys-kv">
-        <span>Sesión JWT</span>
-        <strong class="m-mono">{{ autenticado ? 'TOKEN RS256 ACTIVO' : 'MODO DEMO ACTIVO' }}</strong>
+        <span>Algoritmo Firma</span>
+        <strong class="m-mono">RS256 (JWKS Validado en API Gateway + Spring Boot)</strong>
       </div>
+
       @if (claims) {
         <div class="sys-kv">
-          <span>Usuario Entra ID</span>
+          <span>Usuario Token</span>
           <strong class="m-mono">{{ claims.name }} ({{ claims.preferredUsername }})</strong>
         </div>
         <div class="sys-kv">
@@ -415,14 +338,47 @@
           <strong class="m-mono">{{ claims.roles }} // {{ claims.scopes }}</strong>
         </div>
         <div class="sys-kv">
-          <span>Expiración Token</span>
+          <span>Expiración</span>
           <strong class="m-mono">{{ claims.expires }}</strong>
         </div>
+      } @else {
+        <p class="section-desc">Haz clic en tu botón de perfil arriba a la derecha para inspeccionar o copiar tu Access Token JWT completo.</p>
       }
+    </section>
+
+    <section class="m-panel sys-card">
+      <div class="console-head">
+        <span class="m-mono console-title">INFRAESTRUCTURA AWS (TERRAFORM IaC)</span>
+        <span class="m-badge">us-east-1</span>
+      </div>
+
+      <div class="sys-kv">
+        <span>EC2 Public IP</span>
+        <strong class="m-mono">44.195.35.138</strong>
+      </div>
+      <div class="sys-kv">
+        <span>API Gateway HTTP</span>
+        <strong class="m-mono">6cmzp83q6h.execute-api.us-east-1.amazonaws.com</strong>
+      </div>
+
+      <div class="badges-grid">
+        <div class="sys-badge-box">
+          <span class="m-mono sys-badge-k">KAFKA</span>
+          <span class="sys-badge-v">3 Brokers RF=3</span>
+        </div>
+        <div class="sys-badge-box">
+          <span class="m-mono sys-badge-k">RABBITMQ</span>
+          <span class="sys-badge-v">2 Nodos + DLQ</span>
+        </div>
+        <div class="sys-badge-box">
+          <span class="m-mono sys-badge-k">POSTGRES 16</span>
+          <span class="sys-badge-v">Persistente</span>
+        </div>
+      </div>
 
       <div class="ping-block">
         <button type="button" class="m-btn m-btn-primary" (click)="probarPingGateway()">
-          ▶ PROBAR LATENCIA GATEWAY
+          ▶ PROBAR LATENCIA API GATEWAY
         </button>
         <p class="m-mono ping-out">{{ pingLatencia }}</p>
       </div>

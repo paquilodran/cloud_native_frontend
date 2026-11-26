@@ -20,7 +20,16 @@ import { TokenClaims, toTokenClaims } from '../shared/token-claims';
 import { NotificationService } from '../shared/notification.service';
 import { getPokemonGbaSprite, CHANSEY_SPRITE, formatPokedollars } from '../shared/pokemon-sprites';
 
-export type HomeTab = 'mochila' | 'kafka' | 'rabbitmq' | 'entrenador' | 'inicio' | 'dashboard';
+export type HomeTab =
+  | 'inicio'
+  | 'taquilla'
+  | 'mensajeria'
+  | 'sistema'
+  | 'mochila'
+  | 'kafka'
+  | 'rabbitmq'
+  | 'entrenador'
+  | 'dashboard';
 
 export interface ToastNotification {
   id: number;
@@ -48,8 +57,9 @@ export class HomeComponent implements OnInit, OnDestroy {
   readonly chanseySprite = CHANSEY_SPRITE;
   readonly formatPokedollars = formatPokedollars;
 
-  // Navegación por pestañas de la Pokédex GBA
-  tabActiva: HomeTab = 'mochila';
+  // Navegación principal ordenada en 4 vistas
+  tabActiva: HomeTab = 'inicio';
+  subTabMensajeria: 'kafka' | 'rabbitmq' = 'kafka';
   pingLatencia = 'HTTP/2 200 OK • Latencia: 23ms (AWS us-east-1)';
   isHealingAnim = false;
 
@@ -350,12 +360,22 @@ export class HomeComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
       const tab = params['tab'];
-      if (tab === 'mochila' || tab === 'kafka' || tab === 'rabbitmq' || tab === 'entrenador') {
-        this.tabActiva = tab;
-      } else if (tab === 'inicio') {
-        this.tabActiva = 'mochila';
-      } else if (tab === 'dashboard') {
-        this.tabActiva = 'entrenador';
+      if (tab === 'inicio') {
+        this.tabActiva = 'inicio';
+      } else if (tab === 'taquilla' || tab === 'mochila') {
+        this.tabActiva = 'taquilla';
+      } else if (tab === 'mensajeria') {
+        this.tabActiva = 'mensajeria';
+      } else if (tab === 'kafka') {
+        this.tabActiva = 'mensajeria';
+        this.subTabMensajeria = 'kafka';
+      } else if (tab === 'rabbitmq') {
+        this.tabActiva = 'mensajeria';
+        this.subTabMensajeria = 'rabbitmq';
+      } else if (tab === 'sistema' || tab === 'entrenador' || tab === 'dashboard') {
+        this.tabActiva = 'sistema';
+      } else {
+        this.tabActiva = 'inicio';
       }
     });
 

@@ -1,236 +1,135 @@
 <!-- ========================================================================= -->
-<!-- PANTALLA 1: ENTER THE MATRIX — HERO CINEMATOGRÁFICO & TICKETS             -->
+<!-- PANTALLA 2: TAQUILLA MATRIX & RASTREADOR END-TO-END DE MENSAJES           -->
 <!-- ========================================================================= -->
-<div class="vault-stack">
+<div class="taquilla-layout">
 
-  <!-- HERO CINEMATOGRÁFICO IDÉNTICO A "Matrix Visual Redesign" (SIN WARNER BROS NI REDES) -->
-  <section class="matrix-cinema-hero" aria-label="Enter the Matrix">
-    <div class="mx-enter-hero__photo" aria-hidden="true"></div>
-    <div class="mx-hero-crt-blinds hero-blinds" aria-hidden="true"></div>
-    <div class="mx-enter-hero__axis" aria-hidden="true"></div>
-    <div class="hero-lens-flare" aria-hidden="true"></div>
-
-    <div class="cinema-hero-content">
-      <div class="cinema-title-block">
-        <h1 class="cinema-heading">
-          <span class="cinema-enter">Enter the</span>
-          <span class="cinema-matrix">MATRIX</span>
-        </h1>
-
-        <!-- 2 CTAs circulares anclados sobre el eje vertical (sin Warner Bros ni redes) -->
-        <div class="cinema-cta-rail">
-          <button type="button" class="cinema-cta-row" (click)="abrirSobre()" [disabled]="procesando()">
-            <span class="cinema-cta-label">
-              {{ procesando() ? 'Generando lote...' : 'Generar lote (5 tickets)' }}
-            </span>
-            <span class="cinema-cta-circle" aria-hidden="true">▶</span>
-          </button>
-
-          <button type="button" class="cinema-cta-row" (click)="toggleHistorial()">
-            <span class="cinema-cta-label">Mis tickets ({{ ordenes().length }})</span>
-            <span class="cinema-cta-circle" aria-hidden="true">❖</span>
-          </button>
-        </div>
+  <!-- COLUMNA IZQUIERDA: 4 ENTRADAS CLARAS (DISPARADOR DEL FLUJO CLOUD) -->
+  <section class="taquilla-col">
+    <header class="m-panel section-banner">
+      <div>
+        <span class="m-mono banner-kicker">// TAQUILLA DIGITAL MATRIX</span>
+        <h1 class="m-display banner-title">EMISIÓN DE TICKETS &amp; ÓRDENES</h1>
+        <p class="banner-sub">
+          Cada compra ejecuta el flujo completo: <strong>PostgreSQL 16 → RabbitMQ (AMQP) → Apache Kafka (3 Brokers)</strong>.
+        </p>
       </div>
+    </header>
 
-      <div class="cinema-bottom-meta m-mono">
-        <span>OPERADOR: {{ entrenador }}</span>
-        <span>•</span>
-        <span>PASES DISPONIBLES: {{ cartas().length }}</span>
-        <span>•</span>
-        <span>PIPELINE: PG16 → RABBITMQ → KAFKA</span>
+    @if (cargando()) {
+      <div class="m-panel empty-box">
+        <p class="m-mono">CONECTANDO CON BACKEND SPRING BOOT...</p>
       </div>
-    </div>
-  </section>
-
-  <!-- Barra de búsqueda y filtros por sector Matrix -->
-  <section class="m-panel filter-panel">
-    <div class="filter-top">
-      <div class="filter-heading">
-        <span class="m-mono filter-title">// TICKETS &amp; PASES DE ACCESO</span>
-        <span class="filter-count">{{ filtradas.length }} de {{ cartas().length }} disponibles</span>
-      </div>
-      <div class="filter-search">
-        <input
-          type="text"
-          class="m-input"
-          [(ngModel)]="busqueda"
-          (ngModelChange)="filtrar()"
-          placeholder="Buscar ticket por código o referencia..."
-          aria-label="Buscar ticket"
-        />
-      </div>
-    </div>
-
-    <div class="filter-chips" role="group" aria-label="Filtrar por sector Matrix">
-      <button type="button" class="m-btn m-btn-sm" [class.m-btn-primary]="tipoFiltro === '' && !soloHolo" (click)="filtrarElemento('')">
-        TODOS ({{ cartas().length }})
-      </button>
-      <button type="button" class="m-btn m-btn-sm" [class.m-btn-primary]="tipoFiltro.toLowerCase() === 'fire'" (click)="filtrarElemento('Fire')">
-        RED PILL
-      </button>
-      <button type="button" class="m-btn m-btn-sm" [class.m-btn-primary]="tipoFiltro.toLowerCase() === 'water'" (click)="filtrarElemento('Water')">
-        ZION
-      </button>
-      <button type="button" class="m-btn m-btn-sm" [class.m-btn-primary]="tipoFiltro.toLowerCase() === 'grass'" (click)="filtrarElemento('Grass')">
-        CONSTRUCT
-      </button>
-      <button type="button" class="m-btn m-btn-sm" [class.m-btn-primary]="tipoFiltro.toLowerCase() === 'lightning'" (click)="filtrarElemento('Lightning')">
-        NEBUCHADNEZZAR
-      </button>
-      <button type="button" class="m-btn m-btn-sm" [class.m-btn-primary]="tipoFiltro.toLowerCase() === 'psychic'" (click)="filtrarElemento('Psychic')">
-        ORACLE
-      </button>
-      <button type="button" class="m-btn m-btn-sm" [class.m-btn-warn]="soloHolo" (click)="toggleSoloHolo()">
-        {{ soloHolo ? '★ SOLO VIP (ON)' : '★ SOLO VIP' }}
-      </button>
-    </div>
-  </section>
-
-  <!-- Grid de Tickets Matrix (0% Pokémon) -->
-  @if (cargando()) {
-    <div class="m-panel empty-box">
-      <p class="m-mono">CARGANDO TICKETS DESDE POSTGRESQL...</p>
-    </div>
-  } @else if (paginaItems.length === 0) {
-    <div class="m-panel empty-box">
-      <p class="m-mono">SIN TICKETS PARA ESTE SECTOR.</p>
-      <button type="button" class="m-btn m-btn-primary" (click)="filtrarElemento(''); busqueda = ''; soloHolo = false">
-        MOSTRAR TODOS
-      </button>
-    </div>
-  } @else {
-    <div class="tickets-grid">
-      @for (carta of paginaItems; track carta.id) {
-        <article class="m-panel ticket-card" [class.ticket-vip]="esHolo(carta.rareza)">
-          <div class="ticket-head">
-            <span class="m-mono ticket-code">{{ codigoTicket(carta.id) }}</span>
-            <span class="m-mono ticket-tier" [class.is-vip]="esHolo(carta.rareza)">
-              {{ esHolo(carta.rareza) ? '★ VIP ACCESS' : '● STANDARD' }}
-            </span>
-          </div>
-
-          <!-- Arte geométrico / boleto digital Matrix -->
-          <div class="ticket-visual" (click)="verDetalle(carta)" role="button" tabindex="0" (keydown.enter)="verDetalle(carta)">
-            <div class="ticket-matrix-grid" aria-hidden="true"></div>
-            <div class="ticket-emblem">
-              <span class="m-mono emblem-sector">{{ sectorMatrix(carta.tipo) }}</span>
-              <span class="emblem-title">MATRIX PASS</span>
-              <span class="m-mono emblem-seq">AUTH // 0x{{ (carta.id * 7919).toString(16).slice(0, 6).toUpperCase() }}</span>
-            </div>
-            <div class="ticket-barcode" aria-hidden="true"></div>
-          </div>
-
-          <div class="ticket-body">
-            <div class="ticket-info-row">
-              <h3 class="ticket-name">{{ tituloTicket(carta) }}</h3>
-              <span class="m-mono ticket-price">{{ formatPrecio(carta.precio) }}</span>
+    } @else {
+      <div class="passes-grid">
+        @for (item of entradasDestacadas; track item.titulo) {
+          <article class="m-panel pass-card" [class.pass-vip]="item.tier === 'VIP ACCESS'">
+            <div class="pass-head">
+              <span class="m-mono pass-sector">{{ item.sector }}</span>
+              <span class="m-badge" [class.m-badge-warn]="item.tier === 'VIP ACCESS'">{{ item.tier }}</span>
             </div>
 
-            <div class="ticket-actions">
-              <button type="button" class="m-btn m-btn-primary ticket-buy-btn" (click)="comprarRapido(carta)" [disabled]="procesando()">
-                ▶ COMPRAR TICKET
-              </button>
-              <button type="button" class="m-btn m-btn-sm" (click)="verDetalle(carta)">
-                DETALLE
+            <div class="pass-body">
+              <h2 class="pass-title">{{ item.titulo }}</h2>
+              <p class="pass-desc">{{ item.subtitulo }}</p>
+            </div>
+
+            <div class="pass-foot">
+              <span class="m-mono pass-price">{{ formatPrecio(item.precio) }}</span>
+              <button type="button" class="m-btn m-btn-primary" (click)="comprarRapido(item.carta)" [disabled]="procesando()">
+                ▶ COMPRAR
               </button>
             </div>
+          </article>
+        }
+
+        <!-- 4ta opción: Pack de 5 tickets (dispara ráfaga real a las 3 particiones de Kafka) -->
+        <article class="m-panel pass-card pass-pack">
+          <div class="pass-head">
+            <span class="m-mono pass-sector">RED PILL // LOTE MULTI-PARTICIÓN</span>
+            <span class="m-badge">PACK x5</span>
+          </div>
+
+          <div class="pass-body">
+            <h2 class="pass-title">PACK x5 ENTRADAS MATRIX</h2>
+            <p class="pass-desc">Emite 5 eventos simultáneos distribuidos en P0, P1 y P2 de Apache Kafka.</p>
+          </div>
+
+          <div class="pass-foot">
+            <span class="m-mono pass-price">$ 35.000</span>
+            <button type="button" class="m-btn m-btn-primary" (click)="abrirSobre()" [disabled]="procesando()">
+              {{ procesando() ? 'EMITIENDO...' : '▶ EMITIR PACK x5' }}
+            </button>
           </div>
         </article>
-      }
-    </div>
+      </div>
+    }
+  </section>
 
-    <!-- Paginador -->
-    <div class="m-panel pager-bar">
-      <button type="button" class="m-btn m-btn-sm" (click)="cambiarPagina(-1)" [disabled]="pagina === 1">
-        ◄ ANTERIOR
-      </button>
-      <span class="m-mono pager-info">PÁGINA {{ pagina }} / {{ totalPaginas }}</span>
-      <button type="button" class="m-btn m-btn-sm" (click)="cambiarPagina(1)" [disabled]="pagina === totalPaginas">
-        SIGUIENTE ►
-      </button>
-    </div>
-  }
-</div>
-
-<!-- MODAL: LOTE DE 5 TICKETS GENERADOS -->
-@if (sobreAbierto()) {
-  <div class="m-modal-backdrop" (click)="cerrarModales()">
-    <div class="m-modal-dialog" (click)="$event.stopPropagation()" role="dialog" aria-modal="true" aria-label="Lote de tickets generado">
-      <div class="modal-header">
-        <div>
-          <h2 class="m-display modal-title">LOTE GENERADO // 5 TICKETS MATRIX</h2>
-          <p class="modal-sub">Órdenes persistidas en PostgreSQL y transmitidas por RabbitMQ y Kafka.</p>
-        </div>
-        <button type="button" class="m-btn m-btn-sm" (click)="cerrarModales()" aria-label="Cerrar">✕</button>
+  <!-- COLUMNA DERECHA: RASTREADOR EN VIVO + HISTORIAL EN POSTGRESQL -->
+  <aside class="tracker-col">
+    <!-- Rastreador End-to-End de la Última Transacción -->
+    <section class="m-panel tracker-panel" aria-live="polite">
+      <div class="tracker-head">
+        <span class="m-mono tracker-kicker">// RASTREADOR DE MENSAJE EN VIVO</span>
+        <span class="m-badge">{{ ultimaOrden() ? 'ORDEN #' + ultimaOrden()!.id : 'EN ESPERA' }}</span>
       </div>
 
-      <div class="pack-grid">
-        @for (c of sobreAbierto(); track $index) {
-          <div class="m-panel pack-card" [class.ticket-vip]="esHolo(c.rareza)">
-            <span class="m-mono pack-code">{{ codigoTicket(c.id) }}</span>
-            <p class="m-mono pack-name">{{ sectorMatrix(c.tipo) }}</p>
-            <span class="m-mono pack-tier" [class.is-vip]="esHolo(c.rareza)">
-              {{ esHolo(c.rareza) ? '★ VIP' : '● STD' }}
-            </span>
-            <span class="m-mono pack-price">{{ formatPrecio(c.precio) }}</span>
+      @if (!ultimaOrden()) {
+        <p class="tracker-empty">
+          Compra cualquier entrada a la izquierda para ver cómo viaja el mensaje paso a paso desde el Frontend hasta PostgreSQL, RabbitMQ y Apache Kafka.
+        </p>
+      } @else {
+        <div class="tracker-steps">
+          <div class="t-step done">
+            <span class="t-icon m-mono">✓</span>
+            <div>
+              <strong>1. Autenticación &amp; Gateway</strong>
+              <p>Validación JWT Entra ID → API Gateway AWS</p>
+            </div>
           </div>
-        }
-      </div>
 
-      <div class="modal-footer">
-        <button type="button" class="m-btn m-btn-primary" (click)="cerrarModales()">
-          CONFIRMAR Y CONTINUAR
-        </button>
-      </div>
-    </div>
-  </div>
-}
+          <div class="t-step done">
+            <span class="t-icon m-mono">✓</span>
+            <div>
+              <strong>2. Persistencia PostgreSQL 16</strong>
+              <p>Orden #{{ ultimaOrden()!.id }} guardada ({{ formatPrecio(ultimaOrden()!.total) }})</p>
+            </div>
+          </div>
 
-<!-- MODAL: DETALLE DE TICKET -->
-@if (cartaDetalle()) {
-  <div class="m-modal-backdrop" (click)="cerrarModales()">
-    <div class="m-modal-dialog modal-sm" (click)="$event.stopPropagation()" role="dialog" aria-modal="true" aria-label="Detalle del ticket">
-      <div class="modal-header">
-        <h2 class="m-display modal-title">INSPECCIÓN DE TICKET</h2>
-        <button type="button" class="m-btn m-btn-sm" (click)="cerrarModales()" aria-label="Cerrar">✕</button>
-      </div>
+          <div class="t-step done">
+            <span class="t-icon m-mono">✓</span>
+            <div>
+              <strong>3. Cola RabbitMQ (Resiliencia)</strong>
+              <p>Publicada en <code>orders.exchange → orders.queue</code> (con DLQ)</p>
+            </div>
+          </div>
 
-      <div class="detail-meta">
-        <span class="m-badge">{{ codigoTicket(cartaDetalle()!.id) }}</span>
-        <h3 class="detail-name">{{ tituloTicket(cartaDetalle()!) }}</h3>
-        <p class="detail-line">Sector asignado: <strong>{{ sectorMatrix(cartaDetalle()!.tipo) }}</strong></p>
-        <p class="detail-line">Nivel de acceso: <strong>{{ esHolo(cartaDetalle()!.rareza) ? 'VIP CONSTRUCT' : 'STANDARD ACCESS' }}</strong></p>
-        <p class="m-mono detail-price">{{ formatPrecio(cartaDetalle()!.precio) }}</p>
-      </div>
+          <div class="t-step done">
+            <span class="t-icon m-mono">✓</span>
+            <div>
+              <strong>4. Streaming Apache Kafka (3 Brokers)</strong>
+              <p>Emitida a <code>analytics.stream</code> (Partición P{{ ultimaParticion() }}) + <code>audit.stream</code></p>
+            </div>
+          </div>
+        </div>
+      }
+    </section>
 
-      <div class="modal-footer">
-        <button type="button" class="m-btn" (click)="cerrarModales()">CANCELAR</button>
-        <button type="button" class="m-btn m-btn-primary" (click)="comprar(cartaDetalle()!)" [disabled]="procesando()">
-          {{ procesando() ? 'PROCESANDO...' : 'CONFIRMAR COMPRA' }}
-        </button>
-      </div>
-    </div>
-  </div>
-}
-
-<!-- MODAL: HISTORIAL DE ÓRDENES -->
-@if (historialAbierto()) {
-  <div class="m-modal-backdrop" (click)="toggleHistorial()">
-    <div class="m-modal-dialog" (click)="$event.stopPropagation()" role="dialog" aria-modal="true" aria-label="Historial de tickets">
-      <div class="modal-header">
-        <h2 class="m-display modal-title">HISTORIAL DE TICKETS // POSTGRESQL</h2>
-        <button type="button" class="m-btn m-btn-sm" (click)="toggleHistorial()" aria-label="Cerrar">✕</button>
+    <!-- Historial reciente en PostgreSQL -->
+    <section class="m-panel history-panel">
+      <div class="tracker-head">
+        <span class="m-mono tracker-kicker">// ÚLTIMAS ÓRDENES (POSTGRESQL)</span>
+        <span class="m-mono history-count">{{ ordenes().length }} REGISTROS</span>
       </div>
 
       @if (ordenes().length === 0) {
-        <p class="empty-msg">No hay tickets emitidos aún. Genera un lote o adquiere un pase.</p>
+        <p class="tracker-empty">Aún no hay órdenes registradas en esta sesión.</p>
       } @else {
         <div class="table-wrap">
           <table class="m-table">
             <thead>
               <tr>
-                <th>ORDEN</th>
+                <th>ID</th>
                 <th>SECTOR</th>
                 <th>TOTAL</th>
                 <th>ESTADO</th>
@@ -249,6 +148,35 @@
           </table>
         </div>
       }
+    </section>
+  </aside>
+</div>
+
+<!-- MODAL: PACK x5 EMITIDO -->
+@if (sobreAbierto()) {
+  <div class="m-modal-backdrop" (click)="cerrarModales()">
+    <div class="m-modal-dialog" (click)="$event.stopPropagation()" role="dialog" aria-modal="true" aria-label="Pack de 5 tickets emitido">
+      <div class="modal-header">
+        <div>
+          <h2 class="m-display modal-title">PACK x5 EMITIDO // KAFKA STREAMING</h2>
+          <p class="modal-sub">5 eventos particionados en tiempo real sobre los 3 brokers.</p>
+        </div>
+        <button type="button" class="m-btn m-btn-sm" (click)="cerrarModales()" aria-label="Cerrar">✕</button>
+      </div>
+
+      <div class="pack-grid">
+        @for (c of sobreAbierto(); track $index) {
+          <div class="m-panel pack-card">
+            <span class="m-mono pack-code">{{ codigoTicket(c.id) }}</span>
+            <p class="m-mono pack-name">{{ sectorMatrix(c.tipo) }}</p>
+            <span class="m-mono pack-price">{{ formatPrecio(c.precio) }}</span>
+          </div>
+        }
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="m-btn m-btn-primary" (click)="cerrarModales()">ENTENDIDO</button>
+      </div>
     </div>
   </div>
 }

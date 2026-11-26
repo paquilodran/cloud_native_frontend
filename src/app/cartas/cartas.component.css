@@ -1,423 +1,229 @@
-.vault-stack {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-/* ========================================================================== */
-/* HERO CINEMATOGRÁFICO IDÉNTICO A "Matrix Visual Redesign"                   */
-/* ========================================================================== */
-.matrix-cinema-hero {
-  position: relative;
-  min-height: 500px;
-  border: 1px solid rgba(0, 255, 65, 0.35);
-  border-radius: 4px;
-  overflow: hidden;
-  background-color: #000000;
-  display: flex;
-  align-items: stretch;
-  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.85), 0 0 24px rgba(0, 255, 65, 0.12);
-}
-
-.mx-enter-hero__photo {
-  position: absolute;
-  inset: 0;
-  background: url('/matrix-hero-bg.png') 68% center / cover no-repeat;
-  mix-blend-mode: screen;
-  opacity: 0.88;
-  pointer-events: none;
-}
-
-.hero-blinds {
-  position: absolute;
-  inset: 0;
-  background-image:
-    repeating-linear-gradient(
-      180deg,
-      rgba(0, 0, 0, 0) 0px,
-      rgba(0, 0, 0, 0) 2px,
-      rgba(0, 12, 6, 0.5) 2px,
-      rgba(0, 12, 6, 0.5) 4px
-    ),
-    linear-gradient(90deg, rgba(0, 6, 2, 0.82) 0%, rgba(0, 10, 4, 0.45) 48%, rgba(0, 8, 3, 0.14) 100%);
-  pointer-events: none;
-}
-
-.mx-enter-hero__axis {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 33.5%;
-  width: 1px;
-  background: rgba(255, 255, 255, 0.35);
-  pointer-events: none;
-}
-
-.hero-lens-flare {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 64%;
-  height: 2px;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(0, 255, 128, 0.35) 28%,
-    rgba(210, 255, 230, 0.85) 54%,
-    rgba(0, 255, 128, 0.28) 80%,
-    transparent 100%
-  );
-  box-shadow: 0 0 18px rgba(0, 255, 128, 0.5);
-  pointer-events: none;
-}
-
-.cinema-hero-content {
-  position: relative;
-  z-index: 2;
-  width: 100%;
-  padding: 48px 40px 28px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  gap: 28px;
-}
-
-.cinema-title-block {
-  max-width: 560px;
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-  margin-top: 24px;
-}
-
-.cinema-heading {
-  display: flex;
-  flex-direction: column;
-  line-height: 1.02;
-  font-family: 'Outfit', 'Inter', sans-serif;
-}
-
-.cinema-enter {
-  font-weight: 200;
-  font-size: clamp(28px, 3.6vw, 44px);
-  letter-spacing: 0.06em;
-  color: #E8FFED;
-}
-
-.cinema-matrix {
-  font-weight: 300;
-  font-size: clamp(50px, 7.2vw, 88px);
-  letter-spacing: 0.14em;
-  color: #FFFFFF;
-  text-shadow: 0 0 28px rgba(0, 255, 65, 0.26);
-}
-
-/* Línea vertical + botones circulares estilo "Watch trailer" / "Buy tickets" */
-.cinema-cta-rail {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 14px;
-  padding-left: 8px;
-}
-
-.rail-line {
-  position: absolute;
-  left: 244px;
-  top: -12px;
-  bottom: -24px;
-  width: 1px;
-  background: linear-gradient(
-    to bottom,
-    rgba(255, 255, 255, 0.1) 0%,
-    rgba(255, 255, 255, 0.55) 40%,
-    rgba(0, 255, 65, 0.45) 100%
-  );
-  pointer-events: none;
-}
-
-.cinema-cta-row {
-  position: relative;
-  z-index: 1;
-  width: 256px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 14px;
-  background: transparent;
-  border: 0;
-  padding: 4px 0;
-  color: #FFFFFF;
-  cursor: pointer;
-  transition: transform 0.18s ease, color 0.18s ease;
-}
-
-.cinema-cta-row:hover:not(:disabled) {
-  color: #00FF41;
-  transform: translateX(3px);
-}
-
-.cinema-cta-row:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.cinema-cta-label {
-  font-size: 14px;
-  font-weight: 400;
-  letter-spacing: 0.04em;
-}
-
-.cinema-cta-circle {
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  border: 1.5px solid #FFFFFF;
-  background: rgba(0, 0, 0, 0.65);
-  color: #FFFFFF;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  flex-shrink: 0;
-  transition: all 0.2s ease;
-}
-
-.cinema-cta-row:hover:not(:disabled) .cinema-cta-circle {
-  border-color: #00FF41;
-  background: #00FF41;
-  color: #000000;
-  box-shadow: 0 0 16px rgba(0, 255, 65, 0.65);
-}
-
-.cinema-bottom-meta {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  font-size: 12px;
-  color: #98C9A3;
-}
-
-/* ========================================================================== */
-/* FILTROS Y GRID DE TICKETS MATRIX                                           */
-/* ========================================================================== */
-.filter-panel {
-  padding: 16px 18px;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.filter-top {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-  flex-wrap: wrap;
-}
-
-.filter-heading {
-  display: flex;
-  align-items: baseline;
-  gap: 12px;
-}
-
-.filter-title {
-  font-size: 14px;
-  color: #00FF41;
-}
-
-.filter-count {
-  font-size: 13px;
-  color: #98C9A3;
-}
-
-.filter-search {
-  flex: 1;
-  min-width: 240px;
-  max-width: 440px;
-}
-
-.filter-chips {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.tickets-grid {
+.taquilla-layout {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  grid-template-columns: 1.25fr 1fr;
+  gap: 20px;
+  align-items: start;
+}
+
+.taquilla-col,
+.tracker-col {
+  display: flex;
+  flex-direction: column;
   gap: 16px;
 }
 
-.ticket-card {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+.section-banner {
+  padding: 20px 22px;
 }
 
-.ticket-card:hover {
-  transform: translateY(-3px);
-  border-color: #00FF41;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7), 0 0 16px rgba(0, 255, 65, 0.25);
-}
-
-.ticket-vip {
-  border-color: rgba(255, 179, 0, 0.65);
-}
-
-.ticket-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 12px;
-  background: rgba(0, 10, 4, 0.92);
-  border-bottom: 1px solid rgba(0, 255, 65, 0.2);
-  font-size: 11px;
-}
-
-.ticket-code {
+.banner-kicker {
+  font-size: 12px;
   color: #00FF41;
+  display: block;
+  margin-bottom: 4px;
 }
 
-.ticket-tier {
-  color: #98C9A3;
+.banner-title {
+  font-size: 22px;
+  margin-bottom: 6px;
 }
 
-.ticket-tier.is-vip,
-.pack-tier.is-vip {
-  color: #FFD166;
+.banner-sub {
+  font-size: 14px;
+  color: #B8E8C2;
 }
 
-.ticket-visual {
-  position: relative;
-  padding: 20px 16px 14px;
-  background: linear-gradient(145deg, rgba(0, 22, 10, 0.92), rgba(0, 8, 3, 0.96));
-  cursor: pointer;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
+.passes-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
   gap: 14px;
 }
 
-.ticket-matrix-grid {
-  position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(rgba(0, 255, 65, 0.06) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 255, 65, 0.06) 1px, transparent 1px);
-  background-size: 18px 18px;
-  pointer-events: none;
-}
-
-.ticket-emblem {
-  position: relative;
-  z-index: 1;
+.pass-card {
+  padding: 18px;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  justify-content: space-between;
+  gap: 16px;
+  transition: border-color 0.2s ease, transform 0.18s ease, box-shadow 0.2s ease;
 }
 
-.emblem-sector {
-  font-size: 11px;
-  color: #00FF41;
-  letter-spacing: 0.14em;
+.pass-card:hover {
+  transform: translateY(-2px);
+  border-color: #00FF41;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7), 0 0 18px rgba(0, 255, 65, 0.2);
 }
 
-.emblem-title {
-  font-weight: 300;
-  font-size: 20px;
-  letter-spacing: 0.14em;
-  color: #FFFFFF;
+.pass-vip {
+  border-color: rgba(255, 179, 0, 0.6);
 }
 
-.emblem-seq {
+.pass-pack {
+  border-color: rgba(0, 255, 65, 0.65);
+  background: rgba(0, 28, 12, 0.86);
+}
+
+.pass-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.pass-sector {
   font-size: 11px;
   color: #88C597;
 }
 
-.ticket-barcode {
-  position: relative;
-  z-index: 1;
-  height: 18px;
-  background: repeating-linear-gradient(
-    90deg,
-    rgba(0, 255, 65, 0.55) 0px,
-    rgba(0, 255, 65, 0.55) 2px,
-    transparent 2px,
-    transparent 5px,
-    rgba(0, 255, 65, 0.35) 5px,
-    rgba(0, 255, 65, 0.35) 6px,
-    transparent 6px,
-    transparent 10px
-  );
-  opacity: 0.7;
+.pass-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
-.ticket-body {
-  padding: 12px;
+.pass-title {
+  font-size: 17px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: #FFFFFF;
+}
+
+.pass-desc {
+  font-size: 13px;
+  color: #B8E8C2;
+  line-height: 1.45;
+}
+
+.pass-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(0, 255, 65, 0.18);
+}
+
+.pass-price {
+  font-size: 18px;
+  color: #00FF41;
+}
+
+/* Rastreador End-to-End */
+.tracker-panel,
+.history-panel {
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.tracker-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.tracker-kicker {
+  font-size: 12px;
+  color: #00FF41;
+}
+
+.history-count {
+  font-size: 12px;
+  color: #98C9A3;
+}
+
+.tracker-empty {
+  font-size: 14px;
+  color: #98C9A3;
+  line-height: 1.5;
+  padding: 8px 0;
+}
+
+.tracker-steps {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  border-top: 1px dashed rgba(0, 255, 65, 0.3);
 }
 
-.ticket-info-row {
+.t-step {
   display: flex;
-  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 12px;
+  background: rgba(0, 10, 4, 0.85);
+  border: 1px solid rgba(0, 255, 65, 0.28);
+  border-left: 3px solid #00FF41;
+  border-radius: 2px;
+}
+
+.t-icon {
+  width: 24px;
+  height: 24px;
+  display: inline-flex;
   align-items: center;
-  gap: 8px;
-}
-
-.ticket-name {
-  font-size: 13px;
-  font-weight: 600;
-  color: #E8FFED;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.ticket-price {
-  font-size: 14px;
+  justify-content: center;
+  background: rgba(0, 255, 65, 0.18);
   color: #00FF41;
+  border: 1px solid #00FF41;
+  font-size: 13px;
   flex-shrink: 0;
 }
 
-.ticket-actions {
-  display: flex;
-  gap: 8px;
+.t-step strong {
+  display: block;
+  font-size: 14px;
+  color: #E8FFED;
+  margin-bottom: 2px;
 }
 
-.ticket-buy-btn {
-  flex: 1;
-}
-
-.pager-bar {
-  padding: 12px 16px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-}
-
-.pager-info {
+.t-step p {
   font-size: 13px;
+  color: #B8E8C2;
+}
+
+.t-step code {
+  color: #00FF41;
+  font-family: var(--font-code);
+  font-size: 12px;
+}
+
+.table-wrap {
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.m-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 13px;
+}
+
+.m-table th {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: #00FF41;
+  padding: 8px 6px;
+  border-bottom: 1px solid rgba(0, 255, 65, 0.35);
+}
+
+.m-table td {
+  padding: 8px 6px;
+  border-bottom: 1px solid rgba(0, 255, 65, 0.12);
   color: #D7FFE0;
+}
+
+.price-col {
+  color: #00FF41;
 }
 
 .empty-box {
   padding: 36px 20px;
   text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 14px;
 }
 
-/* Modales */
 .modal-header {
   display: flex;
   justify-content: space-between;
@@ -438,132 +244,38 @@
   margin-top: 4px;
 }
 
-.modal-sm {
-  max-width: 480px;
-}
-
 .pack-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 12px;
-  margin-bottom: 18px;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 10px;
+  margin-bottom: 16px;
 }
 
 .pack-card {
-  padding: 14px 10px;
+  padding: 12px 8px;
   text-align: center;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 6px;
+  gap: 4px;
 }
 
-.pack-code {
-  font-size: 11px;
-  color: #00FF41;
-}
-
-.pack-name {
-  font-size: 13px;
-  color: #FFFFFF;
-}
-
-.pack-tier {
-  font-size: 11px;
-  color: #98C9A3;
-}
-
-.pack-price {
-  font-size: 13px;
-  color: #00FF41;
-}
-
-.detail-meta {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 10px;
-  margin-bottom: 18px;
-}
-
-.detail-name {
-  font-size: 20px;
-  color: #FFFFFF;
-}
-
-.detail-line {
-  font-size: 14px;
-  color: #C4F2CE;
-}
-
-.detail-price {
-  font-size: 20px;
-  color: #00FF41;
-}
+.pack-code { font-size: 11px; color: #00FF41; }
+.pack-name { font-size: 12px; color: #FFFFFF; }
+.pack-price { font-size: 12px; color: #00FF41; }
 
 .modal-footer {
   display: flex;
   justify-content: flex-end;
-  gap: 10px;
 }
 
-.table-wrap {
-  max-height: 380px;
-  overflow-y: auto;
-}
-
-.m-table {
-  width: 100%;
-  border-collapse: collapse;
-  text-align: left;
-  font-size: 14px;
-}
-
-.m-table th {
-  font-family: var(--font-mono);
-  font-size: 12px;
-  color: #00FF41;
-  padding: 10px 8px;
-  border-bottom: 1px solid rgba(0, 255, 65, 0.35);
-}
-
-.m-table td {
-  padding: 10px 8px;
-  border-bottom: 1px solid rgba(0, 255, 65, 0.12);
-  color: #D7FFE0;
-}
-
-.price-col {
-  color: #00FF41;
-}
-
-.empty-msg {
-  text-align: center;
-  padding: 24px;
-  color: #98C9A3;
-}
-
-@media (max-width: 768px) {
-  .matrix-cinema-hero {
-    min-height: 390px;
-    background-position: 68% center;
+@media (max-width: 960px) {
+  .taquilla-layout {
+    grid-template-columns: 1fr;
   }
+}
 
-  .cinema-hero-content {
-    padding: 20px 18px;
-  }
-
-  .rail-line {
-    display: none;
-  }
-
-  .cinema-cta-row {
-    width: auto;
-    justify-content: flex-start;
-    flex-direction: row-reverse;
-  }
-
-  .tickets-grid {
+@media (max-width: 640px) {
+  .passes-grid {
     grid-template-columns: 1fr;
   }
 }

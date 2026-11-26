@@ -365,3 +365,217 @@
     grid-template-columns: repeat(2, 1fr);
   }
 }
+
+/* ========================================================================== */
+/* HERO FULL-BLEED "Enter the MATRIX" — IMAGEN COMPLETA SIN RECORTES          */
+/* ========================================================================== */
+.full-matrix-hero {
+  position: relative;
+  width: 100%;
+  min-height: calc(100vh - 64px);
+  background: #000000;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.fmh-photo {
+  position: absolute;
+  inset: 0;
+  background: url('/matrix-hero-bg.png') center center / contain no-repeat;
+  mix-blend-mode: screen;
+  opacity: 0.92;
+  pointer-events: none;
+}
+
+.fmh-blinds {
+  position: absolute;
+  inset: 0;
+  background-image:
+    repeating-linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0) 0px,
+      rgba(0, 0, 0, 0) 2px,
+      rgba(0, 12, 6, 0.45) 2px,
+      rgba(0, 12, 6, 0.45) 4px
+    ),
+    radial-gradient(circle at 60% 48%, rgba(0, 255, 106, 0.12), transparent 62%);
+  pointer-events: none;
+}
+
+.fmh-axis {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 33.5%;
+  width: 1px;
+  background: rgba(255, 255, 255, 0.34);
+  pointer-events: none;
+}
+
+.fmh-flare {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 63%;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(0, 255, 128, 0.3) 28%,
+    rgba(210, 255, 230, 0.85) 54%,
+    rgba(0, 255, 128, 0.25) 80%,
+    transparent 100%
+  );
+  box-shadow: 0 0 18px rgba(0, 255, 128, 0.48);
+  pointer-events: none;
+}
+
+.fmh-inner {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  width: 100%;
+  max-width: 1380px;
+  margin: 0 auto;
+  padding: 40px 44px 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.fmh-center {
+  margin: auto 0;
+  max-width: 560px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.fmh-titles {
+  font-family: 'Outfit', 'Inter', sans-serif;
+  line-height: 1.02;
+}
+
+.fmh-kicker {
+  font-weight: 200;
+  font-size: clamp(30px, 3.8vw, 48px);
+  letter-spacing: 0.06em;
+  color: #E8FFED;
+}
+
+.fmh-title {
+  font-weight: 300;
+  font-size: clamp(56px, 8vw, 98px);
+  letter-spacing: 0.14em;
+  color: #FFFFFF;
+  text-shadow: 0 0 30px rgba(0, 255, 65, 0.28);
+}
+
+.fmh-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.fmh-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  background: transparent;
+  border: 0;
+  padding: 4px 0;
+  color: #FFFFFF;
+  cursor: pointer;
+  transition: color 0.18s ease, transform 0.18s ease;
+}
+
+.fmh-cta:hover {
+  color: #00FF41;
+  transform: translateX(4px);
+}
+
+.fmh-cta-label {
+  font-size: 15px;
+  letter-spacing: 0.04em;
+}
+
+.fmh-circle {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1.4px solid rgba(255, 255, 255, 0.88);
+  background: rgba(2, 16, 9, 0.88);
+  color: #FFFFFF;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  transition: all 0.2s ease;
+}
+
+.fmh-cta:hover .fmh-circle {
+  border-color: #00FF41;
+  background: #00FF41;
+  color: #000000;
+  box-shadow: 0 0 18px rgba(0, 255, 65, 0.65);
+}
+
+.fmh-arch-strip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 10px 16px;
+  background: rgba(0, 12, 5, 0.72);
+  border: 1px solid rgba(0, 255, 65, 0.25);
+  backdrop-filter: blur(8px);
+  font-size: 12px;
+  color: #B8E8C2;
+}
+
+.arch-arrow {
+  color: #00FF41;
+}
+
+.arch-warn {
+  color: #FFD166;
+}
+
+.arch-danger {
+  color: #FF7A90;
+}
+
+/* Sub-selector Mensajería */
+.subtabs-bar {
+  padding: 12px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.subtabs-group,
+.subtabs-links {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+  .fmh-axis {
+    display: none;
+  }
+
+  .fmh-photo {
+    background-size: cover;
+    background-position: 68% center;
+  }
+
+  .fmh-inner {
+    padding: 24px 18px 18px;
+  }
+}

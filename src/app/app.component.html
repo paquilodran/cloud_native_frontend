@@ -11,7 +11,7 @@
     <!-- Header fijo minimalista, limpio y ordenado (sin Warner Bros ni redes sociales) -->
     <header class="matrix-header" role="banner">
       <div class="matrix-header-inner">
-        <div class="matrix-brand" (click)="irATab('mochila')" role="button" tabindex="0" (keydown.enter)="irATab('mochila')">
+        <div class="matrix-brand" (click)="irATab('inicio')" role="button" tabindex="0" (keydown.enter)="irATab('inicio')">
           <span class="matrix-logo-mark" aria-hidden="true">M//</span>
           <div class="matrix-brand-text">
             <span class="matrix-brand-title">ENTER THE MATRIX</span>
@@ -19,23 +19,23 @@
           </div>
         </div>
 
-        <!-- 4 Pestañas principales (atajos 1-4) -->
+        <!-- 4 Pestañas principales limpias y ordenadas (atajos 1-4) -->
         <nav class="matrix-nav" role="tablist" aria-label="Navegación principal">
-          <button type="button" role="tab" class="matrix-nav-tab" [class.active]="currentTab === 'mochila'" [attr.aria-selected]="currentTab === 'mochila'" (click)="irATab('mochila')">
+          <button type="button" role="tab" class="matrix-nav-tab" [class.active]="currentTab === 'inicio'" [attr.aria-selected]="currentTab === 'inicio'" (click)="irATab('inicio')">
             <span class="tab-key">1</span>
-            <span>INICIO / TICKETS</span>
+            <span>INICIO</span>
           </button>
-          <button type="button" role="tab" class="matrix-nav-tab" [class.active]="currentTab === 'kafka'" [attr.aria-selected]="currentTab === 'kafka'" (click)="irATab('kafka')">
+          <button type="button" role="tab" class="matrix-nav-tab" [class.active]="currentTab === 'taquilla'" [attr.aria-selected]="currentTab === 'taquilla'" (click)="irATab('taquilla')">
             <span class="tab-key">2</span>
-            <span>CLÚSTER KAFKA</span>
+            <span>TAQUILLA / ÓRDENES</span>
           </button>
-          <button type="button" role="tab" class="matrix-nav-tab" [class.active]="currentTab === 'rabbitmq'" [attr.aria-selected]="currentTab === 'rabbitmq'" (click)="irATab('rabbitmq')">
+          <button type="button" role="tab" class="matrix-nav-tab" [class.active]="currentTab === 'mensajeria'" [attr.aria-selected]="currentTab === 'mensajeria'" (click)="irATab('mensajeria')">
             <span class="tab-key">3</span>
-            <span>RABBITMQ</span>
+            <span>KAFKA &amp; RABBITMQ</span>
           </button>
-          <button type="button" role="tab" class="matrix-nav-tab" [class.active]="currentTab === 'entrenador'" [attr.aria-selected]="currentTab === 'entrenador'" (click)="irATab('entrenador')">
+          <button type="button" role="tab" class="matrix-nav-tab" [class.active]="currentTab === 'sistema'" [attr.aria-selected]="currentTab === 'sistema'" (click)="irATab('sistema')">
             <span class="tab-key">4</span>
-            <span>SISTEMA AWS / JWT</span>
+            <span>PERFIL &amp; AWS</span>
           </button>
         </nav>
 
@@ -44,7 +44,7 @@
           <button type="button" class="matrix-status-pill"
                   [class.warn]="brokersOnlineCount === 2"
                   [class.danger]="brokersOnlineCount < 2"
-                  (click)="irATab('kafka')"
+                  (click)="irATab('mensajeria')"
                   role="status"
                   aria-live="polite"
                   title="Estado de los 3 brokers Kafka">
@@ -68,8 +68,8 @@
       </div>
     </header>
 
-    <!-- Contenido principal por encima del canvas -->
-    <main class="matrix-main" role="main">
+    <!-- Contenido principal (full-bleed en Inicio para mostrar la imagen completa de Matrix) -->
+    <main class="matrix-main" [class.matrix-main--fullbleed]="currentTab === 'inicio'" role="main">
       <router-outlet />
     </main>
   </div>

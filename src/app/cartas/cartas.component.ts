@@ -27,6 +27,8 @@ export class CartasComponent implements OnInit {
   readonly cartaDetalle = signal<Carta | null>(null);
   readonly cantidad = signal(1);
   readonly historialAbierto = signal(false);
+  readonly ultimaOrden = signal<Orden | null>(null);
+  readonly ultimaParticion = signal<number>(1);
 
   readonly colorTipo = colorTipo;
   readonly esHolo = esHolo;
@@ -141,15 +143,28 @@ export class CartasComponent implements OnInit {
     this.pagina = Math.min(this.totalPaginas, Math.max(1, this.pagina + delta));
   }
 
+  get entradasDestacadas(): Array<{ titulo: string; subtitulo: string; sector: string; tier: string; precio: number; carta: Carta }> {
+    const lista = this.cartas();
+    if (lista.length === 0) return [];
+    const pick = (idx: number) => lista[idx % lista.length];
+    return [
+      { titulo: 'ENTRADA STANDARD', subtitulo: 'Acceso general sala principal · 1 ticket', sector: 'ZION // SALA 01', tier: 'STANDARD', precio: 8500, carta: pick(4) },
+      { titulo: 'ENTRADA IMAX 3D', subtitulo: 'Proyección inmersiva 4K + audio Dolby', sector: 'NEBUCHADNEZZAR // IMAX', tier: 'IMAX', precio: 14000, carta: pick(1) },
+      { titulo: 'PASE VIP CONSTRUCT', subtitulo: 'Butaca preferencial + acceso prioritario', sector: 'CONSTRUCT // VIP', tier: 'VIP ACCESS', precio: 25000, carta: pick(0) }
+    ];
+  }
+
   comprarRapido(carta: Carta): void {
     if (this.procesando()) return;
     this.procesando.set(true);
     this.cartasService.comprar(carta, 1, this.entrenador).subscribe({
       next: (orden) => {
         this.procesando.set(false);
+        this.ultimaOrden.set(orden);
+        this.ultimaParticion.set((orden.id ?? 1) % 3);
         this.notifications.notify(
-          '¡Compra Exitosa!',
-          `Compraste 1 x ${carta.nombre} (Orden #${orden.id}). Evento emitido a Kafka y RabbitMQ.`,
+          'Ticket emitido',
+          `Orden #${orden.id} guardada en PostgreSQL y enviada a RabbitMQ + Kafka (P${(orden.id ?? 1) % 3}).`,
           'success',
           'CARTAS'
         );
@@ -185,9 +200,11 @@ export class CartasComponent implements OnInit {
     this.cartasService.abrirSobre(this.entrenador).subscribe((res) => {
       this.procesando.set(false);
       this.sobreAbierto.set(res.cartas);
+      this.ultimaOrden.set(res.orden);
+      this.ultimaParticion.set((res.orden.id ?? 2) % 3);
       this.notifications.notify(
-        'Sobre abierto',
-        `Orden #${res.orden.id}: ${res.cartas.length} cartas emitidas a Kafka (analitica por tipo).`,
+        'Pack x5 emitido',
+        `Orden #${res.orden.id}: 5 tickets enviados a RabbitMQ y particionados en Kafka.`,
         'success',
         'CARTAS'
       );

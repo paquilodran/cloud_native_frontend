@@ -31,8 +31,8 @@ export class AppComponent implements OnInit {
   // Estado visual global para lluvia Matrix y navegación
   activeBrokerIds: number[] = [1, 2, 3];
   balance = 185000;
-  readonly tabs = ['mochila', 'kafka', 'rabbitmq', 'entrenador'];
-  currentTab = 'mochila';
+  readonly tabs = ['inicio', 'taquilla', 'mensajeria', 'sistema'];
+  currentTab = 'inicio';
 
   totalOrdenes = 3;
   autenticado = false;
@@ -109,10 +109,10 @@ export class AppComponent implements OnInit {
   onGlobalKeyDown(event: KeyboardEvent): void {
     if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement) return;
 
-    if (event.key === '1') this.irATab('mochila');
-    if (event.key === '2') this.irATab('kafka');
-    if (event.key === '3') this.irATab('rabbitmq');
-    if (event.key === '4') this.irATab('entrenador');
+    if (event.key === '1') this.irATab('inicio');
+    if (event.key === '2') this.irATab('taquilla');
+    if (event.key === '3') this.irATab('mensajeria');
+    if (event.key === '4') this.irATab('sistema');
     if (event.key === 'l' || event.key === 'L') this.prevTab();
     if (event.key === 'r' || event.key === 'R') this.nextTab();
 
@@ -182,9 +182,14 @@ export class AppComponent implements OnInit {
     const match = url.match(/[?&]tab=([^&]+)/);
     if (match) {
       const tab = decodeURIComponent(match[1]);
-      if (tab === 'inicio') this.currentTab = 'mochila';
-      else if (tab === 'dashboard') this.currentTab = 'entrenador';
+      if (tab === 'mochila') this.currentTab = 'taquilla';
+      else if (tab === 'kafka' || tab === 'rabbitmq') this.currentTab = 'mensajeria';
+      else if (tab === 'entrenador' || tab === 'dashboard') this.currentTab = 'sistema';
       else if (this.tabs.includes(tab)) this.currentTab = tab;
+    } else if (url.startsWith('/cartas')) {
+      this.currentTab = 'taquilla';
+    } else {
+      this.currentTab = 'inicio';
     }
   }
 

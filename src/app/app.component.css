@@ -419,3 +419,8 @@
   padding-top: 8px;
   border-top: 1px solid rgba(0, 255, 65, 0.2);
 }
+
+.matrix-main--fullbleed {
+  max-width: none !important;
+  padding: 0 !important;
+}
