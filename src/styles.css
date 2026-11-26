@@ -1,36 +1,42 @@
 :root {
-  --bg: #F4F5FB;
-  --surface: #FFFFFF;
-  --text: #111827;
-  --muted: #667085;
-  --line: #E5E7EB;
-  --blue: #3B4CCA;
-  --blue-soft: #E9ECFB;
-  --success: #12B76A;
-  --success-soft: #ECFDF3;
-  --danger: #F04438;
-  --danger-soft: #FEF3F2;
-  --warning: #F79009;
-  --warning-soft: #FFFAEB;
-  --info-soft: #EFF8FF;
-  --shadow: 0 1px 2px rgba(16, 24, 40, 0.05), 0 1px 3px rgba(16, 24, 40, 0.04);
-  --radius: 12px;
-  --sidebar: 248px;
-  --header: 72px;
-  --font: Inter, "Segoe UI", sans-serif;
+  --m-bg: #000000;
+  --m-panel: rgba(0, 18, 8, 0.82);
+  --m-panel-strong: rgba(0, 22, 10, 0.92);
+  --m-panel-hover: rgba(0, 34, 14, 0.88);
+  --m-border: rgba(0, 255, 65, 0.35);
+  --m-border-strong: rgba(0, 255, 65, 0.72);
+  --m-green: #00FF41;
+  --m-green-dim: #00B32C;
+  --m-green-dark: #003B0F;
+  --m-text: #D7FFE0;
+  --m-text-muted: #98C9A3;
+  --m-red: #FF1744;
+  --m-red-soft: rgba(255, 23, 68, 0.14);
+  --m-red-border: rgba(255, 23, 68, 0.65);
+  --m-warn: #FFB300;
+  --m-warn-soft: rgba(255, 179, 0, 0.14);
+  --m-glow: 0 0 14px rgba(0, 255, 65, 0.18);
+  --m-glow-red: 0 0 16px rgba(255, 23, 68, 0.32);
+
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'Share Tech Mono', 'JetBrains Mono', monospace;
+  --font-code: 'JetBrains Mono', 'Share Tech Mono', monospace;
 }
 
-* { box-sizing: border-box; }
+* {
+  box-sizing: border-box;
+}
 
 html,
 body {
   margin: 0;
   min-height: 100%;
-  font-family: var(--font);
-  background: var(--bg);
-  color: var(--text);
-  font-size: 15px;
-  line-height: 1.5;
+  background: var(--m-bg);
+  color: var(--m-text);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
 }
 
 button,
@@ -39,357 +45,315 @@ select {
   font-family: inherit;
 }
 
-a { color: inherit; text-decoration: none; }
-
-h1, h2, h3, p { margin: 0; }
-
-.card {
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
+a {
+  color: inherit;
+  text-decoration: none;
 }
 
-.btn {
+h1, h2, h3, p {
+  margin: 0;
+}
+
+:focus-visible {
+  outline: 2px solid var(--m-green);
+  outline-offset: 2px;
+}
+
+/* Tipografías Matrix */
+.m-display {
+  font-family: var(--font-sans);
+  font-weight: 300;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #E8FFED;
+}
+
+.m-mono {
+  font-family: var(--font-mono);
+  letter-spacing: 0.05em;
+}
+
+.m-code {
+  font-family: var(--font-code);
+}
+
+/* Paneles vidrio oscuro estilo Matrix */
+.m-panel {
+  background: var(--m-panel);
+  border: 1px solid var(--m-border);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: var(--m-glow);
+  border-radius: 4px;
+}
+
+.m-panel-danger {
+  background: rgba(28, 4, 10, 0.86);
+  border: 1px solid var(--m-red-border);
+  box-shadow: var(--m-glow-red);
+}
+
+.m-panel-warn {
+  background: rgba(26, 18, 2, 0.85);
+  border: 1px solid rgba(255, 179, 0, 0.55);
+}
+
+/* Botones de contorno fino estilo "Enter the MATRIX" */
+.m-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  border: 1px solid transparent;
-  border-radius: 10px;
-  padding: 10px 16px;
-  font-size: 14px;
-  font-weight: 600;
+  padding: 9px 16px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--m-green);
+  background: rgba(0, 20, 8, 0.65);
+  border: 1px solid var(--m-border-strong);
+  border-radius: 2px;
   cursor: pointer;
-  background: transparent;
-  color: var(--text);
+  transition: background 0.18s ease, color 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+  user-select: none;
 }
 
-.btn:disabled {
+.m-btn:hover:not(:disabled) {
+  background: var(--m-green);
+  color: #000000;
+  box-shadow: 0 0 16px rgba(0, 255, 65, 0.45);
+}
+
+.m-btn:disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+}
+
+.m-btn-primary {
+  background: rgba(0, 255, 65, 0.14);
+  border-color: var(--m-green);
+  color: #E8FFED;
+  box-shadow: 0 0 12px rgba(0, 255, 65, 0.25);
+}
+
+.m-btn-primary:hover:not(:disabled) {
+  background: var(--m-green);
+  color: #000000;
+}
+
+.m-btn-danger {
+  color: #FF6B84;
+  border-color: var(--m-red-border);
+  background: rgba(255, 23, 68, 0.1);
+}
+
+.m-btn-danger:hover:not(:disabled) {
+  background: var(--m-red);
+  color: #FFFFFF;
+  box-shadow: 0 0 16px rgba(255, 23, 68, 0.55);
+}
+
+.m-btn-warn {
+  color: #FFD166;
+  border-color: rgba(255, 179, 0, 0.65);
+  background: rgba(255, 179, 0, 0.1);
+}
+
+.m-btn-warn:hover:not(:disabled) {
+  background: var(--m-warn);
+  color: #000000;
+}
+
+.m-btn-sm {
+  padding: 6px 11px;
+  font-size: 12px;
+}
+
+/* Botón cinematográfico con ícono circular (inspirado en "Watch trailer" / "Buy tickets") */
+.m-cta-circle {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 14px 8px 18px;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  color: #E8FFED;
+  background: rgba(0, 20, 8, 0.55);
+  border: 1px solid rgba(0, 255, 65, 0.45);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.m-cta-circle .m-icon-ring {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1px solid var(--m-green);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  color: var(--m-green);
+  background: rgba(0, 255, 65, 0.1);
+  transition: all 0.2s ease;
+}
+
+.m-cta-circle:hover:not(:disabled) {
+  border-color: var(--m-green);
+  background: rgba(0, 255, 65, 0.16);
+  box-shadow: 0 0 18px rgba(0, 255, 65, 0.28);
+}
+
+.m-cta-circle:hover:not(:disabled) .m-icon-ring {
+  background: var(--m-green);
+  color: #000000;
+}
+
+.m-cta-circle:disabled {
   opacity: 0.45;
   cursor: not-allowed;
 }
 
-.btn-primary {
-  background: var(--blue);
-  color: #fff;
-}
-
-.btn-secondary {
-  background: #fff;
-  border-color: var(--line);
-  color: var(--text);
-}
-
-.btn-ghost {
-  color: var(--blue);
-  padding: 8px 0;
-}
-
-.input,
-.select {
+/* Inputs */
+.m-input {
   width: 100%;
-  border: 1px solid var(--line);
-  background: #fff;
-  border-radius: 10px;
-  padding: 10px 12px;
-  color: var(--text);
+  background: rgba(0, 10, 4, 0.88);
+  border: 1px solid var(--m-border);
+  color: #E8FFED;
+  padding: 10px 14px;
   font-size: 14px;
+  border-radius: 2px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.m-input::placeholder {
+  color: #7AA885;
+}
+
+.m-input:focus {
   outline: none;
+  border-color: var(--m-green);
+  box-shadow: 0 0 10px rgba(0, 255, 65, 0.25);
 }
 
-.input:focus,
-.select:focus {
-  border-color: #93c5fd;
-  box-shadow: 0 0 0 3px var(--blue-soft);
-}
-
-.badge {
+/* Badges */
+.m-badge {
   display: inline-flex;
   align-items: center;
-  padding: 4px 10px;
-  border-radius: 999px;
+  gap: 6px;
+  padding: 3px 10px;
+  font-family: var(--font-mono);
   font-size: 12px;
-  font-weight: 600;
+  letter-spacing: 0.05em;
+  border-radius: 2px;
+  border: 1px solid var(--m-border);
+  background: rgba(0, 255, 65, 0.1);
+  color: var(--m-green);
 }
 
-.badge-success { background: var(--success-soft); color: #027a48; }
-.badge-warning { background: var(--warning-soft); color: #b54708; }
-.badge-info { background: var(--info-soft); color: #026aa2; }
-.badge-danger { background: var(--danger-soft); color: #b42318; }
-
-.muted { color: var(--muted); }
-.tiny { font-size: 12px; color: var(--muted); }
-.section-title { font-size: 18px; font-weight: 600; }
-
-.icon-btn {
-  width: 36px;
-  height: 36px;
-  border: 0;
-  border-radius: 10px;
-  background: transparent;
-  color: var(--muted);
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+.m-badge-danger {
+  border-color: var(--m-red-border);
+  background: var(--m-red-soft);
+  color: #FF7A90;
 }
 
-.icon-btn:hover { background: #F2F4F7; color: var(--text); }
+.m-badge-warn {
+  border-color: rgba(255, 179, 0, 0.65);
+  background: var(--m-warn-soft);
+  color: #FFD166;
+}
 
-.dot {
+/* Barra de progreso / ISR */
+.m-meter {
+  height: 8px;
+  background: rgba(0, 0, 0, 0.75);
+  border: 1px solid rgba(0, 255, 65, 0.3);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.m-meter-fill {
+  height: 100%;
+  background: var(--m-green);
+  box-shadow: 0 0 8px rgba(0, 255, 65, 0.6);
+  transition: width 0.35s ease, background 0.35s ease;
+}
+
+.m-meter-fill.offline {
+  background: var(--m-red);
+  box-shadow: 0 0 8px rgba(255, 23, 68, 0.6);
+}
+
+/* Indicador LED vivo */
+.m-dot {
   width: 8px;
   height: 8px;
   border-radius: 50%;
   display: inline-block;
+  background: var(--m-green);
+  box-shadow: 0 0 8px var(--m-green);
 }
 
-.dot-ok { background: var(--success); }
-.dot-warn { background: var(--warning); }
-.dot-err { background: var(--danger); }
-
-/* ========================================================================== */
-/* ESTILOS RETRO POKÉMON GBA (GAME BOY ADVANCE / DMG POKÉDEX)                 */
-/* ========================================================================== */
-
-.font-pixel {
-  font-family: 'Press Start 2P', monospace !important;
-  letter-spacing: 0.04em;
+.m-dot-warn {
+  background: var(--m-warn);
+  box-shadow: 0 0 8px var(--m-warn);
 }
 
-.font-telemetry {
-  font-family: 'VT323', monospace !important;
-  letter-spacing: 0.05em;
+.m-dot-danger {
+  background: var(--m-red);
+  box-shadow: 0 0 8px var(--m-red);
 }
 
-.font-silk {
-  font-family: 'Silkscreen', monospace !important;
-}
-
-.pixel-art {
-  image-rendering: -moz-crisp-edges;
-  image-rendering: pixelated;
-  image-rendering: crisp-edges;
-}
-
-/* Consola GBA Envolvente */
-.gba-shell-indigo {
-  background: linear-gradient(180deg, #352B5C 0%, #241C42 100%);
-  border: 5px solid #4B3F72;
-  box-shadow: 0 12px 0 #120E22, 0 20px 30px rgba(0,0,0,0.6);
-}
-
-.gba-shell-dmg {
-  background: linear-gradient(180deg, #8B956D 0%, #58633F 100%);
-  border: 5px solid #303E1A;
-  box-shadow: 0 12px 0 #1A220F, 0 20px 30px rgba(0,0,0,0.6);
-}
-
-/* Pantalla LCD / CRT Bezel */
-.gba-screen-bezel {
-  background: #12141A;
-  border: 4px solid #000000;
-  border-radius: 12px;
-  position: relative;
-  overflow: hidden;
-}
-
-.gba-screen-content {
-  background: #0B0E14;
-  color: #E2E8F0;
-  min-height: 680px;
-}
-
-/* Scanlines sutiles de pantalla retro */
-.scanlines {
-  background: linear-gradient(
-    rgba(18, 16, 16, 0) 50%, 
-    rgba(0, 0, 0, 0.25) 50%
-  ), linear-gradient(
-    90deg,
-    rgba(255, 0, 0, 0.03),
-    rgba(0, 255, 0, 0.01),
-    rgba(0, 0, 255, 0.03)
-  );
-  background-size: 100% 3px, 6px 100%;
-}
-
-/* Caja de diálogo Pokémon Clásica (Pueblo Paleta / Batalla) */
-.gba-dialog-box {
-  background: #F8FAFC;
-  color: #0F172A;
-  border: 3px solid #101018;
-  border-radius: 6px;
-  box-shadow: 3px 3px 0 #101018;
-  padding: 12px 16px;
-  position: relative;
-}
-
-.gba-dialog-dark {
-  background: #121824;
-  color: #F8FAFC;
-  border: 3px solid #000;
-  border-radius: 6px;
-  box-shadow: 3px 3px 0 #000;
-}
-
-/* Flecha parpadeante de diálogo Pokémon (▼) */
-.prompt-arrow {
-  display: inline-block;
-  animation: blinkArrow 0.8s infinite steps(1);
-}
-
-@keyframes blinkArrow {
-  0%, 100% { opacity: 1; transform: translateY(0); }
-  50% { opacity: 0; transform: translateY(2px); }
-}
-
-/* Botones Pixel Retro con Bisel 3D */
-.gba-btn {
-  font-family: 'Press Start 2P', monospace;
-  font-size: 10px;
-  padding: 8px 12px;
-  border: 2px solid #000000;
-  background: #E2E8F0;
-  color: #0F172A;
-  box-shadow: 2px 2px 0 #000000;
-  cursor: pointer;
-  transition: transform 0.05s, box-shadow 0.05s;
-  display: inline-flex;
+/* Modales */
+.m-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 6, 2, 0.82);
+  backdrop-filter: blur(6px);
+  display: flex;
   align-items: center;
-  gap: 6px;
-  user-select: none;
+  justify-content: center;
+  z-index: 9999;
+  padding: 16px;
 }
 
-.gba-btn:hover:not(:disabled) {
-  background: #FFFFFF;
-}
-
-.gba-btn:active:not(:disabled) {
-  transform: translate(2px, 2px);
-  box-shadow: 0 0 0 #000000;
-}
-
-.gba-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  filter: grayscale(0.8);
-}
-
-.gba-btn-primary {
-  background: #F8D030;
-  color: #101018;
-}
-.gba-btn-primary:hover:not(:disabled) {
-  background: #FFE054;
-}
-
-.gba-btn-fire {
-  background: #FF5722;
-  color: #FFF;
-}
-.gba-btn-fire:hover:not(:disabled) {
-  background: #FF7043;
-}
-
-.gba-btn-water {
-  background: #3B82F6;
-  color: #FFF;
-}
-.gba-btn-water:hover:not(:disabled) {
-  background: #60A5FA;
-}
-
-.gba-btn-grass {
-  background: #10B981;
-  color: #FFF;
-}
-.gba-btn-grass:hover:not(:disabled) {
-  background: #34D399;
-}
-
-.gba-btn-danger {
-  background: #EF4444;
-  color: #FFF;
-}
-
-.gba-btn-heal {
-  background: #22C55E;
-  color: #FFF;
-}
-
-/* Pestañas de Navegación GBA */
-.gba-tab {
-  font-family: 'Press Start 2P', monospace;
-  font-size: 10px;
-  padding: 10px 14px;
-  border: 2px solid #000;
-  background: #1E2533;
-  color: #94A3B8;
-  cursor: pointer;
-  transition: all 0.1s;
-  box-shadow: 2px 2px 0 #000;
-}
-
-.gba-tab.active {
-  background: #F8D030;
-  color: #101018;
-  transform: translateY(-2px);
-  box-shadow: 2px 4px 0 #000;
-}
-
-/* Barra de Vida / Quórum estilo Batalla Pokémon */
-.hp-gauge-container {
-  height: 12px;
-  background: #202020;
-  border: 2px solid #000;
+.m-modal-dialog {
+  width: 100%;
+  max-width: 720px;
+  background: rgba(0, 16, 7, 0.96);
+  border: 1px solid var(--m-green);
+  box-shadow: 0 0 32px rgba(0, 255, 65, 0.22);
   border-radius: 4px;
-  overflow: hidden;
-  position: relative;
+  padding: 20px;
+  color: var(--m-text);
 }
 
-.hp-gauge-fill {
-  height: 100%;
-  transition: width 0.3s ease;
+/* Scrollbar sutil verde */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
 }
 
-.hp-green { background: #22C55E; }
-.hp-yellow { background: #EAB308; }
-.hp-red { background: #EF4444; }
-
-/* Led Pokédex parpadeante */
-.pokedex-led {
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  border: 2px solid #000;
-  box-shadow: 0 0 8px rgba(239, 68, 68, 0.8);
-  animation: ledPulse 1.8s infinite;
+::-webkit-scrollbar-track {
+  background: #020804;
 }
 
-@keyframes ledPulse {
-  0%, 100% { background: #EF4444; box-shadow: 0 0 10px #EF4444; }
-  50% { background: #991B1B; box-shadow: 0 0 2px #991B1B; }
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 255, 65, 0.3);
+  border-radius: 2px;
 }
 
-/* Tarjeta Coleccionable Retro con Brillo */
-.gba-card-item {
-  border: 3px solid #101018;
-  border-radius: 8px;
-  background: #18202F;
-  box-shadow: 3px 3px 0 #000;
-  transition: transform 0.15s, box-shadow 0.15s;
-  overflow: hidden;
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 255, 65, 0.55);
 }
 
-.gba-card-item:hover {
-  transform: translateY(-3px);
-  box-shadow: 3px 6px 0 #000;
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
-
-.gba-card-holo {
-  border-color: #F59E0B;
-  box-shadow: 0 0 12px rgba(245, 158, 11, 0.4), 3px 3px 0 #000;
-  background: linear-gradient(135deg, #1E293B 0%, #2A1F3D 50%, #1E293B 100%);
-}
-

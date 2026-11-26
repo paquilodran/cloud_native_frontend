@@ -1,369 +1,334 @@
 <!-- ========================================================================= -->
-<!-- POKÉVAULT TCG: GBA CONSOLE INTERFACE (INTUITIVA & RETRO)                  -->
+<!-- MATRIX VAULT — PANEL DE CONTROL CLOUD-NATIVE (4 PANTALLAS)               -->
 <!-- ========================================================================= -->
 
-<!-- Barra de Pestañas Retro Grande y Clara -->
-<nav style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; border-bottom: 3px solid #101018; padding-bottom: 12px;">
-  <button type="button" class="gba-tab" [class.active]="tabActiva === 'mochila' || tabActiva === 'inicio'" (click)="seleccionarTab('mochila')">
-    🎒 1. MOCHILA &amp; TIENDA
-  </button>
-  <button type="button" class="gba-tab" [class.active]="tabActiva === 'kafka'" (click)="seleccionarTab('kafka')">
-    ⚡ 2. GIMNASIO KAFKA (ISR {{ brokersOnlineCount }}/3)
-  </button>
-  <button type="button" class="gba-tab" [class.active]="tabActiva === 'rabbitmq'" (click)="seleccionarTab('rabbitmq')">
-    🏥 3. CENTRO RABBITMQ (DLQ: {{ dlqMessages.length }})
-  </button>
-  <button type="button" class="gba-tab" [class.active]="tabActiva === 'entrenador' || tabActiva === 'dashboard'" (click)="seleccionarTab('entrenador')">
-    🪪 4. FICHA ENTRENADOR (AWS • JWT)
-  </button>
-</nav>
-
-<!-- Guía Rápida de Misiones Interactivas (Para Evaluación o Demo) -->
-<section class="gba-dialog-dark" style="padding: 10px 14px; margin-bottom: 16px; border-left: 4px solid #F8D030;">
-  <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
-    <div style="display: flex; align-items: center; gap: 8px;">
-      <span class="font-pixel" style="font-size: 9px; color: #F8D030;">🎯 MISIONES RÁPIDAS DE DEMOSTRACIÓN:</span>
-      <span style="font-family: 'Inter', sans-serif; font-size: 12px; color: #94A3B8;">Prueba el clúster con 1 clic:</span>
-    </div>
-    <div style="display: flex; gap: 6px; flex-wrap: wrap;">
-      <button type="button" class="gba-mini-btn" (click)="seleccionarTab('mochila')">
-        🎁 1. Abrir Sobre
-      </button>
-      <button type="button" class="gba-mini-btn" (click)="seleccionarTab('kafka'); emitirRafaga()">
-        ⚡ 2. Ráfaga Kafka
-      </button>
-      <button type="button" class="gba-mini-btn" (click)="seleccionarTab('kafka'); simularCaosBroker(1)">
-        💀 3. Probar Caída Bulbasaur
-      </button>
-      <button type="button" class="gba-mini-btn" (click)="seleccionarTab('rabbitmq'); curarDlqJoy()">
-        💉 4. Curar DLQ
-      </button>
-    </div>
+<!-- Barra de Misiones Rápidas de Demostración (1 Clic) -->
+<section class="m-panel missions-bar" aria-label="Acciones rápidas de demostración">
+  <div class="missions-label">
+    <span class="m-mono missions-tag">// MISIONES RÁPIDAS</span>
+    <span class="missions-sub">Prueba todo el ecosistema distribuido con 1 clic:</span>
+  </div>
+  <div class="missions-actions">
+    <button type="button" class="m-btn m-btn-sm" (click)="seleccionarTab('mochila')">
+      ▶ 1. CATÁLOGO
+    </button>
+    <button type="button" class="m-btn m-btn-sm" (click)="seleccionarTab('kafka'); emitirRafaga()">
+      ⚡ 2. RÁFAGA KAFKA x5
+    </button>
+    <button type="button" class="m-btn m-btn-sm m-btn-danger" (click)="seleccionarTab('kafka'); simularCaosBroker(1)">
+      ⬢ 3. TOGGLE BROKER 1
+    </button>
+    <button type="button" class="m-btn m-btn-sm" (click)="seleccionarTab('rabbitmq'); curarDlqJoy()">
+      ↻ 4. CURAR DLQ
+    </button>
   </div>
 </section>
 
 <!-- ========================================================================= -->
-<!-- PANTALLA 1: MOCHILA / CARTAS (TIENDA CIUDAD AZULONA & BASE SET)           -->
+<!-- PANTALLA 1: CATÁLOGO / ÓRDENES                                            -->
 <!-- ========================================================================= -->
 @if (tabActiva === 'mochila' || tabActiva === 'inicio') {
   <app-cartas></app-cartas>
 }
 
 <!-- ========================================================================= -->
-<!-- PANTALLA 2: BATALLA DE GIMNASIO KAFKA (EL TRÍO DE KANTO: 3 BROKERS)       -->
+<!-- PANTALLA 2: CLÚSTER APACHE KAFKA (3 BROKERS → 3 BANDAS DE LLUVIA MATRIX)  -->
 <!-- ========================================================================= -->
 @if (tabActiva === 'kafka') {
-  <div class="space-y-4">
+  <div class="section-stack">
 
-    <!-- Quorum & Telemetría Superior -->
-    <section class="gba-dialog-dark" style="padding: 14px 18px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
-      <div style="display: flex; align-items: center; gap: 12px;">
-        <div class="font-pixel" [style.background]="brokersOnlineCount === 3 ? '#22C55E' : brokersOnlineCount === 2 ? '#EAB308' : '#EF4444'" 
-             style="color: #000; padding: 6px 12px; border: 2px solid #000; border-radius: 4px; font-size: 11px;">
+    <!-- Panel de Quórum -->
+    <section
+      class="m-panel quorum-panel"
+      [class.m-panel-warn]="brokersOnlineCount === 2"
+      [class.m-panel-danger]="brokersOnlineCount < 2"
+    >
+      <div class="quorum-info">
+        <span
+          class="m-badge"
+          [class.m-badge-warn]="brokersOnlineCount === 2"
+          [class.m-badge-danger]="brokersOnlineCount < 2"
+        >
+          <span
+            class="m-dot"
+            [class.m-dot-warn]="brokersOnlineCount === 2"
+            [class.m-dot-danger]="brokersOnlineCount < 2"
+          ></span>
           ISR {{ brokersOnlineCount }}/3
-        </div>
+        </span>
         <div>
-          <h2 class="font-pixel" style="font-size: 12px; margin: 0 0 4px 0; color: #F8FAFC;">
-            BATALLA DE GIMNASIO KAFKA — EL TRÍO DE KANTO (3 BROKERS)
-          </h2>
-          <p style="font-family: 'Inter', sans-serif; font-size: 13px; margin: 0; color: #CBD5E1;">
+          <h2 class="m-display section-title">CLÚSTER APACHE KAFKA // 3 BROKERS</h2>
+          <p class="section-desc">
             @if (brokersOnlineCount === 3) {
-              <strong style="color: #22C55E;">✓ Quórum Saludable (3/3 ISR):</strong> Todos los brokers sincronizados. Tolerancia a fallos con min.insync.replicas=2.
+              Quórum saludable (3/3 ISR). Todas las columnas de la lluvia Matrix corren en verde. Apaga un nodo para ver su banda teñirse de rojo.
             } @else if (brokersOnlineCount === 2) {
-              <strong style="color: #EAB308;">⚠️ Failover Activo (2/3 ISR):</strong> 1 broker desconectado. El clúster sigue produciendo y consumiendo sin pérdida de datos.
+              Failover automático activo (2/3 ISR). El clúster mantiene min.insync.replicas=2 sin pérdida de mensajes; 1 banda del fondo corre en rojo.
             } @else {
-              <strong style="color: #EF4444;">🚨 Quórum Crítico (&lt; 2 ISR):</strong> Menos del mínimo requerido. Reactiva al menos 2 brokers para reanudar.
+              ALERTA CRÍTICA (&lt; 2 ISR): Quórum comprometido. Reactiva al menos 2 brokers para restablecer la replicación nominal.
             }
           </p>
         </div>
       </div>
 
-      <div style="display: flex; gap: 8px; flex-wrap: wrap;">
-        <button type="button" class="gba-btn gba-btn-primary" (click)="enviarEventoAnalitico()" [disabled]="enviandoKafka" title="Envía un evento analítico a Kafka">
-          ⚡ EMITIR 1 EVENTO
+      <div class="quorum-actions">
+        <button type="button" class="m-btn m-btn-primary" (click)="enviarEventoAnalitico()" [disabled]="enviandoKafka">
+          ▶ EMITIR 1 EVENTO
         </button>
-        <button type="button" class="gba-btn" style="background: #EAB308; color: #000;" (click)="emitirRafaga()" title="Emite 5 eventos distribuidos en las particiones P0, P1 y P2">
-          💥 RÁFAGA x5 (BALANCEO P0/P1/P2)
+        <button type="button" class="m-btn" (click)="emitirRafaga()">
+          ⚡ RÁFAGA x5 (P0/P1/P2)
         </button>
       </div>
     </section>
 
-    <!-- Los 3 Brokers como Iniciales de Kanto en Boxes de Batalla Pokémon -->
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-bottom: 16px;">
-      
-      <!-- BROKER 1: BULBASAUR (PLANTA / :29092 / P0) -->
-      <article class="gba-dialog-box" [style.background]="activeBrokerIds.includes(1) ? '#F8FAFC' : '#E2E8F0'" 
-               [style.border-color]="activeBrokerIds.includes(1) ? '#10B981' : '#64748B'" style="border-width: 4px;">
-        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
-          <div style="display: flex; gap: 10px; align-items: center;">
-            <img [src]="getPokemonGbaSprite(1)" alt="Bulbasaur" class="pixel-art" style="width: 56px; height: 56px;">
-            <div>
-              <span class="font-pixel" style="font-size: 11px; color: #101018; display: block;">BULBASAUR Lv.50</span>
-              <span class="font-pixel" style="font-size: 8px; color: #10B981; font-weight: bold;">TIPO PLANTA • P0 LEADER</span>
-            </div>
+    <!-- 3 Tarjetas de Broker (Banda Izquierda, Centro y Derecha) -->
+    <div class="brokers-grid">
+      <!-- BROKER 1 -->
+      <article class="m-panel broker-card" [class.m-panel-danger]="!activeBrokerIds.includes(1)">
+        <div class="broker-head">
+          <div>
+            <span class="m-mono broker-band">BANDA IZQUIERDA // P0 LEADER</span>
+            <h3 class="broker-name">KAFKA BROKER 1</h3>
           </div>
-          <span class="font-pixel" style="font-size: 9px; background: #10B981; color: #FFF; padding: 3px 6px; border: 1px solid #000; border-radius: 4px;">
-            :29092
+          <span class="m-badge" [class.m-badge-danger]="!activeBrokerIds.includes(1)">
+            {{ activeBrokerIds.includes(1) ? 'ONLINE :29092' : 'NODE OFFLINE' }}
           </span>
         </div>
 
-        <!-- Barra HP estilo batalla -->
-        <div style="margin: 8px 0;">
-          <div style="display: flex; justify-content: space-between; font-size: 9px;" class="font-pixel">
-            <span>HP / ISR:</span>
-            <span [style.color]="activeBrokerIds.includes(1) ? '#16A34A' : '#DC2626'">
-              {{ activeBrokerIds.includes(1) ? '100% (EN LÍNEA)' : '0% (DEBILITADO)' }}
+        <div class="broker-meter-block">
+          <div class="meter-row m-mono">
+            <span>ESTADO ISR</span>
+            <span [class.text-danger]="!activeBrokerIds.includes(1)">
+              {{ activeBrokerIds.includes(1) ? '100% SINCRONIZADO' : '0% DESCONECTADO' }}
             </span>
           </div>
-          <div class="hp-gauge-container" style="margin-top: 4px;">
-            <div class="hp-gauge-fill" [class.hp-green]="activeBrokerIds.includes(1)" [class.hp-red]="!activeBrokerIds.includes(1)" 
-                 [style.width]="activeBrokerIds.includes(1) ? '100%' : '0%'"></div>
+          <div class="m-meter">
+            <div class="m-meter-fill" [class.offline]="!activeBrokerIds.includes(1)" [style.width]="activeBrokerIds.includes(1) ? '100%' : '12%'"></div>
           </div>
         </div>
 
-        <p style="font-family: 'Inter', sans-serif; font-size: 13px; color: #334155; margin: 6px 0;">
-          Eventos procesados en P0: <strong>{{ kafkaMetrics?.partitionDistribution?.['partition_0'] || 0 }}</strong>
-        </p>
+        <div class="broker-stat">
+          <span>Eventos en Partición 0</span>
+          <strong class="m-mono">{{ kafkaMetrics?.partitionDistribution?.['partition_0'] || 0 }}</strong>
+        </div>
 
-        <button type="button" class="gba-btn" [class.gba-btn-danger]="activeBrokerIds.includes(1)" [class.gba-btn-heal]="!activeBrokerIds.includes(1)"
-                style="width: 100%; margin-top: 6px; justify-content: center; font-size: 9px;" (click)="simularCaosBroker(1)" [disabled]="simulandoCaos">
-          {{ activeBrokerIds.includes(1) ? '💀 APAGAR BROKER (STOP)' : '💊 ENCENDER BROKER (START)' }}
+        <button
+          type="button"
+          class="m-btn broker-toggle-btn"
+          [class.m-btn-danger]="activeBrokerIds.includes(1)"
+          [class.m-btn-primary]="!activeBrokerIds.includes(1)"
+          (click)="simularCaosBroker(1)"
+        >
+          {{ activeBrokerIds.includes(1) ? '■ APAGAR BROKER 1' : '▶ ENCENDER BROKER 1' }}
         </button>
       </article>
 
-      <!-- BROKER 2: CHARMANDER (FUEGO / :29093 / P1) -->
-      <article class="gba-dialog-box" [style.background]="activeBrokerIds.includes(2) ? '#F8FAFC' : '#E2E8F0'" 
-               [style.border-color]="activeBrokerIds.includes(2) ? '#FF5722' : '#64748B'" style="border-width: 4px;">
-        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
-          <div style="display: flex; gap: 10px; align-items: center;">
-            <img [src]="getPokemonGbaSprite(4)" alt="Charmander" class="pixel-art" style="width: 56px; height: 56px;">
-            <div>
-              <span class="font-pixel" style="font-size: 11px; color: #101018; display: block;">CHARMANDER Lv.50</span>
-              <span class="font-pixel" style="font-size: 8px; color: #FF5722; font-weight: bold;">TIPO FUEGO • P1 LEADER</span>
-            </div>
+      <!-- BROKER 2 -->
+      <article class="m-panel broker-card" [class.m-panel-danger]="!activeBrokerIds.includes(2)">
+        <div class="broker-head">
+          <div>
+            <span class="m-mono broker-band">BANDA CENTRAL // P1 LEADER</span>
+            <h3 class="broker-name">KAFKA BROKER 2</h3>
           </div>
-          <span class="font-pixel" style="font-size: 9px; background: #FF5722; color: #FFF; padding: 3px 6px; border: 1px solid #000; border-radius: 4px;">
-            :29093
+          <span class="m-badge" [class.m-badge-danger]="!activeBrokerIds.includes(2)">
+            {{ activeBrokerIds.includes(2) ? 'ONLINE :29093' : 'NODE OFFLINE' }}
           </span>
         </div>
 
-        <!-- Barra HP estilo batalla -->
-        <div style="margin: 8px 0;">
-          <div style="display: flex; justify-content: space-between; font-size: 9px;" class="font-pixel">
-            <span>HP / ISR:</span>
-            <span [style.color]="activeBrokerIds.includes(2) ? '#16A34A' : '#DC2626'">
-              {{ activeBrokerIds.includes(2) ? '100% (EN LÍNEA)' : '0% (DEBILITADO)' }}
+        <div class="broker-meter-block">
+          <div class="meter-row m-mono">
+            <span>ESTADO ISR</span>
+            <span [class.text-danger]="!activeBrokerIds.includes(2)">
+              {{ activeBrokerIds.includes(2) ? '100% SINCRONIZADO' : '0% DESCONECTADO' }}
             </span>
           </div>
-          <div class="hp-gauge-container" style="margin-top: 4px;">
-            <div class="hp-gauge-fill" [class.hp-green]="activeBrokerIds.includes(2)" [class.hp-red]="!activeBrokerIds.includes(2)" 
-                 [style.width]="activeBrokerIds.includes(2) ? '100%' : '0%'"></div>
+          <div class="m-meter">
+            <div class="m-meter-fill" [class.offline]="!activeBrokerIds.includes(2)" [style.width]="activeBrokerIds.includes(2) ? '100%' : '12%'"></div>
           </div>
         </div>
 
-        <p style="font-family: 'Inter', sans-serif; font-size: 13px; color: #334155; margin: 6px 0;">
-          Eventos procesados en P1: <strong>{{ kafkaMetrics?.partitionDistribution?.['partition_1'] || 0 }}</strong>
-        </p>
+        <div class="broker-stat">
+          <span>Eventos en Partición 1</span>
+          <strong class="m-mono">{{ kafkaMetrics?.partitionDistribution?.['partition_1'] || 0 }}</strong>
+        </div>
 
-        <button type="button" class="gba-btn" [class.gba-btn-danger]="activeBrokerIds.includes(2)" [class.gba-btn-heal]="!activeBrokerIds.includes(2)"
-                style="width: 100%; margin-top: 6px; justify-content: center; font-size: 9px;" (click)="simularCaosBroker(2)" [disabled]="simulandoCaos">
-          {{ activeBrokerIds.includes(2) ? '💀 APAGAR BROKER (STOP)' : '💊 ENCENDER BROKER (START)' }}
+        <button
+          type="button"
+          class="m-btn broker-toggle-btn"
+          [class.m-btn-danger]="activeBrokerIds.includes(2)"
+          [class.m-btn-primary]="!activeBrokerIds.includes(2)"
+          (click)="simularCaosBroker(2)"
+        >
+          {{ activeBrokerIds.includes(2) ? '■ APAGAR BROKER 2' : '▶ ENCENDER BROKER 2' }}
         </button>
       </article>
 
-      <!-- BROKER 3: SQUIRTLE (AGUA / :29094 / P2) -->
-      <article class="gba-dialog-box" [style.background]="activeBrokerIds.includes(3) ? '#F8FAFC' : '#E2E8F0'" 
-               [style.border-color]="activeBrokerIds.includes(3) ? '#3B82F6' : '#64748B'" style="border-width: 4px;">
-        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
-          <div style="display: flex; gap: 10px; align-items: center;">
-            <img [src]="getPokemonGbaSprite(7)" alt="Squirtle" class="pixel-art" style="width: 56px; height: 56px;">
-            <div>
-              <span class="font-pixel" style="font-size: 11px; color: #101018; display: block;">SQUIRTLE Lv.50</span>
-              <span class="font-pixel" style="font-size: 8px; color: #3B82F6; font-weight: bold;">TIPO AGUA • P2 LEADER</span>
-            </div>
+      <!-- BROKER 3 -->
+      <article class="m-panel broker-card" [class.m-panel-danger]="!activeBrokerIds.includes(3)">
+        <div class="broker-head">
+          <div>
+            <span class="m-mono broker-band">BANDA DERECHA // P2 LEADER</span>
+            <h3 class="broker-name">KAFKA BROKER 3</h3>
           </div>
-          <span class="font-pixel" style="font-size: 9px; background: #3B82F6; color: #FFF; padding: 3px 6px; border: 1px solid #000; border-radius: 4px;">
-            :29094
+          <span class="m-badge" [class.m-badge-danger]="!activeBrokerIds.includes(3)">
+            {{ activeBrokerIds.includes(3) ? 'ONLINE :29094' : 'NODE OFFLINE' }}
           </span>
         </div>
 
-        <!-- Barra HP estilo batalla -->
-        <div style="margin: 8px 0;">
-          <div style="display: flex; justify-content: space-between; font-size: 9px;" class="font-pixel">
-            <span>HP / ISR:</span>
-            <span [style.color]="activeBrokerIds.includes(3) ? '#16A34A' : '#DC2626'">
-              {{ activeBrokerIds.includes(3) ? '100% (EN LÍNEA)' : '0% (DEBILITADO)' }}
+        <div class="broker-meter-block">
+          <div class="meter-row m-mono">
+            <span>ESTADO ISR</span>
+            <span [class.text-danger]="!activeBrokerIds.includes(3)">
+              {{ activeBrokerIds.includes(3) ? '100% SINCRONIZADO' : '0% DESCONECTADO' }}
             </span>
           </div>
-          <div class="hp-gauge-container" style="margin-top: 4px;">
-            <div class="hp-gauge-fill" [class.hp-green]="activeBrokerIds.includes(3)" [class.hp-red]="!activeBrokerIds.includes(3)" 
-                 [style.width]="activeBrokerIds.includes(3) ? '100%' : '0%'"></div>
+          <div class="m-meter">
+            <div class="m-meter-fill" [class.offline]="!activeBrokerIds.includes(3)" [style.width]="activeBrokerIds.includes(3) ? '100%' : '12%'"></div>
           </div>
         </div>
 
-        <p style="font-family: 'Inter', sans-serif; font-size: 13px; color: #334155; margin: 6px 0;">
-          Eventos procesados en P2: <strong>{{ kafkaMetrics?.partitionDistribution?.['partition_2'] || 0 }}</strong>
-        </p>
+        <div class="broker-stat">
+          <span>Eventos en Partición 2</span>
+          <strong class="m-mono">{{ kafkaMetrics?.partitionDistribution?.['partition_2'] || 0 }}</strong>
+        </div>
 
-        <button type="button" class="gba-btn" [class.gba-btn-danger]="activeBrokerIds.includes(3)" [class.gba-btn-heal]="!activeBrokerIds.includes(3)"
-                style="width: 100%; margin-top: 6px; justify-content: center; font-size: 9px;" (click)="simularCaosBroker(3)" [disabled]="simulandoCaos">
-          {{ activeBrokerIds.includes(3) ? '💀 APAGAR BROKER (STOP)' : '💊 ENCENDER BROKER (START)' }}
+        <button
+          type="button"
+          class="m-btn broker-toggle-btn"
+          [class.m-btn-danger]="activeBrokerIds.includes(3)"
+          [class.m-btn-primary]="!activeBrokerIds.includes(3)"
+          (click)="simularCaosBroker(3)"
+        >
+          {{ activeBrokerIds.includes(3) ? '■ APAGAR BROKER 3' : '▶ ENCENDER BROKER 3' }}
         </button>
       </article>
     </div>
 
-    <!-- Consola de Combate Pokémon en Tiempo Real -->
-    <section class="gba-dialog-box" style="margin-bottom: 16px;">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-        <span class="font-pixel" style="font-size: 10px; color: #101018;">CONSOLA DE STREAMING KAFKA EN TIEMPO REAL</span>
-        <span class="font-silk" style="font-size: 10px; color: #2563EB;">TOTAL CONSUMIDOS: {{ kafkaMetrics?.totalEventsConsumed || 0 }} EVENTOS</span>
+    <!-- Consola de Streaming en Tiempo Real -->
+    <section class="m-panel console-panel">
+      <div class="console-head">
+        <span class="m-mono console-title">TERMINAL DE STREAMING // EN VIVO</span>
+        <span class="m-badge">TOTAL CONSUMIDOS: {{ kafkaMetrics?.totalEventsConsumed || 0 }}</span>
       </div>
-      <div style="background: #0B0E14; border: 2px solid #000; border-radius: 6px; padding: 12px; max-height: 150px; overflow-y: auto;">
+      <div class="console-log m-code">
         @if (recentKafkaEvents.length === 0) {
-          <p style="font-family: 'Inter', sans-serif; font-size: 13px; color: #64748B; margin: 0;">
-            Aún no hay eventos registrados. Haz clic arriba en <strong>[ ⚡ EMITIR 1 EVENTO ]</strong> o <strong>[ 💥 RÁFAGA x5 ]</strong>.
-          </p>
+          <p class="log-empty">Esperando eventos en tcg.analytics.stream... Pulsa [ EMITIR 1 EVENTO ] o [ RÁFAGA x5 ].</p>
         } @else {
           @for (ev of recentKafkaEvents.slice(0, 6); track ev.eventId) {
-            <p style="font-family: 'VT323', monospace; font-size: 18px; margin: 2px 0; color: #A3E635; line-height: 1.2;">
-              ▶ [{{ ev.processedAt ? ev.processedAt.slice(11, 19) : 'EN VIVO' }}] [Partición {{ ev.partition }}] {{ ev.categoria }}: Orden #{{ ev.orderId }} procesada (${{ ev.monto | number }}).
+            <p class="log-line">
+              <span class="log-ts">[{{ ev.processedAt ? ev.processedAt.slice(11, 19) : 'LIVE' }}]</span>
+              <span class="log-part">[P{{ ev.partition }}]</span>
+              <span>{{ ev.categoria }} :: Orden #{{ ev.orderId }} procesada (${{ ev.monto | number }})</span>
             </p>
           }
         }
       </div>
     </section>
 
-    <!-- Tópicos TCG -->
-    <section class="gba-dialog-dark" style="padding: 14px 18px;">
-      <span class="font-pixel" style="font-size: 10px; color: #F8D030; display: block; margin-bottom: 10px;">
-        CONFIGURACIÓN DE TÓPICOS KAFKA (EP5 / EP6)
-      </span>
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px;">
-        <div style="background: #18202F; border: 2px solid #334155; padding: 10px 14px; border-radius: 6px;">
-          <strong class="font-pixel" style="font-size: 10px; color: #38BDF8;">tcg.analytics.stream</strong>
-          <p style="font-family: 'Inter', sans-serif; font-size: 12px; color: #CBD5E1; margin: 4px 0 0 0;">
-            Particiones: 3 • Factor Réplica: 3 • Retención: 24h • Grupo: tcg-analytics-group
-          </p>
+    <!-- Tópicos Kafka -->
+    <section class="m-panel topics-panel">
+      <h3 class="m-mono topics-title">TÓPICOS ACTIVOS (RF=3 // 3 PARTICIONES)</h3>
+      <div class="topics-grid">
+        <div class="topic-item">
+          <strong class="m-mono topic-name">tcg.analytics.stream</strong>
+          <p class="topic-meta">Particiones: 3 · Réplicas: 3 · Retención: 24h · Grupo: tcg-analytics-group</p>
         </div>
-        <div style="background: #18202F; border: 2px solid #334155; padding: 10px 14px; border-radius: 6px;">
-          <strong class="font-pixel" style="font-size: 10px; color: #A855F7;">tcg.audit.stream</strong>
-          <p style="font-family: 'Inter', sans-serif; font-size: 12px; color: #CBD5E1; margin: 4px 0 0 0;">
-            Particiones: 3 • Factor Réplica: 3 • Retención: 7d • Política: compact,delete
-          </p>
+        <div class="topic-item">
+          <strong class="m-mono topic-name">tcg.audit.stream</strong>
+          <p class="topic-meta">Particiones: 3 · Réplicas: 3 · Retención: 7d · Política: compact,delete</p>
         </div>
       </div>
     </section>
-
   </div>
 }
 
 <!-- ========================================================================= -->
-<!-- PANTALLA 3: CENTRO POKÉMON DE RECUPERACIÓN (RABBITMQ RESILIENT MESH)       -->
+<!-- PANTALLA 3: RABBITMQ RESILIENT MESH & DEAD LETTER QUEUE                   -->
 <!-- ========================================================================= -->
 @if (tabActiva === 'rabbitmq') {
-  <div class="space-y-4">
+  <div class="section-stack">
 
-    <!-- Diálogo de la Enfermera Joy con Chansey -->
-    <section class="gba-dialog-box" style="margin-bottom: 16px;">
-      <div style="display: flex; gap: 16px; align-items: center; flex-wrap: wrap;">
-        <div style="background: #FFE4E6; border: 2px solid #000; border-radius: 8px; padding: 6px; flex-shrink: 0;">
-          <img [src]="chanseySprite" alt="Chansey Enfermera" class="pixel-art" style="width: 64px; height: 64px; object-fit: contain;">
-        </div>
-        <div style="flex: 1; min-width: 260px;">
-          <span class="font-pixel" style="font-size: 11px; color: #BE123C; display: block; margin-bottom: 4px;">
-            ENFERMERA JOY &amp; CHANSEY • SALA DE RECUPERACIÓN AMQP
-          </span>
-          <p style="font-family: 'Inter', sans-serif; font-size: 14px; margin: 0 0 10px 0; color: #0F172A; line-height: 1.4;">
-            ¡Bienvenido al Centro Pokémon RabbitMQ! Nuestro clúster cuenta con <strong>2 nodos en espejo activo-activo</strong>. Si un mensaje falla o expira su TTL, se guarda en la <strong>Dead Letter Queue (DLQ)</strong> para recuperarlo con Revivir Máximo.
-            <span class="prompt-arrow font-pixel" style="font-size: 10px; color: #BE123C;">▼</span>
+    <section class="m-panel quorum-panel">
+      <div class="quorum-info">
+        <span class="m-badge" [class.m-badge-danger]="dlqMessages.length > 0">
+          DLQ: {{ dlqMessages.length }}
+        </span>
+        <div>
+          <h2 class="m-display section-title">RABBITMQ // CLÚSTER AMQP (2 NODOS)</h2>
+          <p class="section-desc">
+            Clúster espejo activo-activo con Dead Letter Exchange (DLX) y reintento controlado de mensajes en cuarentena.
           </p>
-
-          <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-            <button type="button" class="gba-btn gba-btn-heal" style="font-size: 10px; padding: 10px 14px;" (click)="curarDlqJoy()" [disabled]="dlqMessages.length === 0">
-              <span>💉</span>
-              <span>USAR REVIVIR MÁXIMO (CURAR DLQ: {{ dlqMessages.length }})</span>
-            </button>
-            <button type="button" class="gba-btn" style="font-size: 10px; padding: 10px 14px;" (click)="enviarOrdenNominal()" [disabled]="enviandoRabbit">
-              <span>📦</span>
-              <span>ENVIAR ORDEN NORMAL</span>
-            </button>
-            <button type="button" class="gba-btn gba-btn-danger" style="font-size: 10px; padding: 10px 14px;" (click)="enviarOrdenConFallo()" [disabled]="enviandoRabbit">
-              <span>☠️</span>
-              <span>SIMULAR MENSAJE CON FALLO → DLQ</span>
-            </button>
-          </div>
         </div>
+      </div>
+
+      <div class="quorum-actions">
+        <button type="button" class="m-btn m-btn-primary" (click)="enviarOrdenNominal()" [disabled]="enviandoRabbit">
+          ▶ ENVIAR ORDEN
+        </button>
+        <button type="button" class="m-btn m-btn-danger" (click)="enviarOrdenConFallo()" [disabled]="enviandoRabbit">
+          ■ SIMULAR FALLO → DLQ
+        </button>
+        <button type="button" class="m-btn m-btn-warn" (click)="curarDlqJoy()" [disabled]="dlqMessages.length === 0">
+          ↻ REINTENTAR DLQ ({{ dlqMessages.length }})
+        </button>
       </div>
     </section>
 
-    <!-- Nodos del Clúster RabbitMQ -->
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-bottom: 16px;">
-      
-      <!-- NODO 1 -->
-      <article class="gba-dialog-dark" style="padding: 16px; border-width: 3px; border-color: #22C55E;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-          <span class="font-pixel" style="font-size: 11px; color: #22C55E;">NODO 1: rabbit1</span>
-          <span class="font-pixel" style="font-size: 9px; background: #22C55E; color: #000; padding: 3px 6px; border-radius: 4px;">
-            PUERTO 5672
-          </span>
+    <div class="nodes-grid">
+      <article class="m-panel broker-card">
+        <div class="broker-head">
+          <div>
+            <span class="m-mono broker-band">NODO PRIMARIO</span>
+            <h3 class="broker-name">rabbit1</h3>
+          </div>
+          <span class="m-badge">AMQP :5672</span>
         </div>
-        <p style="font-family: 'Inter', sans-serif; font-size: 13px; color: #CBD5E1; margin: 0 0 8px 0;">
-          Modo: Clúster Quorum Primario • Management: :15672
-        </p>
-        <div class="hp-gauge-container">
-          <div class="hp-gauge-fill hp-green" style="width: 100%;"></div>
-        </div>
+        <p class="section-desc">Quórum activo · Panel Management en :15672</p>
+        <div class="m-meter"><div class="m-meter-fill" style="width: 100%"></div></div>
       </article>
 
-      <!-- NODO 2 -->
-      <article class="gba-dialog-dark" style="padding: 16px; border-width: 3px; border-color: #22C55E;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-          <span class="font-pixel" style="font-size: 11px; color: #22C55E;">NODO 2: rabbit2</span>
-          <span class="font-pixel" style="font-size: 9px; background: #22C55E; color: #000; padding: 3px 6px; border-radius: 4px;">
-            PUERTO 5673
-          </span>
+      <article class="m-panel broker-card">
+        <div class="broker-head">
+          <div>
+            <span class="m-mono broker-band">NODO ESPEJO</span>
+            <h3 class="broker-name">rabbit2</h3>
+          </div>
+          <span class="m-badge">AMQP :5673</span>
         </div>
-        <p style="font-family: 'Inter', sans-serif; font-size: 13px; color: #CBD5E1; margin: 0 0 8px 0;">
-          Modo: Espejo Sincronizado (Mirrored) • Management: :15673
-        </p>
-        <div class="hp-gauge-container">
-          <div class="hp-gauge-fill hp-green" style="width: 100%;"></div>
-        </div>
+        <p class="section-desc">Alta disponibilidad sincronizada · Panel Management en :15673</p>
+        <div class="m-meter"><div class="m-meter-fill" style="width: 100%"></div></div>
       </article>
-
     </div>
 
-    <!-- Sala de Cuarentena (Dead Letter Queue DLQ) -->
-    <section class="gba-dialog-box" style="margin-bottom: 16px;">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-        <span class="font-pixel" style="font-size: 11px; color: #BE123C;">SALA DE CUARENTENA: DEAD LETTER QUEUE (DLQ)</span>
-        <span class="font-silk" style="font-size: 10px; color: #475569;">MENSAJES EN CUARENTENA: {{ dlqMessages.length }}</span>
+    <section class="m-panel console-panel">
+      <div class="console-head">
+        <span class="m-mono console-title">DEAD LETTER QUEUE (CUARENTENA AMQP)</span>
+        <span class="m-badge" [class.m-badge-danger]="dlqMessages.length > 0">
+          {{ dlqMessages.length }} EN ESPERA
+        </span>
       </div>
 
       @if (dlqMessages.length === 0) {
-        <p style="font-family: 'Inter', sans-serif; font-size: 14px; color: #16A34A; margin: 16px 0; text-align: center;">
-          ✓ ¡Todas las colas están en orden! No hay mensajes fallidos en la Dead Letter Queue.
-        </p>
+        <p class="dlq-ok">✓ Sin mensajes fallidos. Todas las colas AMQP operan normalmente.</p>
       } @else {
-        <div style="max-height: 240px; overflow-y: auto;">
-          <table style="width: 100%; border-collapse: collapse; text-align: left;">
+        <div class="table-wrap">
+          <table class="m-table">
             <thead>
-              <tr class="font-pixel" style="font-size: 9px; color: #0F172A; border-bottom: 2px solid #000;">
-                <th style="padding: 8px;">ID MENSAJE</th>
-                <th style="padding: 8px;">COLA ORIGEN</th>
-                <th style="padding: 8px;">CAUSA DE FALLO</th>
-                <th style="padding: 8px;">ACCIÓN</th>
+              <tr>
+                <th>ID</th>
+                <th>COLA ORIGEN</th>
+                <th>MOTIVO</th>
+                <th>ACCIÓN</th>
               </tr>
             </thead>
             <tbody>
               @for (m of dlqMessages; track m.id) {
-                <tr style="font-family: 'Inter', sans-serif; font-size: 13px; border-bottom: 1px solid #E2E8F0;">
-                  <td style="padding: 8px; font-weight: bold;">{{ m.id }}</td>
-                  <td style="padding: 8px;">{{ m.colaOrigen }}</td>
-                  <td style="padding: 8px; color: #DC2626;">{{ m.razon }}</td>
-                  <td style="padding: 8px;">
-                    <button type="button" class="gba-btn gba-btn-heal" style="font-size: 8px; padding: 4px 8px;" (click)="vaciarDlq()">
-                      REVIVIR
+                <tr>
+                  <td class="m-mono">{{ m.id }}</td>
+                  <td class="m-mono">{{ m.colaOrigen }}</td>
+                  <td class="text-danger">{{ m.razon }}</td>
+                  <td>
+                    <button type="button" class="m-btn m-btn-sm m-btn-primary" (click)="vaciarDlq()">
+                      ↻ REINTENTAR
                     </button>
                   </td>
                 </tr>
@@ -373,117 +338,81 @@
         </div>
       }
     </section>
-
   </div>
 }
 
 <!-- ========================================================================= -->
-<!-- PANTALLA 4: FICHA DE ENTRENADOR GBA (AWS CLOUD & TELEMETRÍA)               -->
+<!-- PANTALLA 4: SISTEMA AWS / JWT / EQUIPO                                    -->
 <!-- ========================================================================= -->
 @if (tabActiva === 'entrenador' || tabActiva === 'dashboard') {
-  <div class="space-y-4">
+  <div class="system-grid">
 
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px;">
-      
-      <!-- Tarjeta de Entrenador Oficial Estilo GBA -->
-      <section style="background: linear-gradient(135deg, #F2D35B 0%, #DFB434 50%, #B98B1C 100%); border: 4px solid #101018; border-radius: 12px; padding: 8px; box-shadow: 4px 4px 0 #000;">
-        <div style="background: #F8F4E0; border: 3px solid #4B3F72; border-radius: 8px; padding: 16px; color: #181824;">
-          
-          <!-- Encabezado Ficha -->
-          <div style="background: #4B3F72; border: 2px solid #000; border-radius: 4px; padding: 8px 12px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-            <span class="font-pixel" style="font-size: 11px; color: #F8D030;">TRAINER CARD</span>
-            <span class="font-pixel" style="font-size: 9px; color: #FFF;">NO. 2026-EP6</span>
-          </div>
+    <section class="m-panel sys-card">
+      <div class="console-head">
+        <span class="m-mono console-title">OPERADORES // DUOC UC DSY1107</span>
+        <span class="m-badge">EP5 / EP6</span>
+      </div>
+      <h2 class="m-display sys-names">PATRICIO QUILODRÁN &amp; SEBASTIAN DINAMARCA</h2>
+      <p class="section-desc">Arquitectura Cloud Native desplegada con Terraform IaC, Docker Compose, Kafka, RabbitMQ y Entra ID.</p>
 
-          <!-- Nombres de los Alumnos -->
-          <div style="margin-bottom: 14px;">
-            <span class="font-pixel" style="font-size: 8px; color: #64748B; display: block;">ENTRENADORES TITULARES:</span>
-            <h3 class="font-pixel" style="font-size: 13px; color: #0F172A; margin: 4px 0;">
-              PATRICIO QUILODRÁN &amp; SEBASTIAN DINAMARCA
-            </h3>
-            <span style="font-family: 'Inter', sans-serif; font-size: 13px; color: #475569;">
-              Duoc UC • DSY1107 Desarrollo Cloud Native I (EP5 / EP6)
-            </span>
-          </div>
-
-          <!-- Medallas de Gimnasio Cloud -->
-          <div>
-            <span class="font-pixel" style="font-size: 9px; color: #4B3F72; display: block; margin-bottom: 8px;">
-              MEDALLAS DE GIMNASIO CLOUD (6/6):
-            </span>
-            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
-              <div class="gba-dialog-dark" style="padding: 8px; text-align: center;">
-                <span style="font-size: 18px; display: block;">⛰️</span>
-                <span class="font-pixel" style="font-size: 8px; color: #F8D030;">ROCA</span>
-                <span style="font-family: 'Inter', sans-serif; font-size: 10px; color: #94A3B8; display: block;">AWS EC2</span>
-              </div>
-              <div class="gba-dialog-dark" style="padding: 8px; text-align: center;">
-                <span style="font-size: 18px; display: block;">💧</span>
-                <span class="font-pixel" style="font-size: 8px; color: #38BDF8;">CASCADA</span>
-                <span style="font-family: 'Inter', sans-serif; font-size: 10px; color: #94A3B8; display: block;">API Gateway</span>
-              </div>
-              <div class="gba-dialog-dark" style="padding: 8px; text-align: center;">
-                <span style="font-size: 18px; display: block;">⚡</span>
-                <span class="font-pixel" style="font-size: 8px; color: #FACC15;">TRUENO</span>
-                <span style="font-family: 'Inter', sans-serif; font-size: 10px; color: #94A3B8; display: block;">Kafka 3N</span>
-              </div>
-              <div class="gba-dialog-dark" style="padding: 8px; text-align: center;">
-                <span style="font-size: 18px; display: block;">🌈</span>
-                <span class="font-pixel" style="font-size: 8px; color: #EC4899;">ARCOÍRIS</span>
-                <span style="font-family: 'Inter', sans-serif; font-size: 10px; color: #94A3B8; display: block;">RabbitMQ 2N</span>
-              </div>
-              <div class="gba-dialog-dark" style="padding: 8px; text-align: center;">
-                <span style="font-size: 18px; display: block;">👻</span>
-                <span class="font-pixel" style="font-size: 8px; color: #C084FC;">ALMA</span>
-                <span style="font-family: 'Inter', sans-serif; font-size: 10px; color: #94A3B8; display: block;">Postgres 16</span>
-              </div>
-              <div class="gba-dialog-dark" style="padding: 8px; text-align: center;">
-                <span style="font-size: 18px; display: block;">🛡️</span>
-                <span class="font-pixel" style="font-size: 8px; color: #4ADE80;">PANTANO</span>
-                <span style="font-family: 'Inter', sans-serif; font-size: 10px; color: #94A3B8; display: block;">Entra ID</span>
-              </div>
-            </div>
-          </div>
-
+      <div class="badges-grid">
+        <div class="sys-badge-box">
+          <span class="m-mono sys-badge-k">AWS EC2</span>
+          <span class="sys-badge-v">us-east-1</span>
         </div>
-      </section>
-
-      <!-- Telemetría de Servidor AWS EC2 & Decodificador JWT -->
-      <section class="gba-dialog-dark" style="padding: 16px 20px;">
-        <span class="font-pixel" style="font-size: 10px; color: #F8D030; display: block; margin-bottom: 10px;">
-          INFRAESTRUCTURA AWS CLOUD (EC2 + API GATEWAY)
-        </span>
-
-        <p style="font-family: 'Inter', sans-serif; font-size: 13px; color: #CBD4EC; margin: 6px 0;">
-          Servidor EC2: <strong style="color: #38BDF8;">13.221.177.55</strong> (us-east-1)
-        </p>
-        <p style="font-family: 'Inter', sans-serif; font-size: 13px; color: #CBD4EC; margin: 6px 0;">
-          HTTP API Gateway: <strong style="color: #38BDF8;">6cmzp83q6h.execute-api.us-east-1.amazonaws.com</strong>
-        </p>
-
-        <div style="margin: 14px 0;">
-          <button type="button" class="gba-btn gba-btn-primary" (click)="probarPingGateway()">
-            📡 PROBAR LATENCIA GATEWAY
-          </button>
-          <p class="font-telemetry" style="font-size: 16px; color: #22C55E; margin-top: 8px;">
-            {{ pingLatencia }}
-          </p>
+        <div class="sys-badge-box">
+          <span class="m-mono sys-badge-k">API GATEWAY</span>
+          <span class="sys-badge-v">HTTP Proxy</span>
         </div>
-
-        <div style="border-top: 1px solid #334155; padding-top: 12px; margin-top: 12px;">
-          <span class="font-pixel" style="font-size: 9px; color: #38BDF8; display: block; margin-bottom: 6px;">
-            AUTENTICACIÓN JWT (MICROSOFT ENTRA ID):
-          </span>
-          <p style="font-family: 'Inter', sans-serif; font-size: 12px; color: #94A3B8; margin: 2px 0;">
-            Algoritmo: RS256 • Tenant ID: 4531cbe0-83c7-406d-a972-e6302b1fb7d1
-          </p>
-          <p style="font-family: 'Inter', sans-serif; font-size: 12px; color: #94A3B8; margin: 2px 0;">
-            Estado de Sesión: {{ autenticado ? '✓ Autenticado con Microsoft Entra ID' : '✓ Modo Demostración Activo' }}
-          </p>
+        <div class="sys-badge-box">
+          <span class="m-mono sys-badge-k">APACHE KAFKA</span>
+          <span class="sys-badge-v">3 Brokers RF=3</span>
         </div>
-      </section>
+        <div class="sys-badge-box">
+          <span class="m-mono sys-badge-k">RABBITMQ</span>
+          <span class="sys-badge-v">2 Nodos + DLQ</span>
+        </div>
+        <div class="sys-badge-box">
+          <span class="m-mono sys-badge-k">POSTGRESQL</span>
+          <span class="sys-badge-v">v16 Persistente</span>
+        </div>
+        <div class="sys-badge-box">
+          <span class="m-mono sys-badge-k">ENTRA ID</span>
+          <span class="sys-badge-v">OAuth2 / JWT</span>
+        </div>
+      </div>
+    </section>
 
-    </div>
+    <section class="m-panel sys-card">
+      <div class="console-head">
+        <span class="m-mono console-title">TELEMETRÍA AWS &amp; SEGURIDAD JWT</span>
+        <span class="m-badge">ONLINE</span>
+      </div>
+
+      <div class="sys-kv">
+        <span>EC2 Public IP</span>
+        <strong class="m-mono">44.195.35.138</strong>
+      </div>
+      <div class="sys-kv">
+        <span>API Gateway</span>
+        <strong class="m-mono">6cmzp83q6h.execute-api.us-east-1.amazonaws.com</strong>
+      </div>
+      <div class="sys-kv">
+        <span>Tenant Entra ID</span>
+        <strong class="m-mono">4531cbe0-83c7-406d-a972-e6302b1fb7d1</strong>
+      </div>
+      <div class="sys-kv">
+        <span>Sesión JWT</span>
+        <strong class="m-mono">{{ autenticado ? 'TOKEN RS256 ACTIVO' : 'MODO DEMO ACTIVO' }}</strong>
+      </div>
+
+      <div class="ping-block">
+        <button type="button" class="m-btn m-btn-primary" (click)="probarPingGateway()">
+          ▶ PROBAR LATENCIA GATEWAY
+        </button>
+        <p class="m-mono ping-out">{{ pingLatencia }}</p>
+      </div>
+    </section>
 
   </div>
 }

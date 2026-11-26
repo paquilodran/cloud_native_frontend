@@ -1,7 +1,7 @@
-import { DatePipe, DecimalPipe } from '@angular/common';
+import { DecimalPipe } from '@angular/common';
 import { Component, OnDestroy, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MsalService } from '@azure/msal-angular';
 import { environment } from '../../environments/environment';
 import { CartasComponent } from '../cartas/cartas.component';
@@ -31,7 +31,7 @@ export interface ToastNotification {
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [RouterLink, DatePipe, DecimalPipe, FormsModule, CartasComponent],
+  imports: [DecimalPipe, FormsModule, CartasComponent],
   templateUrl: './home.component.html',
   styleUrl: './home.component.css'
 })
@@ -294,38 +294,42 @@ export class HomeComponent implements OnInit, OnDestroy {
     return ["Bulbasaur", "Charmander", "Squirtle"][id - 1] ?? `Broker ${id}`;
   }
 
+  private emitBrokerState(): void {
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('matrix:brokers', { detail: [...this.activeBrokerIds] }));
+    }
+  }
+
   simularCaosBroker(brokerId: number): void {
-    if (this.simulandoCaos) return;
-    this.simulandoCaos = true;
-    this.brokerCaidoId = brokerId;
+    const estaOnline = this.activeBrokerIds.includes(brokerId);
 
-    this.notificationService.notify(
-      'Prueba de Resiliencia Iniciada',
-      `Simulando desconexión de ${this.brokerNombre(brokerId)} (Broker ${brokerId}, Alta Disponibilidad).`,
-      'info',
-      'KAFKA'
-    );
+    if (estaOnline) {
+      this.activeBrokerIds = this.activeBrokerIds.filter((id) => id !== brokerId);
+      this.brokersOnlineCount = this.activeBrokerIds.length;
+      this.brokerCaidoId = brokerId;
+      this.emitBrokerState();
 
-    // Simula failover: los líderes de partición se reasignan a los brokers restantes
-    setTimeout(() => {
       this.notificationService.notify(
-        'Failover Exitoso (ISR Activo)',
-        `Particiones rebalanceadas en ${this.brokerNombre(brokerId === 1 ? 2 : 1)} sin pérdida de mensajes (min.insync.replicas=2 nominal).`,
+        'NODE OFFLINE',
+        `Broker ${brokerId} (${this.brokerNombre(brokerId)}) desconectado. Banda ${brokerId} en alerta roja (${this.brokersOnlineCount}/3 ISR).`,
+        this.brokersOnlineCount >= 2 ? 'info' : 'error',
+        'KAFKA'
+      );
+    } else {
+      this.activeBrokerIds = [...this.activeBrokerIds, brokerId].sort((a, b) => a - b);
+      this.brokersOnlineCount = this.activeBrokerIds.length;
+      if (this.brokerCaidoId === brokerId) {
+        this.brokerCaidoId = null;
+      }
+      this.emitBrokerState();
+
+      this.notificationService.notify(
+        'NODE ONLINE',
+        `Broker ${brokerId} (${this.brokerNombre(brokerId)}) reconectado y sincronizado (${this.brokersOnlineCount}/3 ISR).`,
         'success',
         'KAFKA'
       );
-    }, 2800);
-
-    setTimeout(() => {
-      this.brokerCaidoId = null;
-      this.simulandoCaos = false;
-      this.notificationService.notify(
-        'Broker Recuperado',
-        `${this.brokerNombre(brokerId)} sincronizado nuevamente con el ensemble de Zookeeper.`,
-        'info',
-        'KAFKA'
-      );
-    }, 6000);
+    }
   }
 
   abrirTimelinePedido(p: Orden): void {
@@ -605,6 +609,7 @@ export class HomeComponent implements OnInit, OnDestroy {
           this.brokersOnlineCount = res.brokersCount;
           if (Array.isArray(res.nodes)) {
             this.activeBrokerIds = res.nodes.map((n: any) => n.id);
+            this.emitBrokerState();
           }
         }
       },

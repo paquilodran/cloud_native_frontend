@@ -1,19 +1,19 @@
-import { AsyncPipe, DatePipe } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import { Component, HostListener, OnInit, inject } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { MsalBroadcastService, MsalService } from '@azure/msal-angular';
 import { InteractionStatus } from '@azure/msal-browser';
 import { filter } from 'rxjs';
 import { environment } from '../environments/environment';
 import { CartasService } from './cartas/cartas.service';
+import { MatrixRainComponent } from './shared/matrix-rain.component';
 import { NotificationService } from './shared/notification.service';
 import { formatPokedollars } from './shared/pokemon-sprites';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, RouterLinkActive, FormsModule, AsyncPipe, DatePipe],
+  imports: [RouterOutlet, AsyncPipe, MatrixRainComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
@@ -26,16 +26,11 @@ export class AppComponent implements OnInit {
 
   readonly formatPokedollars = formatPokedollars;
 
-  // GBA Console Shell State
-  shellTheme: 'INDIGO' | 'DMG' = 'INDIGO';
+  // Estado visual global para lluvia Matrix y navegación
+  activeBrokerIds: number[] = [1, 2, 3];
   balance = 185000;
-  vistaAmpliada = false;
   readonly tabs = ['mochila', 'kafka', 'rabbitmq', 'entrenador'];
   currentTab = 'mochila';
-
-  toggleVistaAmpliada(): void {
-    this.vistaAmpliada = !this.vistaAmpliada;
-  }
 
   totalOrdenes = 3;
   autenticado = false;
@@ -47,13 +42,28 @@ export class AppComponent implements OnInit {
   menuAbierto = false;
   busqueda = '';
 
-  toggleShellTheme(): void {
-    this.shellTheme = this.shellTheme === 'INDIGO' ? 'DMG' : 'INDIGO';
+  menuNotificacionesAbierto = false;
+  menuPerfilAbierto = false;
+  modalPerfilAbierto = false;
+  tokenPreview = '';
+  copiadoTenant = false;
+  copiadoToken = false;
+
+  get brokersOnlineCount(): number {
+    return this.activeBrokerIds.length;
+  }
+
+  @HostListener('window:matrix:brokers', ['$event'])
+  onBrokersChanged(event: Event): void {
+    const custom = event as CustomEvent<number[]>;
+    if (Array.isArray(custom.detail)) {
+      this.activeBrokerIds = [...custom.detail];
+    }
   }
 
   recargarBalance(): void {
     this.balance += 50000;
-    this.notificationService.showToast('¡Has recibido ₽ 50.000 Poké-dólares de la Liga Pokémon!', 'success');
+    this.notificationService.showToast('Crédito recargado: +₽ 50.000 disponibles en la bóveda.', 'success');
   }
 
   irATab(tab: string): void {
@@ -72,20 +82,6 @@ export class AppComponent implements OnInit {
     const nextIdx = (idx + 1) % this.tabs.length;
     this.irATab(this.tabs[nextIdx]);
   }
-
-  // Control de agrupación / desagrupación en la barra lateral
-  seccionMensajeriaAbierta = true;
-  seccionTecnologiasAbierta = true;
-
-  // Control de notificaciones
-  menuNotificacionesAbierto = false;
-
-  // Control de menú de perfil desplegable y ventana modal de usuario
-  menuPerfilAbierto = false;
-  modalPerfilAbierto = false;
-  tokenPreview = '';
-  copiadoTenant = false;
-  copiadoToken = false;
 
   @HostListener('window:keydown', ['$event'])
   onGlobalKeyDown(event: KeyboardEvent): void {
@@ -114,10 +110,10 @@ export class AppComponent implements OnInit {
     navigator.clipboard.writeText(texto).then(() => {
       if (tipo === 'tenant') {
         this.copiadoTenant = true;
-        setTimeout(() => this.copiadoTenant = false, 2500);
+        setTimeout(() => (this.copiadoTenant = false), 2500);
       } else {
         this.copiadoToken = true;
-        setTimeout(() => this.copiadoToken = false, 2500);
+        setTimeout(() => (this.copiadoToken = false), 2500);
       }
       this.notificationService.showToast(`${tipo === 'tenant' ? 'Tenant ID' : 'Token JWT'} copiado al portapapeles`, 'info');
     });
@@ -136,9 +132,12 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     this.esLogin = this.router.url.startsWith('/login');
+    this.syncTabFromUrl(this.router.url);
+
     this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe((event) => {
       const nav = event as NavigationEnd;
       this.esLogin = nav.urlAfterRedirects.startsWith('/login');
+      this.syncTabFromUrl(nav.urlAfterRedirects);
       this.menuAbierto = false;
       this.menuPerfilAbierto = false;
     });
@@ -157,58 +156,30 @@ export class AppComponent implements OnInit {
     this.cargarContadorOrdenes();
   }
 
+  private syncTabFromUrl(url: string): void {
+    const match = url.match(/[?&]tab=([^&]+)/);
+    if (match) {
+      const tab = decodeURIComponent(match[1]);
+      if (tab === 'inicio') this.currentTab = 'mochila';
+      else if (tab === 'dashboard') this.currentTab = 'entrenador';
+      else if (this.tabs.includes(tab)) this.currentTab = tab;
+    }
+  }
+
   cargarContadorOrdenes(): void {
     this.cartasService.listarOrdenes().subscribe({
-      next: (res) => this.totalOrdenes = res.length,
-      error: () => this.totalOrdenes = 0
+      next: (res) => (this.totalOrdenes = res.length),
+      error: () => (this.totalOrdenes = 0)
     });
-  }
-
-  toggleMenuPerfil(event: Event): void {
-    event.stopPropagation();
-    this.menuPerfilAbierto = !this.menuPerfilAbierto;
-    if (this.menuPerfilAbierto) {
-      this.menuNotificacionesAbierto = false;
-    }
-  }
-
-  toggleMenuNotificaciones(event: Event): void {
-    event.stopPropagation();
-    this.menuNotificacionesAbierto = !this.menuNotificacionesAbierto;
-    if (this.menuNotificacionesAbierto) {
-      this.menuPerfilAbierto = false;
-    }
-  }
-
-  abrirModalPerfil(): void {
-    this.modalPerfilAbierto = true;
-    this.menuPerfilAbierto = false;
-    this.obtenerTokenPreview();
   }
 
   cerrarModalPerfil(): void {
     this.modalPerfilAbierto = false;
   }
 
-  toggleSeccionMensajeria(): void {
-    this.seccionMensajeriaAbierta = !this.seccionMensajeriaAbierta;
-  }
-
-  toggleSeccionTecnologias(): void {
-    this.seccionTecnologiasAbierta = !this.seccionTecnologiasAbierta;
-  }
-
   logout(): void {
     this.menuPerfilAbierto = false;
     this.msal.logoutRedirect();
-  }
-
-  buscar(): void {
-    this.router.navigate(['/cartas']);
-  }
-
-  get inicial(): string {
-    return (this.usuario || 'P').charAt(0).toUpperCase();
   }
 
   private syncSession(): void {
@@ -223,19 +194,5 @@ export class AppComponent implements OnInit {
     this.autenticado = false;
     this.usuario = 'Patricio';
     this.email = 'patricio@duocuc.cl';
-  }
-
-  private obtenerTokenPreview(): void {
-    const account = this.msal.instance.getActiveAccount() ?? this.msal.instance.getAllAccounts()[0];
-    if (!account) return;
-
-    this.msal.instance.acquireTokenSilent({
-      account,
-      scopes: environment.azure.apiScopes
-    }).then((result) => {
-      this.tokenPreview = result.accessToken;
-    }).catch(() => {
-      this.tokenPreview = 'Token en memoria (Mock / Standalone)';
-    });
   }
 }

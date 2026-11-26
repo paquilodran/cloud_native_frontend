@@ -1,118 +1,67 @@
+<!-- Lluvia de código Matrix global (montada una sola vez, persiste entre pestañas) -->
+<app-matrix-rain [activeBrokerIds]="activeBrokerIds"></app-matrix-rain>
+
 @if (esLogin) {
-  <router-outlet />
+  <div class="matrix-shell">
+    <router-outlet />
+  </div>
 } @else {
-  <!-- ========================================================================= -->
-  <!-- CARCASA DE CONSOLA GAME BOY ADVANCE (GBA CLOUD-NATIVE EDITION)           -->
-  <!-- ========================================================================= -->
-  <div class="gba-outer-container" [class.gba-ampliada]="vistaAmpliada">
-    <div class="gba-console-wrapper" [class.gba-shell-indigo]="shellTheme === 'INDIGO'" [class.gba-shell-dmg]="shellTheme === 'DMG'">
-      
-      <!-- Botones Superiores L y R (Shoulder Bumpers) -->
-      <div class="gba-bumpers-bar">
-        <button type="button" class="gba-bumper-btn" (click)="prevTab()" title="Botón L (Tecla L o Pág. Anterior)">
-          [ L ] PREV TAB
-        </button>
-        <div class="gba-bumper-speaker">
-          <span>::::</span>
-          <span class="font-pixel" style="font-size: 8px; color: #E2E8F0; margin: 0 8px;">NINTENDO GBA CONSOLE • POKÉVAULT TCG</span>
-          <span>::::</span>
+  <div class="matrix-shell">
+    <!-- Header minimalista fijo -->
+    <header class="matrix-header" role="banner">
+      <div class="matrix-header-inner">
+        <div class="matrix-brand" (click)="irATab('mochila')" role="button" tabindex="0" aria-label="Ir al inicio">
+          <span class="m-dot" [class.m-dot-warn]="brokersOnlineCount === 2" [class.m-dot-danger]="brokersOnlineCount < 2"></span>
+          <div class="matrix-brand-text">
+            <span class="matrix-logo m-display">MATRIX <strong>VAULT</strong></span>
+            <span class="matrix-sub m-mono">CLOUD NATIVE // 44.195.35.138</span>
+          </div>
         </div>
-        <button type="button" class="gba-bumper-btn" (click)="nextTab()" title="Botón R (Tecla R o Pág. Siguiente)">
-          NEXT TAB [ R ]
-        </button>
+
+        <!-- 4 Pestañas claras con atajos 1-4 -->
+        <nav class="matrix-nav" aria-label="Navegación principal">
+          <button type="button" class="matrix-nav-btn" [class.active]="currentTab === 'mochila'" (click)="irATab('mochila')">
+            <span class="m-key">1</span> CATÁLOGO / ÓRDENES
+          </button>
+          <button type="button" class="matrix-nav-btn" [class.active]="currentTab === 'kafka'" (click)="irATab('kafka')">
+            <span class="m-key">2</span> CLÚSTER KAFKA
+            <span class="m-pill" [class.warn]="brokersOnlineCount === 2" [class.danger]="brokersOnlineCount < 2">{{ brokersOnlineCount }}/3</span>
+          </button>
+          <button type="button" class="matrix-nav-btn" [class.active]="currentTab === 'rabbitmq'" (click)="irATab('rabbitmq')">
+            <span class="m-key">3</span> RABBITMQ
+          </button>
+          <button type="button" class="matrix-nav-btn" [class.active]="currentTab === 'entrenador'" (click)="irATab('entrenador')">
+            <span class="m-key">4</span> SISTEMA AWS / JWT
+          </button>
+        </nav>
+
+        <!-- Telemetría global y saldo -->
+        <div class="matrix-status-bar">
+          <div class="m-badge" [class.m-badge-warn]="brokersOnlineCount === 2" [class.m-badge-danger]="brokersOnlineCount < 2" title="Estado del clúster Apache Kafka">
+            <span class="m-dot" [class.m-dot-warn]="brokersOnlineCount === 2" [class.m-dot-danger]="brokersOnlineCount < 2"></span>
+            ISR {{ brokersOnlineCount }}/3
+          </div>
+
+          <div class="matrix-wallet">
+            <span class="m-mono wallet-amount">{{ formatPokedollars(balance) }}</span>
+            <button type="button" class="m-btn m-btn-sm" (click)="recargarBalance()" title="Recargar saldo">+50K</button>
+          </div>
+        </div>
       </div>
+    </header>
 
-      <!-- Barra de Encabezado Pokédex Superior -->
-      <header class="gba-pokedex-header">
-        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
-          <div class="pokedex-led" title="Pokédex Power ON"></div>
-          <div>
-            <h1 class="font-pixel" style="font-size: 13px; margin: 0; color: #F8D030; text-shadow: 2px 2px 0 #000;">
-              POKéVAULT TCG
-            </h1>
-            <span class="font-silk" style="font-size: 8px; color: #CBD5E1;">
-              CLOUD-NATIVE GBA • AWS EC2 13.221.177.55
-            </span>
-          </div>
-        </div>
-
-        <!-- Telemetría & Perfil de Entrenador -->
-        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-          <!-- Saldo en Poké-dólares -->
-          <div class="gba-wallet-box">
-            <span class="font-pixel" style="font-size: 10px; color: #F8D030;">{{ formatPokedollars(balance) }}</span>
-            <button type="button" class="gba-mini-btn" (click)="recargarBalance()" title="Recargar saldo">+₽50K</button>
-          </div>
-
-          <!-- Selector de Modo Ampliado -->
-          <button type="button" class="gba-mini-btn" (click)="toggleVistaAmpliada()" title="Alternar tamaño de pantalla">
-            {{ vistaAmpliada ? '🔍 CONSOLA' : '🖥️ AMPLIAR' }}
-          </button>
-
-          <!-- Selector de Carcasa GBA / DMG -->
-          <button type="button" class="gba-mini-btn" (click)="toggleShellTheme()" title="Cambiar color de carcasa">
-            {{ shellTheme === 'INDIGO' ? '🎨 INDIGO' : '🎨 GB DMG' }}
-          </button>
-
-          <!-- Ficha de Entrenador -->
-          <div class="gba-trainer-chip" (click)="irATab('entrenador')">
-            <span class="font-pixel" style="font-size: 9px; color: #A3E635;">TRN: PATRICIO &amp; SEBASTIAN</span>
-          </div>
-        </div>
-      </header>
-
-      <!-- Pantalla CRT LCD de la Consola GBA -->
-      <main class="gba-screen-bezel">
-        <div class="gba-screen-content scanlines" style="padding: 16px;">
-          <router-outlet></router-outlet>
-        </div>
-      </main>
-
-      <!-- Controles Inferiores GBA (Decorativos / Interactivos) -->
-      @if (!vistaAmpliada) {
-        <footer class="gba-controls-footer">
-          <!-- D-Pad -->
-          <div class="gba-dpad">
-            <div class="dpad-up" (click)="prevTab()">▲</div>
-            <div class="dpad-left" (click)="prevTab()">◀</div>
-            <div class="dpad-center"></div>
-            <div class="dpad-right" (click)="nextTab()">▶</div>
-            <div class="dpad-down" (click)="nextTab()">▼</div>
-          </div>
-
-          <!-- Botones Select y Start -->
-          <div class="gba-start-select">
-            <div class="btn-pill" (click)="irATab('mochila')">
-              <span></span>
-              <label class="font-pixel" style="font-size: 7px; color: #CBD5E1;">MOCHILA</label>
-            </div>
-            <div class="btn-pill" (click)="irATab('kafka')">
-              <span></span>
-              <label class="font-pixel" style="font-size: 7px; color: #CBD5E1;">KAFKA</label>
-            </div>
-          </div>
-
-          <!-- Botones B y A de Nintendo -->
-          <div class="gba-ab-buttons">
-            <div class="action-btn" (click)="prevTab()" title="Botón B (Pestaña Anterior)">
-              <span class="font-pixel" style="font-size: 10px; color: #FFF;">B</span>
-            </div>
-            <div class="action-btn" (click)="nextTab()" title="Botón A (Pestaña Siguiente)">
-              <span class="font-pixel" style="font-size: 10px; color: #FFF;">A</span>
-            </div>
-          </div>
-        </footer>
-      }
-
-    </div>
+    <!-- Contenido principal por encima del canvas -->
+    <main class="matrix-main" role="main">
+      <router-outlet></router-outlet>
+    </main>
   </div>
 
-  <!-- Contenedor Flotante de Toasts Retro -->
-  <div class="gba-toast-container">
+  <!-- Notificaciones flotantes (Toasts) -->
+  <div class="matrix-toast-container" aria-live="polite">
     @for (toast of notificationService.toasts$ | async; track toast.id) {
-      <div class="gba-toast" [class.gba-toast-success]="toast.type === 'success'" [class.gba-toast-error]="toast.type === 'error'">
-        <span class="font-pixel" style="font-size: 8px;">{{ toast.message }}</span>
-        <button type="button" class="gba-mini-btn" (click)="notificationService.dismissToast(toast.id)">X</button>
+      <div class="matrix-toast" [class.success]="toast.type === 'success'" [class.error]="toast.type === 'error'" [class.info]="toast.type === 'info'">
+        <span class="matrix-toast-msg">{{ toast.message }}</span>
+        <button type="button" class="m-btn m-btn-sm" (click)="notificationService.dismissToast(toast.id)" aria-label="Cerrar notificación">×</button>
       </div>
     }
   </div>

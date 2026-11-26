@@ -1,4 +1,3 @@
-import { DecimalPipe, DatePipe } from '@angular/common';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MsalService } from '@azure/msal-angular';
@@ -11,7 +10,7 @@ import { CartasService } from './cartas.service';
 @Component({
   selector: 'app-cartas',
   standalone: true,
-  imports: [FormsModule, DecimalPipe, DatePipe],
+  imports: [FormsModule],
   templateUrl: './cartas.component.html',
   styleUrl: './cartas.component.css'
 })

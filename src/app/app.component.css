@@ -1,278 +1,238 @@
-.gba-outer-container {
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  min-height: 100vh;
-  background: #090B10;
-  padding: 16px 12px;
-  box-sizing: border-box;
-  transition: all 0.25s ease;
-}
-
-.gba-ampliada {
-  padding: 8px !important;
-}
-
-.gba-ampliada .gba-console-wrapper {
-  max-width: 100% !important;
-  border-radius: 12px !important;
-  border-width: 3px !important;
-  padding: 10px 14px 14px 14px !important;
-}
-
-.gba-console-wrapper {
-  width: 100%;
-  max-width: 1380px;
-  border-radius: 28px;
-  padding: 14px 20px 20px 20px;
+.matrix-shell {
   position: relative;
-  box-sizing: border-box;
-  transition: background 0.3s ease, border-color 0.3s ease;
-}
-
-/* Bumpers L y R */
-.gba-bumpers-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
-  padding: 0 4px;
-}
-
-.gba-bumper-btn {
-  font-family: 'Press Start 2P', monospace;
-  font-size: 9px;
-  background: #3B4252;
-  color: #ECEFF4;
-  border: 2px solid #1E222A;
-  border-radius: 8px 8px 2px 2px;
-  padding: 6px 16px;
-  cursor: pointer;
-  box-shadow: 0 4px 0 #1A1D24;
-  transition: transform 0.05s, box-shadow 0.05s;
-}
-
-.gba-bumper-btn:hover {
-  background: #4C566A;
-}
-
-.gba-bumper-btn:active {
-  transform: translateY(2px);
-  box-shadow: 0 2px 0 #1A1D24;
-}
-
-.gba-bumper-speaker {
-  font-family: 'Silkscreen', monospace;
-  color: rgba(255, 255, 255, 0.4);
-  font-size: 11px;
-  letter-spacing: 2px;
-  display: flex;
-  align-items: center;
-}
-
-/* Header Pokédex */
-.gba-pokedex-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-bottom: 12px;
-  padding: 8px 12px;
-  background: rgba(0, 0, 0, 0.35);
-  border: 2px solid rgba(0, 0, 0, 0.6);
-  border-radius: 8px;
-}
-
-.gba-wallet-box {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: #0F172A;
-  border: 2px solid #000;
-  padding: 4px 10px;
-  border-radius: 6px;
-}
-
-.gba-mini-btn {
-  font-family: 'Press Start 2P', monospace;
-  font-size: 8px;
-  background: #334155;
-  color: #F8FAFC;
-  border: 1px solid #000;
-  padding: 5px 8px;
-  border-radius: 4px;
-  cursor: pointer;
-  box-shadow: 1px 1px 0 #000;
-}
-
-.gba-mini-btn:hover {
-  background: #475569;
-}
-
-.gba-mini-btn:active {
-  transform: translate(1px, 1px);
-  box-shadow: none;
-}
-
-.gba-trainer-chip {
-  background: #1E293B;
-  border: 2px solid #000;
-  padding: 5px 10px;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: background 0.15s;
-}
-
-.gba-trainer-chip:hover {
-  background: #334155;
-}
-
-/* Controles Inferiores GBA */
-.gba-controls-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 16px;
-  padding: 4px 20px;
-}
-
-/* D-Pad */
-.gba-dpad {
-  display: grid;
-  grid-template-columns: repeat(3, 24px);
-  grid-template-rows: repeat(3, 24px);
-  gap: 0;
-  user-select: none;
-  cursor: pointer;
-}
-
-.gba-dpad > div {
-  background: #2E3440;
-  border: 1px solid #1E222A;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 10px;
-  color: #7B88A1;
-  font-family: monospace;
-}
-
-.dpad-up { border-radius: 4px 4px 0 0; }
-.dpad-left { border-radius: 4px 0 0 4px; }
-.dpad-right { border-radius: 0 4px 4px 0; }
-.dpad-down { border-radius: 0 0 4px 4px; }
-.dpad-center { background: #242933 !important; }
-
-.gba-dpad > div:active {
-  background: #434C5E;
-}
-
-/* Start / Select */
-.gba-start-select {
-  display: flex;
-  gap: 20px;
-  align-items: center;
-  user-select: none;
-  cursor: pointer;
-}
-
-.btn-pill {
+  z-index: 1;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 4px;
 }
 
-.btn-pill > span {
-  width: 38px;
-  height: 10px;
-  background: #4C566A;
-  border: 1px solid #1E222A;
-  border-radius: 10px;
-  transform: rotate(-25deg);
-  box-shadow: 1px 2px 0 #1A1D24;
+.matrix-header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: rgba(0, 10, 4, 0.88);
+  border-bottom: 1px solid rgba(0, 255, 65, 0.35);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
-.btn-pill:active > span {
-  background: #606F8A;
-  transform: rotate(-25deg) translate(1px, 1px);
-  box-shadow: none;
-}
-
-/* Botones A y B */
-.gba-ab-buttons {
+.matrix-header-inner {
+  max-width: 1340px;
+  margin: 0 auto;
+  padding: 10px 20px;
   display: flex;
+  align-items: center;
+  justify-content: space-between;
   gap: 14px;
-  align-items: center;
-  user-select: none;
-  cursor: pointer;
+  flex-wrap: wrap;
 }
 
-.action-btn {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  background: #881337;
-  border: 2px solid #4C0519;
-  box-shadow: 0 4px 0 #2E030F, 0 6px 8px rgba(0,0,0,0.4);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.05s, box-shadow 0.05s;
-}
-
-.action-btn:active {
-  transform: translateY(3px);
-  box-shadow: 0 1px 0 #2E030F;
-}
-
-/* Toasts Flotantes */
-.gba-toast-container {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  z-index: 99999;
-  pointer-events: none;
-}
-
-.gba-toast {
-  pointer-events: auto;
-  background: #10141D;
-  border: 2px solid #000;
-  border-radius: 6px;
-  padding: 8px 12px;
-  color: #FFF;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6), 2px 2px 0 #000;
+.matrix-brand {
   display: flex;
   align-items: center;
   gap: 10px;
-  max-width: 360px;
-  animation: slideIn 0.2s ease-out;
+  cursor: pointer;
 }
 
-.gba-toast-success {
-  border-left: 5px solid #22C55E !important;
+.matrix-brand-text {
+  display: flex;
+  flex-direction: column;
 }
 
-.gba-toast-error {
-  border-left: 5px solid #EF4444 !important;
+.matrix-logo {
+  font-size: 16px;
+  letter-spacing: 0.16em;
+  color: #E8FFED;
+  line-height: 1.1;
 }
 
-.gba-toast-info {
-  border-left: 5px solid #38BDF8 !important;
+.matrix-logo strong {
+  color: var(--m-green);
+  font-weight: 600;
 }
 
-@keyframes slideIn {
-  from { transform: translateX(100%); opacity: 0; }
-  to { transform: translateX(0); opacity: 1; }
+.matrix-sub {
+  font-size: 11px;
+  color: var(--m-text-muted);
+}
+
+.matrix-nav {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.matrix-nav-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 12px;
+  background: transparent;
+  border: 1px solid rgba(0, 255, 65, 0.22);
+  border-radius: 2px;
+  color: var(--m-text-muted);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.matrix-nav-btn:hover {
+  border-color: var(--m-green);
+  color: #E8FFED;
+  background: rgba(0, 255, 65, 0.08);
+}
+
+.matrix-nav-btn.active {
+  border-color: var(--m-green);
+  color: #000000;
+  background: var(--m-green);
+  box-shadow: 0 0 14px rgba(0, 255, 65, 0.4);
+  font-weight: 600;
+}
+
+.m-key {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  font-size: 11px;
+  border: 1px solid currentColor;
+  border-radius: 2px;
+  opacity: 0.8;
+}
+
+.m-pill {
+  padding: 1px 6px;
+  font-size: 11px;
+  border-radius: 2px;
+  background: rgba(0, 0, 0, 0.35);
+  color: var(--m-green);
+  border: 1px solid rgba(0, 255, 65, 0.45);
+}
+
+.matrix-nav-btn.active .m-pill {
+  background: rgba(0, 0, 0, 0.8);
+  color: var(--m-green);
+}
+
+.m-pill.warn {
+  color: var(--m-warn);
+  border-color: var(--m-warn);
+}
+
+.m-pill.danger {
+  color: #FF7A90;
+  border-color: var(--m-red);
+}
+
+.matrix-status-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.matrix-wallet {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px 4px 12px;
+  background: rgba(0, 20, 8, 0.75);
+  border: 1px solid var(--m-border);
+  border-radius: 2px;
+}
+
+.wallet-amount {
+  color: #E8FFED;
+  font-size: 13px;
+}
+
+.matrix-main {
+  width: 100%;
+  max-width: 1340px;
+  margin: 0 auto;
+  padding: 20px;
+  flex: 1;
+}
+
+/* Toasts flotantes */
+.matrix-toast-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 99999;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 380px;
+  pointer-events: none;
+}
+
+.matrix-toast {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  background: rgba(0, 16, 7, 0.95);
+  border: 1px solid var(--m-green);
+  border-left: 4px solid var(--m-green);
+  color: #E8FFED;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.7), 0 0 12px rgba(0, 255, 65, 0.2);
+  border-radius: 2px;
+  font-size: 13px;
+}
+
+.matrix-toast.error {
+  border-color: var(--m-red);
+  border-left-color: var(--m-red);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.7), 0 0 14px rgba(255, 23, 68, 0.35);
+}
+
+.matrix-toast.info {
+  border-left-color: var(--m-warn);
+}
+
+.matrix-toast-msg {
+  line-height: 1.4;
 }
 
 @media (max-width: 768px) {
-  .gba-controls-footer {
-    display: none;
+  .matrix-header-inner {
+    padding: 10px 12px;
+    gap: 10px;
+  }
+
+  .matrix-nav {
+    width: 100%;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: 2px;
+  }
+
+  .matrix-nav-btn {
+    white-space: nowrap;
+    padding: 7px 10px;
+    font-size: 11px;
+  }
+
+  .matrix-status-bar {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .matrix-main {
+    padding: 12px;
+  }
+
+  .matrix-toast-container {
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    max-width: none;
   }
 }

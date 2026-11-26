@@ -1,40 +1,410 @@
-.cartas-retro-grid {
+.vault-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* Hero estilo "Enter the MATRIX" */
+.vault-hero {
+  padding: 28px;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  grid-template-columns: 1.5fr 1fr;
+  gap: 24px;
+  align-items: center;
+  background:
+    radial-gradient(circle at 80% 35%, rgba(0, 255, 65, 0.14), transparent 55%),
+    rgba(0, 16, 7, 0.84);
+}
+
+.vault-eyebrow {
+  font-size: 12px;
+  color: var(--m-green);
+  margin-bottom: 10px;
+}
+
+.vault-title {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 12px;
+}
+
+.vault-title-sub {
+  font-size: 22px;
+  font-weight: 300;
+  letter-spacing: 0.06em;
+  color: #D7FFE0;
+}
+
+.vault-title-main {
+  font-size: 42px;
+  line-height: 1.05;
+  color: #FFFFFF;
+  text-shadow: 0 0 22px rgba(0, 255, 65, 0.35);
+}
+
+.vault-lead {
+  color: var(--m-text);
+  font-size: 14px;
+  max-width: 560px;
+  margin-bottom: 18px;
+}
+
+.vault-ctas {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.vault-processing {
+  font-size: 12px;
+  color: var(--m-green);
+}
+
+.vault-hero-right {
+  display: grid;
+  gap: 10px;
+}
+
+.vault-stat-box {
+  padding: 12px 14px;
+  border: 1px solid rgba(0, 255, 65, 0.25);
+  background: rgba(0, 8, 3, 0.72);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stat-label {
+  font-size: 11px;
+  color: var(--m-text-muted);
+}
+
+.stat-val {
+  font-size: 15px;
+  color: #00FF41;
+}
+
+/* Filtros */
+.vault-filters {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.filters-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.filters-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.filters-label {
+  font-size: 13px;
+  color: #00FF41;
+}
+
+.filters-count {
+  font-size: 12px;
+  color: var(--m-text-muted);
+}
+
+.filters-search {
+  flex: 1;
+  min-width: 240px;
+  max-width: 420px;
+}
+
+.filters-chips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Grid de cartas */
+.matrix-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   gap: 16px;
 }
 
-@media (max-width: 640px) {
-  .cartas-retro-grid {
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 10px;
-  }
+.matrix-card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
 }
 
-.gba-modal-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.75);
-  backdrop-filter: blur(4px);
+.matrix-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--m-green);
+  box-shadow: 0 0 20px rgba(0, 255, 65, 0.28);
+}
+
+.matrix-card.card-holo {
+  border-color: rgba(0, 255, 65, 0.75);
+  box-shadow: 0 0 18px rgba(0, 255, 65, 0.22);
+}
+
+.card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 7px 10px;
+  background: rgba(0, 10, 4, 0.9);
+  border-bottom: 1px solid rgba(0, 255, 65, 0.22);
+  font-size: 11px;
+}
+
+.card-rarity {
+  color: #00FF41;
+}
+
+.card-hp {
+  color: var(--m-text-muted);
+}
+
+.card-media {
+  position: relative;
+  background: rgba(0, 4, 2, 0.85);
+  padding: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 9999;
-  padding: 16px;
+  min-height: 196px;
+  cursor: pointer;
 }
 
-.gba-modal-content {
-  background: #121824;
-  border: 4px solid #000;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 4px 4px 0 #000;
-  border-radius: 8px;
-  padding: 18px;
+.card-img {
+  height: 176px;
+  width: auto;
+  object-fit: contain;
+  border-radius: 4px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.75);
+}
+
+.card-scan-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(0, 255, 65, 0.03) 0px,
+    rgba(0, 255, 65, 0.03) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+}
+
+.card-body {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-top: 1px solid rgba(0, 255, 65, 0.2);
+}
+
+.card-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.card-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: #E8FFED;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-type-dot {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 1px 6px;
+  border: 1px solid;
+  border-radius: 2px;
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.card-price-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.card-price {
+  font-size: 15px;
+  color: #00FF41;
+}
+
+.card-buy-btn {
   width: 100%;
-  max-width: 680px;
-  animation: popIn 0.15s ease-out;
 }
 
-@keyframes popIn {
-  from { transform: scale(0.92); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
+.vault-pager {
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.vault-empty {
+  padding: 36px 20px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Modales */
+.modal-sm {
+  max-width: 480px;
+}
+
+.modal-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  padding-bottom: 12px;
+  margin-bottom: 14px;
+  border-bottom: 1px solid rgba(0, 255, 65, 0.25);
+}
+
+.modal-title {
+  font-size: 18px;
+}
+
+.modal-sub {
+  font-size: 13px;
+  color: var(--m-text-muted);
+  margin-top: 4px;
+}
+
+.pack-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(115px, 1fr));
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.pack-item {
+  padding: 10px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.pack-img {
+  height: 120px;
+  object-fit: contain;
+}
+
+.pack-name {
+  font-size: 13px;
+  color: #E8FFED;
+}
+
+.pack-meta {
+  font-size: 11px;
+}
+
+.detail-layout {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.detail-img {
+  height: 200px;
+  border-radius: 4px;
+}
+
+.detail-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.detail-row {
+  font-size: 13px;
+  color: var(--m-text);
+}
+
+.detail-price {
+  font-size: 20px;
+  color: #00FF41;
+  margin-top: 6px;
+}
+
+.modal-foot {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.modal-empty {
+  text-align: center;
+  color: var(--m-text-muted);
+  padding: 24px 0;
+}
+
+.orders-table-wrap {
+  max-height: 380px;
+  overflow-y: auto;
+}
+
+.matrix-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 14px;
+}
+
+.matrix-table th {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: #00FF41;
+  padding: 10px 8px;
+  border-bottom: 1px solid rgba(0, 255, 65, 0.35);
+}
+
+.matrix-table td {
+  padding: 10px 8px;
+  border-bottom: 1px solid rgba(0, 255, 65, 0.14);
+  color: var(--m-text);
+}
+
+@media (max-width: 768px) {
+  .vault-hero {
+    grid-template-columns: 1fr;
+    padding: 18px;
+  }
+
+  .vault-title-main {
+    font-size: 30px;
+  }
+
+  .matrix-cards-grid {
+    grid-template-columns: repeat(auto-fill, minmax(156px, 1fr));
+    gap: 12px;
+  }
 }

@@ -1,239 +1,277 @@
 <!-- ========================================================================= -->
-<!-- PANTALLA 1: TIENDA CIUDAD AZULONA & BÓVEDA TCG (INTUITIVA & RETRO)        -->
+<!-- PANTALLA 1: CATÁLOGO / ÓRDENES (ESTILO "ENTER THE MATRIX")                -->
 <!-- ========================================================================= -->
-<div class="space-y-4">
+<div class="vault-wrap">
 
-  <!-- Banner del Profesor Oak con Acciones Rápidas -->
-  <section class="gba-dialog-box" style="margin-bottom: 16px;">
-    <div style="display: flex; gap: 16px; align-items: center; flex-wrap: wrap;">
-      <!-- Avatar de Oak -->
-      <div style="background: #E2E8F0; border: 2px solid #000; border-radius: 8px; padding: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-        <img [src]="oakSprite" alt="Profesor Oak" class="pixel-art" style="width: 64px; height: 64px; object-fit: contain;">
+  <!-- Hero cinematográfico inspirado en "Enter the MATRIX" -->
+  <section class="m-panel vault-hero" aria-label="Bóveda principal">
+    <div class="vault-hero-left">
+      <div class="m-mono vault-eyebrow">SYSTEM ACCESS // BASE_SET_102 // POSTGRESQL 16</div>
+      <h1 class="vault-title">
+        <span class="vault-title-sub">Enter the</span>
+        <span class="vault-title-main m-display">MATRIX VAULT</span>
+      </h1>
+      <p class="vault-lead">
+        Catálogo conectado en tiempo real. Abre un sobre de 5 cartas o compra cualquier carta en 1 clic: cada orden persiste en PostgreSQL y dispara eventos hacia RabbitMQ y Apache Kafka.
+      </p>
+
+      <div class="vault-ctas">
+        <button
+          type="button"
+          class="m-cta-circle"
+          (click)="abrirSobre()"
+          [disabled]="procesando()"
+        >
+          <span>Abrir sobre (5 cartas)</span>
+          <span class="m-icon-ring" aria-hidden="true">▶</span>
+        </button>
+
+        <button
+          type="button"
+          class="m-cta-circle"
+          (click)="toggleHistorial()"
+        >
+          <span>Historial de órdenes ({{ ordenes().length }})</span>
+          <span class="m-icon-ring" aria-hidden="true">⬢</span>
+        </button>
+
+        @if (procesando()) {
+          <span class="m-mono vault-processing">PROCESANDO TRANSACCIÓN...</span>
+        }
       </div>
+    </div>
 
-      <!-- Texto del Profesor -->
-      <div style="flex: 1; min-width: 260px;">
-        <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 4px;">
-          <span class="font-pixel" style="font-size: 11px; color: #1E293B;">PROFESOR OAK • PUEBLO PALETA</span>
-          <span class="font-silk" style="font-size: 10px; color: #2563EB; font-weight: bold;">TIENDA CIUDAD AZULONA (PISO 4F)</span>
-        </div>
-        <p style="font-family: 'Inter', sans-serif; font-size: 14px; margin: 0 0 10px 0; color: #1E293B; line-height: 1.4;">
-          ¡Bienvenido, Entrenador! Puedes <strong>abrir un sobre booster de 5 cartas</strong> gratis o <strong>comprar cartas sueltas</strong> con un solo clic. Cada orden se registra en PostgreSQL y viaja en tiempo real por Kafka y RabbitMQ.
-          <span class="prompt-arrow font-pixel" style="font-size: 10px; color: #EF4444;">▼</span>
-        </p>
-
-        <!-- Botones de Acción Prominentes -->
-        <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
-          <button type="button" class="gba-btn gba-btn-primary" style="font-size: 11px; padding: 10px 16px;" (click)="abrirSobre()" [disabled]="procesando()">
-            <span>🎁</span>
-            <span>¡ABRIR SOBRE BOOSTER (5 CARTAS)!</span>
-          </button>
-          <button type="button" class="gba-btn" style="font-size: 10px; padding: 10px 14px;" (click)="toggleHistorial()">
-            <span>📜</span>
-            <span>VER MIS ÓRDENES ({{ ordenes().length }})</span>
-          </button>
-          @if (procesando()) {
-            <span class="font-pixel" style="font-size: 9px; color: #2563EB;">Procesando orden...</span>
-          }
-        </div>
+    <div class="vault-hero-right">
+      <div class="vault-stat-box">
+        <span class="m-mono stat-label">ENTRENADOR / OPERADOR</span>
+        <strong class="m-mono stat-val">{{ autenticado ? entrenador : 'MODO DEMO ACTIVO' }}</strong>
+      </div>
+      <div class="vault-stat-box">
+        <span class="m-mono stat-label">CATÁLOGO DISPONIBLE</span>
+        <strong class="m-mono stat-val">{{ cartas().length }} CARTAS SYNC</strong>
+      </div>
+      <div class="vault-stat-box">
+        <span class="m-mono stat-label">PIPELINE DE EVENTOS</span>
+        <strong class="m-mono stat-val">AMQP + KAFKA 3N</strong>
       </div>
     </div>
   </section>
 
-  <!-- Barra de Filtros Intuitiva con Chips Elementales Grandes -->
-  <section class="gba-dialog-dark" style="padding: 14px; margin-bottom: 16px;">
-    <!-- Barra de búsqueda superior -->
-    <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-bottom: 12px;">
-      <div style="display: flex; align-items: center; gap: 8px;">
-        <span class="font-pixel" style="font-size: 10px; color: #F8D030;">CATÁLOGO POKÉDEX:</span>
-        <span class="font-silk" style="font-size: 11px; color: #94A3B8;">{{ filtradas.length }} de {{ cartas().length }} cartas</span>
+  <!-- Barra de búsqueda y filtros elementales -->
+  <section class="m-panel vault-filters" aria-label="Filtros del catálogo">
+    <div class="filters-top">
+      <div class="filters-info">
+        <span class="m-mono filters-label">ÍNDICE DE CARTAS</span>
+        <span class="m-mono filters-count">{{ filtradas.length }} / {{ cartas().length }} REGISTROS</span>
       </div>
-      <div style="flex: 1; max-width: 420px; position: relative;">
-        <input type="text" [(ngModel)]="busqueda" (ngModelChange)="filtrar()" 
-               placeholder="🔍 Escribe un Pokémon (Charizard, Pikachu, Blastoise...)"
-               style="width: 100%; box-sizing: border-box; background: #0B0E14; border: 2px solid #475569; color: #F8FAFC; padding: 8px 12px; font-size: 14px; font-family: 'Inter', sans-serif; border-radius: 6px;">
+      <div class="filters-search">
+        <input
+          type="text"
+          class="m-input"
+          [(ngModel)]="busqueda"
+          (ngModelChange)="filtrar()"
+          placeholder="Buscar por nombre (Charizard, Blastoise, Pikachu...)"
+          aria-label="Buscar carta por nombre"
+        >
       </div>
     </div>
 
-    <!-- Chips de Elemento Grandes y Fáciles de Cliquear -->
-    <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
-      <button type="button" class="gba-btn" [class.gba-btn-primary]="tipoFiltro === '' && !soloHolo" (click)="filtrarElemento('')">
-        ⭐ TODAS ({{ cartas().length }})
+    <div class="filters-chips" role="group" aria-label="Filtrar por tipo">
+      <button
+        type="button"
+        class="m-btn m-btn-sm"
+        [class.m-btn-primary]="tipoFiltro === '' && !soloHolo"
+        (click)="filtrarElemento('')"
+      >
+        TODAS ({{ cartas().length }})
       </button>
-      <button type="button" class="gba-btn gba-btn-grass" [style.outline]="tipoFiltro.toLowerCase() === 'grass' ? '3px solid #FFF' : 'none'" (click)="filtrarElemento('Grass')">
-        🌿 PLANTA
+      <button
+        type="button"
+        class="m-btn m-btn-sm"
+        [class.m-btn-primary]="tipoFiltro.toLowerCase() === 'grass'"
+        (click)="filtrarElemento('Grass')"
+      >
+        PLANTA
       </button>
-      <button type="button" class="gba-btn gba-btn-fire" [style.outline]="tipoFiltro.toLowerCase() === 'fire' ? '3px solid #FFF' : 'none'" (click)="filtrarElemento('Fire')">
-        🔥 FUEGO
+      <button
+        type="button"
+        class="m-btn m-btn-sm"
+        [class.m-btn-primary]="tipoFiltro.toLowerCase() === 'fire'"
+        (click)="filtrarElemento('Fire')"
+      >
+        FUEGO
       </button>
-      <button type="button" class="gba-btn gba-btn-water" [style.outline]="tipoFiltro.toLowerCase() === 'water' ? '3px solid #FFF' : 'none'" (click)="filtrarElemento('Water')">
-        💧 AGUA
+      <button
+        type="button"
+        class="m-btn m-btn-sm"
+        [class.m-btn-primary]="tipoFiltro.toLowerCase() === 'water'"
+        (click)="filtrarElemento('Water')"
+      >
+        AGUA
       </button>
-      <button type="button" class="gba-btn" style="background: #EAB308; color: #000;" [style.outline]="tipoFiltro.toLowerCase() === 'lightning' ? '3px solid #FFF' : 'none'" (click)="filtrarElemento('Lightning')">
-        ⚡ ELÉCTRICO
+      <button
+        type="button"
+        class="m-btn m-btn-sm"
+        [class.m-btn-primary]="tipoFiltro.toLowerCase() === 'lightning'"
+        (click)="filtrarElemento('Lightning')"
+      >
+        ELÉCTRICO
       </button>
-      <button type="button" class="gba-btn" style="background: #EC4899; color: #FFF;" [style.outline]="tipoFiltro.toLowerCase() === 'psychic' ? '3px solid #FFF' : 'none'" (click)="filtrarElemento('Psychic')">
-        👁️ PSÍQUICO
+      <button
+        type="button"
+        class="m-btn m-btn-sm"
+        [class.m-btn-primary]="tipoFiltro.toLowerCase() === 'psychic'"
+        (click)="filtrarElemento('Psychic')"
+      >
+        PSÍQUICO
       </button>
-      <button type="button" class="gba-btn" style="background: #F59E0B; color: #000; font-weight: bold;" [style.outline]="soloHolo ? '3px solid #FFF' : 'none'" (click)="toggleSoloHolo()">
-        {{ soloHolo ? '★ VER TODAS' : '★ SOLO RARAS HOLO' }}
+      <button
+        type="button"
+        class="m-btn m-btn-sm"
+        [class.m-btn-warn]="soloHolo"
+        (click)="toggleSoloHolo()"
+      >
+        {{ soloHolo ? '★ MOSTRAR TODAS' : '★ SOLO HOLO' }}
       </button>
     </div>
   </section>
 
-  <!-- Grid de Cartas Base Set -->
+  <!-- Grid de cartas -->
   @if (cargando()) {
-    <div class="gba-dialog-box" style="text-align: center; padding: 40px 20px;">
-      <p class="font-pixel" style="font-size: 11px; color: #0F172A;">CARGANDO BÓVEDA DE CARTAS DESDE POSTGRESQL...</p>
+    <div class="m-panel vault-empty">
+      <p class="m-mono">SINCRONIZANDO CATÁLOGO DESDE POSTGRESQL...</p>
     </div>
   } @else if (paginaItems.length === 0) {
-    <div class="gba-dialog-box" style="text-align: center; padding: 40px 20px;">
-      <p class="font-pixel" style="font-size: 11px; color: #0F172A; margin-bottom: 12px;">NO SE ENCONTRARON CARTAS CON ESOS FILTROS.</p>
-      <button type="button" class="gba-btn gba-btn-primary" (click)="filtrarElemento(''); busqueda = ''; soloHolo = false">
-        LIMPIAR FILTROS
+    <div class="m-panel vault-empty">
+      <p class="m-mono">SIN COINCIDENCIAS PARA LOS FILTROS ACTUALES.</p>
+      <button
+        type="button"
+        class="m-btn m-btn-primary m-btn-sm"
+        (click)="filtrarElemento(''); busqueda = ''; soloHolo = false"
+      >
+        RESTABLECER FILTROS
       </button>
     </div>
   } @else {
-    <div class="cartas-retro-grid">
+    <section class="matrix-cards-grid" aria-label="Listado de cartas">
       @for (carta of paginaItems; track carta.id) {
-        <article class="gba-card-item" [class.gba-card-holo]="esHolo(carta.rareza)">
-          <!-- Cabecera de la carta -->
-          <div style="background: #111827; border-bottom: 2px solid #000; padding: 6px 10px; display: flex; justify-content: space-between; align-items: center;">
-            <span class="font-pixel" style="font-size: 8px; color: #F59E0B;">
-              {{ esHolo(carta.rareza) ? '★ HOLO' : '● COMÚN' }}
-            </span>
-            <span class="font-pixel" style="font-size: 8px; color: #94A3B8;">
-              {{ carta.hp ? 'HP ' + carta.hp : 'TCG' }}
-            </span>
+        <article class="m-panel matrix-card" [class.card-holo]="esHolo(carta.rareza)">
+          <div class="card-head">
+            <span class="m-mono card-rarity">{{ esHolo(carta.rareza) ? '★ HOLO' : 'STD' }}</span>
+            <span class="m-mono card-hp">{{ carta.hp ? 'HP ' + carta.hp : 'TCG' }}</span>
           </div>
 
-          <!-- Imagen oficial de la carta y sprite GBA retro -->
-          <div style="background: #0B0E14; padding: 8px; display: flex; align-items: center; justify-content: center; position: relative; min-height: 185px;">
-            <!-- Sprite retro GBA FireRed de Nintendo en la esquina -->
-            <div style="position: absolute; top: 6px; left: 6px; background: rgba(0,0,0,0.75); border: 1px solid #475569; border-radius: 6px; padding: 2px; z-index: 2;"
-                 title="Sprite GBA Oficial">
-              <img [src]="getPokemonGbaSprite(carta.nombre)" [alt]="carta.nombre" class="pixel-art" style="width: 44px; height: 44px; object-fit: contain;">
-            </div>
-
-            <!-- Carta Oficial TCG de pokemontcg.io -->
+          <div class="card-media" (click)="verDetalle(carta)" role="button" tabindex="0" (keydown.enter)="verDetalle(carta)">
             @if (carta.imagenUrl) {
-              <img [src]="carta.imagenUrl" [alt]="carta.nombre" loading="lazy" 
-                   style="height: 170px; border-radius: 6px; box-shadow: 0 4px 10px rgba(0,0,0,0.6); object-fit: contain; cursor: pointer;" 
-                   (click)="verDetalle(carta)" (error)="ocultarImagen($event)">
+              <img
+                [src]="carta.imagenUrl"
+                [alt]="carta.nombre"
+                loading="lazy"
+                class="card-img"
+                (error)="ocultarImagen($event)"
+              >
             }
+            <div class="card-scan-overlay" aria-hidden="true"></div>
           </div>
 
-          <!-- Metadatos y Botones Rápidos -->
-          <div style="background: #18202F; padding: 10px; border-top: 2px solid #000;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-              <h3 class="font-pixel" style="font-size: 11px; margin: 0; color: #F8FAFC;">{{ carta.nombre }}</h3>
-              <span class="font-pixel" [style.color]="colorTipo(carta.tipo)" style="font-size: 8px; font-weight: bold;">
+          <div class="card-body">
+            <div class="card-title-row">
+              <h3 class="card-name">{{ carta.nombre }}</h3>
+              <span class="card-type-dot" [style.border-color]="colorTipo(carta.tipo)" [style.color]="colorTipo(carta.tipo)">
                 {{ carta.tipo }}
               </span>
             </div>
 
-            <!-- Precio en Poké-dólares -->
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-              <span class="font-pixel" style="font-size: 11px; color: #F8D030;">{{ formatPokedollars(carta.precio) }}</span>
-              <button type="button" class="gba-mini-btn" (click)="verDetalle(carta)" title="Ver detalle ampliado">
-                🔍 Ver
+            <div class="card-price-row">
+              <span class="m-mono card-price">{{ formatPokedollars(carta.precio) }}</span>
+              <button type="button" class="m-btn m-btn-sm" (click)="verDetalle(carta)">
+                VER
               </button>
             </div>
 
-            <!-- Botón de Compra Rápida de 1 clic -->
-            <button type="button" class="gba-btn gba-btn-primary" style="width: 100%; justify-content: center; font-size: 9px;" 
-                    (click)="comprarRapido(carta)" [disabled]="procesando()">
-              ⚡ COMPRAR RÁPIDO
+            <button
+              type="button"
+              class="m-btn m-btn-primary card-buy-btn"
+              (click)="comprarRapido(carta)"
+              [disabled]="procesando()"
+            >
+              ▶ COMPRAR 1 CLIC
             </button>
           </div>
         </article>
       }
-    </div>
+    </section>
 
-    <!-- Paginador Retro Claro -->
-    <div class="gba-dialog-dark" style="margin-top: 16px; padding: 10px 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
-      <button type="button" class="gba-btn" (click)="cambiarPagina(-1)" [disabled]="pagina === 1">
-        ◄ PÁG. ANTERIOR
+    <!-- Paginación -->
+    <div class="m-panel vault-pager">
+      <button type="button" class="m-btn m-btn-sm" (click)="cambiarPagina(-1)" [disabled]="pagina === 1">
+        ◄ ANTERIOR
       </button>
-      <span class="font-pixel" style="font-size: 10px; color: #F8FAFC;">
-        PÁGINA {{ pagina }} DE {{ totalPaginas }}
-      </span>
-      <button type="button" class="gba-btn" (click)="cambiarPagina(1)" [disabled]="pagina === totalPaginas">
-        PÁG. SIGUIENTE ►
+      <span class="m-mono">PÁGINA {{ pagina }} / {{ totalPaginas }}</span>
+      <button type="button" class="m-btn m-btn-sm" (click)="cambiarPagina(1)" [disabled]="pagina === totalPaginas">
+        SIGUIENTE ►
       </button>
     </div>
   }
-
 </div>
 
-<!-- ========================================================================= -->
-<!-- MODAL: APERTURA DE SOBRE BOOSTER (5 CARTAS REVEAL)                        -->
-<!-- ========================================================================= -->
+<!-- MODAL: APERTURA DE SOBRE (5 CARTAS) -->
 @if (sobreAbierto()) {
-  <div class="gba-modal-backdrop" (click)="cerrarModales()">
-    <div class="gba-modal-content" (click)="$event.stopPropagation()">
-      <div class="gba-dialog-box" style="margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center;">
+  <div class="m-modal-backdrop" (click)="cerrarModales()" role="dialog" aria-modal="true" aria-label="Sobre abierto">
+    <div class="m-modal-dialog" (click)="$event.stopPropagation()">
+      <div class="modal-head">
         <div>
-          <span class="font-pixel" style="font-size: 11px; color: #0F172A; display: block;">¡HAS ABIERTO UN BOOSTER PACK!</span>
-          <span style="font-family: 'Inter', sans-serif; font-size: 12px; color: #475569;">Las 5 cartas se han registrado en tu base de datos y emitido a Kafka.</span>
+          <h2 class="m-display modal-title">BOOSTER DECODIFICADO</h2>
+          <p class="modal-sub">5 cartas registradas en PostgreSQL y emitidas a Apache Kafka.</p>
         </div>
-        <button type="button" class="gba-btn" (click)="cerrarModales()">[ X ]</button>
+        <button type="button" class="m-btn m-btn-sm" (click)="cerrarModales()" aria-label="Cerrar">×</button>
       </div>
 
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 10px; margin-bottom: 16px;">
+      <div class="pack-grid">
         @for (c of sobreAbierto(); track $index) {
-          <div class="gba-card-item" [class.gba-card-holo]="esHolo(c.rareza)" style="text-align: center; padding: 8px;">
-            <img [src]="getPokemonGbaSprite(c.nombre)" class="pixel-art" style="width: 52px; height: 52px; margin: 0 auto; display: block;">
-            <p class="font-pixel" style="font-size: 9px; color: #F8FAFC; margin: 6px 0 2px 0;">{{ c.nombre }}</p>
-            <span class="font-pixel" [style.color]="colorTipo(c.tipo)" style="font-size: 8px;">{{ c.tipo }}</span>
-            <div style="margin-top: 6px;">
-              <span class="font-pixel" style="font-size: 8px; color: #F59E0B;">{{ esHolo(c.rareza) ? '★ HOLO' : '● COMÚN' }}</span>
-            </div>
+          <div class="m-panel pack-item" [class.card-holo]="esHolo(c.rareza)">
+            @if (c.imagenUrl) {
+              <img [src]="c.imagenUrl" [alt]="c.nombre" class="pack-img" (error)="ocultarImagen($event)">
+            }
+            <strong class="pack-name">{{ c.nombre }}</strong>
+            <span class="m-mono pack-meta" [style.color]="colorTipo(c.tipo)">{{ c.tipo }}</span>
           </div>
         }
       </div>
 
-      <div style="text-align: center;">
-        <button type="button" class="gba-btn gba-btn-primary" style="font-size: 11px; padding: 10px 20px;" (click)="cerrarModales()">
-          ¡GUARDAR EN MI MOCHILA Y CONTINUAR!
+      <div class="modal-foot">
+        <button type="button" class="m-btn m-btn-primary" (click)="cerrarModales()">
+          CONFIRMAR Y CONTINUAR
         </button>
       </div>
     </div>
   </div>
 }
 
-<!-- ========================================================================= -->
-<!-- MODAL: DETALLE DE CARTA                                                   -->
-<!-- ========================================================================= -->
+<!-- MODAL: DETALLE DE CARTA -->
 @if (cartaDetalle()) {
-  <div class="gba-modal-backdrop" (click)="cerrarModales()">
-    <div class="gba-modal-content" (click)="$event.stopPropagation()" style="max-width: 480px;">
-      <div class="gba-dialog-box" style="margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
-        <span class="font-pixel" style="font-size: 10px; color: #0F172A;">DETALLE DE LA CARTA</span>
-        <button type="button" class="gba-btn" (click)="cerrarModales()">[ X ]</button>
+  <div class="m-modal-backdrop" (click)="cerrarModales()" role="dialog" aria-modal="true" aria-label="Detalle de carta">
+    <div class="m-modal-dialog modal-sm" (click)="$event.stopPropagation()">
+      <div class="modal-head">
+        <h2 class="m-display modal-title">{{ cartaDetalle()!.nombre }}</h2>
+        <button type="button" class="m-btn m-btn-sm" (click)="cerrarModales()" aria-label="Cerrar">×</button>
       </div>
 
-      <div style="display: flex; gap: 16px; align-items: center; margin-bottom: 16px; flex-wrap: wrap;">
+      <div class="detail-layout">
         @if (cartaDetalle()!.imagenUrl) {
-          <img [src]="cartaDetalle()!.imagenUrl" [alt]="cartaDetalle()!.nombre" style="height: 180px; border-radius: 6px;">
+          <img [src]="cartaDetalle()!.imagenUrl" [alt]="cartaDetalle()!.nombre" class="detail-img">
         }
-        <div style="flex: 1; min-width: 180px;">
-          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
-            <img [src]="getPokemonGbaSprite(cartaDetalle()!.nombre)" class="pixel-art" style="width: 36px; height: 36px;">
-            <h3 class="font-pixel" style="font-size: 13px; color: #F8FAFC; margin: 0;">{{ cartaDetalle()!.nombre }}</h3>
-          </div>
-          <p style="font-family: 'Inter', sans-serif; font-size: 13px; color: #94A3B8; margin: 0 0 6px 0;">
-            Tipo: <strong [style.color]="colorTipo(cartaDetalle()!.tipo)">{{ cartaDetalle()!.tipo }}</strong> • {{ cartaDetalle()!.rareza }}
-          </p>
-          <p class="font-pixel" style="font-size: 12px; color: #F8D030; margin: 6px 0;">
-            Precio: {{ formatPokedollars(cartaDetalle()!.precio) }}
-          </p>
+        <div class="detail-info">
+          <div class="m-mono detail-row">TIPO: <strong [style.color]="colorTipo(cartaDetalle()!.tipo)">{{ cartaDetalle()!.tipo }}</strong></div>
+          <div class="m-mono detail-row">RAREZA: <strong>{{ cartaDetalle()!.rareza }}</strong></div>
+          <div class="m-mono detail-row">HP: <strong>{{ cartaDetalle()!.hp || 'N/A' }}</strong></div>
+          <div class="m-mono detail-price">{{ formatPokedollars(cartaDetalle()!.precio) }}</div>
         </div>
       </div>
 
-      <div style="display: flex; justify-content: flex-end; gap: 10px;">
-        <button type="button" class="gba-btn" (click)="cerrarModales()">CERRAR</button>
-        <button type="button" class="gba-btn gba-btn-primary" (click)="comprar(cartaDetalle()!)" [disabled]="procesando()">
+      <div class="modal-foot">
+        <button type="button" class="m-btn" (click)="cerrarModales()">CERRAR</button>
+        <button type="button" class="m-btn m-btn-primary" (click)="comprar(cartaDetalle()!)" [disabled]="procesando()">
           {{ procesando() ? 'PROCESANDO...' : 'CONFIRMAR COMPRA' }}
         </button>
       </div>
@@ -241,46 +279,37 @@
   </div>
 }
 
-<!-- ========================================================================= -->
-<!-- MODAL: HISTORIAL DE PEDIDOS                                               -->
-<!-- ========================================================================= -->
+<!-- MODAL: HISTORIAL DE ÓRDENES -->
 @if (historialAbierto()) {
-  <div class="gba-modal-backdrop" (click)="toggleHistorial()">
-    <div class="gba-modal-content" (click)="$event.stopPropagation()" style="max-width: 720px;">
-      <div class="gba-dialog-box" style="margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;">
-        <span class="font-pixel" style="font-size: 11px; color: #0F172A;">HISTORIAL DE ÓRDENES EN POSTGRESQL</span>
-        <button type="button" class="gba-btn" (click)="toggleHistorial()">[ X ]</button>
+  <div class="m-modal-backdrop" (click)="toggleHistorial()" role="dialog" aria-modal="true" aria-label="Historial de órdenes">
+    <div class="m-modal-dialog" (click)="$event.stopPropagation()">
+      <div class="modal-head">
+        <h2 class="m-display modal-title">REGISTRO DE ÓRDENES // POSTGRESQL</h2>
+        <button type="button" class="m-btn m-btn-sm" (click)="toggleHistorial()" aria-label="Cerrar">×</button>
       </div>
 
       @if (ordenes().length === 0) {
-        <p style="font-family: 'Inter', sans-serif; font-size: 14px; color: #94A3B8; text-align: center; padding: 20px;">
-          No hay órdenes registradas aún. ¡Abre un sobre o compra una carta para generar eventos!
-        </p>
+        <p class="modal-empty">Aún no hay órdenes registradas. Abre un sobre o compra una carta para generar tráfico.</p>
       } @else {
-        <div style="max-height: 380px; overflow-y: auto;">
-          <table style="width: 100%; border-collapse: collapse; text-align: left;">
+        <div class="orders-table-wrap">
+          <table class="matrix-table">
             <thead>
-              <tr class="font-pixel" style="font-size: 9px; color: #F8D030; border-bottom: 2px solid #334155;">
-                <th style="padding: 8px;">ID</th>
-                <th style="padding: 8px;">CARTA</th>
-                <th style="padding: 8px;">TIPO</th>
-                <th style="padding: 8px;">TOTAL</th>
-                <th style="padding: 8px;">ESTADO</th>
+              <tr>
+                <th>ID</th>
+                <th>CARTA</th>
+                <th>TIPO</th>
+                <th>TOTAL</th>
+                <th>ESTADO</th>
               </tr>
             </thead>
             <tbody>
               @for (o of ordenes(); track o.id) {
-                <tr style="font-family: 'Inter', sans-serif; font-size: 13px; border-bottom: 1px solid #1E293B; color: #F8FAFC;">
-                  <td style="padding: 8px; font-weight: bold;">#{{ o.id }}</td>
-                  <td style="padding: 8px; display: flex; align-items: center; gap: 8px;">
-                    <img [src]="getPokemonGbaSprite(o.cartaNombre)" class="pixel-art" style="width: 24px; height: 24px;">
-                    <span>{{ o.cartaNombre }}</span>
-                  </td>
-                  <td style="padding: 8px;">{{ o.tipo }}</td>
-                  <td style="padding: 8px; color: #F8D030; font-weight: bold;">{{ formatPokedollars(o.total) }}</td>
-                  <td style="padding: 8px;">
-                    <span class="font-pixel" style="font-size: 8px; color: #22C55E;">{{ o.estado }}</span>
-                  </td>
+                <tr>
+                  <td class="m-mono">#{{ o.id }}</td>
+                  <td>{{ o.cartaNombre }}</td>
+                  <td class="m-mono">{{ o.tipo }}</td>
+                  <td class="m-mono">{{ formatPokedollars(o.total) }}</td>
+                  <td><span class="m-badge">{{ o.estado }}</span></td>
                 </tr>
               }
             </tbody>
