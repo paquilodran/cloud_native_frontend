@@ -5,32 +5,51 @@
 }
 
 /* ========================================================================== */
-/* HERO CINEMATOGRÁFICO CALCADO DE LA REFERENCIA "Enter the MATRIX"          */
+/* HERO CINEMATOGRÁFICO IDÉNTICO A "Matrix Visual Redesign"                   */
 /* ========================================================================== */
 .matrix-cinema-hero {
   position: relative;
-  min-height: 460px;
+  min-height: 500px;
   border: 1px solid rgba(0, 255, 65, 0.35);
   border-radius: 4px;
   overflow: hidden;
   background-color: #000000;
-  background-image: url('/matrix-hero.jpg');
-  background-size: cover;
-  background-position: right center;
   display: flex;
   align-items: stretch;
-  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.85), 0 0 24px rgba(0, 255, 65, 0.14);
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.85), 0 0 24px rgba(0, 255, 65, 0.12);
 }
 
-.hero-bg-overlay {
+.mx-enter-hero__photo {
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    90deg,
-    rgba(0, 6, 2, 0.92) 0%,
-    rgba(0, 12, 5, 0.72) 45%,
-    rgba(0, 10, 4, 0.22) 100%
-  );
+  background: url('/matrix-hero-bg.png') 68% center / cover no-repeat;
+  mix-blend-mode: screen;
+  opacity: 0.88;
+  pointer-events: none;
+}
+
+.hero-blinds {
+  position: absolute;
+  inset: 0;
+  background-image:
+    repeating-linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0) 0px,
+      rgba(0, 0, 0, 0) 2px,
+      rgba(0, 12, 6, 0.5) 2px,
+      rgba(0, 12, 6, 0.5) 4px
+    ),
+    linear-gradient(90deg, rgba(0, 6, 2, 0.82) 0%, rgba(0, 10, 4, 0.45) 48%, rgba(0, 8, 3, 0.14) 100%);
+  pointer-events: none;
+}
+
+.mx-enter-hero__axis {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 33.5%;
+  width: 1px;
+  background: rgba(255, 255, 255, 0.35);
   pointer-events: none;
 }
 
@@ -38,17 +57,17 @@
   position: absolute;
   left: 0;
   right: 0;
-  top: 63%;
+  top: 64%;
   height: 2px;
   background: linear-gradient(
     90deg,
     transparent 0%,
     rgba(0, 255, 128, 0.35) 28%,
-    rgba(200, 255, 225, 0.85) 54%,
-    rgba(0, 255, 128, 0.3) 80%,
+    rgba(210, 255, 230, 0.85) 54%,
+    rgba(0, 255, 128, 0.28) 80%,
     transparent 100%
   );
-  box-shadow: 0 0 18px rgba(0, 255, 128, 0.55);
+  box-shadow: 0 0 18px rgba(0, 255, 128, 0.5);
   pointer-events: none;
 }
 
@@ -56,66 +75,41 @@
   position: relative;
   z-index: 2;
   width: 100%;
-  padding: 28px 36px;
+  padding: 48px 40px 28px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   gap: 28px;
 }
 
-.cinema-top-brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.cinema-shield {
-  width: 30px;
-  height: 30px;
-  border: 1.5px solid #FFFFFF;
-  color: #FFFFFF;
-  font-family: var(--font-mono);
-  font-size: 16px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 3px;
-}
-
-.cinema-studio {
-  font-family: var(--font-sans);
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 0.2em;
-  color: #E8FFED;
-}
-
 .cinema-title-block {
-  max-width: 540px;
+  max-width: 560px;
   display: flex;
   flex-direction: column;
-  gap: 22px;
+  gap: 24px;
+  margin-top: 24px;
 }
 
 .cinema-heading {
   display: flex;
   flex-direction: column;
   line-height: 1.02;
+  font-family: 'Outfit', 'Inter', sans-serif;
 }
 
 .cinema-enter {
-  font-weight: 300;
-  font-size: clamp(28px, 3.6vw, 42px);
-  letter-spacing: 0.04em;
+  font-weight: 200;
+  font-size: clamp(28px, 3.6vw, 44px);
+  letter-spacing: 0.06em;
   color: #E8FFED;
 }
 
 .cinema-matrix {
   font-weight: 300;
-  font-size: clamp(48px, 7vw, 84px);
+  font-size: clamp(50px, 7.2vw, 88px);
   letter-spacing: 0.14em;
   color: #FFFFFF;
-  text-shadow: 0 0 28px rgba(0, 255, 65, 0.28);
+  text-shadow: 0 0 28px rgba(0, 255, 65, 0.26);
 }
 
 /* Línea vertical + botones circulares estilo "Watch trailer" / "Buy tickets" */

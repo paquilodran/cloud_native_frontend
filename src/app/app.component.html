@@ -4,47 +4,49 @@
     <router-outlet />
   </div>
 } @else {
-  <!-- Lluvia de código Matrix global (persiste entre las 4 pestañas) -->
+  <!-- Lluvia de código Matrix global (montada una sola vez para persistir entre pestañas) -->
   <app-matrix-rain [activeBrokerIds]="activeBrokerIds" />
 
   <div class="matrix-shell">
-    <!-- Header minimalista fijo estilo "Enter the MATRIX" -->
+    <!-- Header fijo minimalista, limpio y ordenado (sin Warner Bros ni redes sociales) -->
     <header class="matrix-header" role="banner">
       <div class="matrix-header-inner">
         <div class="matrix-brand" (click)="irATab('mochila')" role="button" tabindex="0" (keydown.enter)="irATab('mochila')">
-          <span class="matrix-logo-mark" aria-hidden="true">M</span>
+          <span class="matrix-logo-mark" aria-hidden="true">M//</span>
           <div class="matrix-brand-text">
-            <span class="matrix-brand-title">MATRIX CLOUD</span>
-            <span class="matrix-brand-sub m-mono">DISTRIBUTED STREAMING // AWS EC2</span>
+            <span class="matrix-brand-title">ENTER THE MATRIX</span>
+            <span class="matrix-brand-sub m-mono">DISTRIBUTED ARCHITECTURE CONSOLE</span>
           </div>
         </div>
 
         <!-- 4 Pestañas principales (atajos 1-4) -->
-        <nav class="matrix-nav" aria-label="Navegación principal">
-          <button type="button" class="matrix-nav-tab" [class.active]="currentTab === 'mochila'" (click)="irATab('mochila')">
+        <nav class="matrix-nav" role="tablist" aria-label="Navegación principal">
+          <button type="button" role="tab" class="matrix-nav-tab" [class.active]="currentTab === 'mochila'" [attr.aria-selected]="currentTab === 'mochila'" (click)="irATab('mochila')">
             <span class="tab-key">1</span>
             <span>INICIO / TICKETS</span>
           </button>
-          <button type="button" class="matrix-nav-tab" [class.active]="currentTab === 'kafka'" (click)="irATab('kafka')">
+          <button type="button" role="tab" class="matrix-nav-tab" [class.active]="currentTab === 'kafka'" [attr.aria-selected]="currentTab === 'kafka'" (click)="irATab('kafka')">
             <span class="tab-key">2</span>
             <span>CLÚSTER KAFKA</span>
           </button>
-          <button type="button" class="matrix-nav-tab" [class.active]="currentTab === 'rabbitmq'" (click)="irATab('rabbitmq')">
+          <button type="button" role="tab" class="matrix-nav-tab" [class.active]="currentTab === 'rabbitmq'" [attr.aria-selected]="currentTab === 'rabbitmq'" (click)="irATab('rabbitmq')">
             <span class="tab-key">3</span>
             <span>RABBITMQ</span>
           </button>
-          <button type="button" class="matrix-nav-tab" [class.active]="currentTab === 'entrenador'" (click)="irATab('entrenador')">
+          <button type="button" role="tab" class="matrix-nav-tab" [class.active]="currentTab === 'entrenador'" [attr.aria-selected]="currentTab === 'entrenador'" (click)="irATab('entrenador')">
             <span class="tab-key">4</span>
             <span>SISTEMA AWS / JWT</span>
           </button>
         </nav>
 
-        <!-- Telemetría global y saldo -->
+        <!-- Telemetría global + Saldo + Perfil de Usuario con Token JWT -->
         <div class="matrix-header-meta">
           <button type="button" class="matrix-status-pill"
                   [class.warn]="brokersOnlineCount === 2"
                   [class.danger]="brokersOnlineCount < 2"
                   (click)="irATab('kafka')"
+                  role="status"
+                  aria-live="polite"
                   title="Estado de los 3 brokers Kafka">
             <span class="m-dot" [class.m-dot-warn]="brokersOnlineCount === 2" [class.m-dot-danger]="brokersOnlineCount < 2"></span>
             <span class="m-mono">{{ brokersOnlineCount }}/3 ISR</span>
@@ -56,6 +58,12 @@
               +50K
             </button>
           </div>
+
+          <button type="button" class="matrix-profile-btn user-trigger" (click)="abrirModalPerfil()" title="Ver perfil de usuario y Token JWT">
+            <span class="profile-avatar m-mono">{{ inicial }}</span>
+            <span class="profile-label">{{ usuario }}</span>
+            <span class="m-dot" [class.m-dot-warn]="!autenticado"></span>
+          </button>
         </div>
       </div>
     </header>
@@ -65,6 +73,81 @@
       <router-outlet />
     </main>
   </div>
+
+  <!-- MODAL: PERFIL DE USUARIO, CLAIMS Y TOKEN JWT (MICROSOFT ENTRA ID) -->
+  @if (modalPerfilAbierto) {
+    <div class="m-modal-backdrop" (click)="cerrarModalPerfil()">
+      <div class="m-modal-dialog profile-modal" (click)="$event.stopPropagation()" role="dialog" aria-modal="true" aria-label="Perfil de usuario y Token JWT">
+        <div class="pm-header">
+          <div class="pm-user">
+            <span class="pm-avatar m-mono">{{ inicial }}</span>
+            <div>
+              <h2 class="m-display pm-title">{{ usuario }}</h2>
+              <p class="m-mono pm-email">{{ email }}</p>
+            </div>
+          </div>
+          <button type="button" class="m-btn m-btn-sm" (click)="cerrarModalPerfil()" aria-label="Cerrar perfil">✕</button>
+        </div>
+
+        <div class="pm-status-row">
+          <span class="m-badge" [class.m-badge-warn]="!autenticado">
+            <span class="m-dot" [class.m-dot-warn]="!autenticado"></span>
+            {{ autenticado ? 'ENTRA ID // TOKEN RS256 ACTIVO' : 'SESIÓN STANDALONE // SIN LOGIN ENTRA ID' }}
+          </span>
+        </div>
+
+        <div class="pm-grid">
+          <div class="pm-field">
+            <span class="m-mono pm-label">TENANT ID</span>
+            <div class="pm-copy-row">
+              <code class="m-code pm-val">{{ tenantId }}</code>
+              <button type="button" class="m-btn m-btn-sm" (click)="copiarTexto(tenantId, 'tenant')">
+                {{ copiadoTenant ? '✓ COPIADO' : 'COPIAR' }}
+              </button>
+            </div>
+          </div>
+
+          <div class="pm-field">
+            <span class="m-mono pm-label">API CLIENT ID</span>
+            <code class="m-code pm-val">{{ clientId }}</code>
+          </div>
+        </div>
+
+        @if (tokenClaims) {
+          <div class="pm-claims">
+            <span class="m-mono pm-label">CLAIMS DECODIFICADOS (JWT PAYLOAD)</span>
+            <div class="pm-claims-grid">
+              <div><small>Nombre:</small> <strong>{{ tokenClaims.name }}</strong></div>
+              <div><small>Usuario:</small> <strong>{{ tokenClaims.preferredUsername }}</strong></div>
+              <div><small>Roles:</small> <strong>{{ tokenClaims.roles }}</strong></div>
+              <div><small>Scopes:</small> <strong>{{ tokenClaims.scopes }}</strong></div>
+              <div><small>Audience:</small> <strong>{{ tokenClaims.audience }}</strong></div>
+              <div><small>Expira:</small> <strong>{{ tokenClaims.expires }}</strong></div>
+            </div>
+          </div>
+        }
+
+        <div class="pm-token-block">
+          <div class="pm-token-head">
+            <span class="m-mono pm-label">ACCESS TOKEN (BEARER JWT)</span>
+            <button type="button" class="m-btn m-btn-sm m-btn-primary" (click)="copiarTexto(tokenPreview, 'token')" [disabled]="!autenticado">
+              {{ copiadoToken ? '✓ TOKEN COPIADO' : 'COPIAR JWT' }}
+            </button>
+          </div>
+          <pre class="m-code pm-token-box">{{ tokenPreview || 'Cargando token...' }}</pre>
+        </div>
+
+        <div class="pm-footer">
+          @if (autenticado) {
+            <button type="button" class="m-btn m-btn-danger" (click)="logout()">CERRAR SESIÓN ENTRA ID</button>
+          } @else {
+            <button type="button" class="m-btn m-btn-primary" (click)="iniciarSesion()">INICIAR SESIÓN CON MICROSOFT ENTRA ID</button>
+          }
+          <button type="button" class="m-btn" (click)="cerrarModalPerfil()">CERRAR</button>
+        </div>
+      </div>
+    </div>
+  }
 
   <!-- Notificaciones flotantes (Toasts) -->
   <div class="matrix-toast-stack" role="status" aria-live="polite">

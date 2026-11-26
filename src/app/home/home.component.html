@@ -405,6 +405,20 @@
         <span>Sesión JWT</span>
         <strong class="m-mono">{{ autenticado ? 'TOKEN RS256 ACTIVO' : 'MODO DEMO ACTIVO' }}</strong>
       </div>
+      @if (claims) {
+        <div class="sys-kv">
+          <span>Usuario Entra ID</span>
+          <strong class="m-mono">{{ claims.name }} ({{ claims.preferredUsername }})</strong>
+        </div>
+        <div class="sys-kv">
+          <span>Roles / Scopes</span>
+          <strong class="m-mono">{{ claims.roles }} // {{ claims.scopes }}</strong>
+        </div>
+        <div class="sys-kv">
+          <span>Expiración Token</span>
+          <strong class="m-mono">{{ claims.expires }}</strong>
+        </div>
+      }
 
       <div class="ping-block">
         <button type="button" class="m-btn m-btn-primary" (click)="probarPingGateway()">

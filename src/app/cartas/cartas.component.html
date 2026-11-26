@@ -3,27 +3,22 @@
 <!-- ========================================================================= -->
 <div class="vault-stack">
 
-  <!-- HERO CINEMATOGRÁFICO CALCADO DE LA REFERENCIA "Enter the MATRIX" -->
+  <!-- HERO CINEMATOGRÁFICO IDÉNTICO A "Matrix Visual Redesign" (SIN WARNER BROS NI REDES) -->
   <section class="matrix-cinema-hero" aria-label="Enter the Matrix">
-    <div class="hero-bg-overlay" aria-hidden="true"></div>
+    <div class="mx-enter-hero__photo" aria-hidden="true"></div>
+    <div class="mx-hero-crt-blinds hero-blinds" aria-hidden="true"></div>
+    <div class="mx-enter-hero__axis" aria-hidden="true"></div>
     <div class="hero-lens-flare" aria-hidden="true"></div>
 
     <div class="cinema-hero-content">
-      <div class="cinema-top-brand">
-        <span class="cinema-shield" aria-hidden="true">M</span>
-        <span class="cinema-studio">MATRIX CLOUD // PRODUCTION</span>
-      </div>
-
       <div class="cinema-title-block">
         <h1 class="cinema-heading">
           <span class="cinema-enter">Enter the</span>
           <span class="cinema-matrix">MATRIX</span>
         </h1>
 
-        <!-- Línea vertical con los 2 CTAs circulares exactamente como la referencia -->
+        <!-- 2 CTAs circulares anclados sobre el eje vertical (sin Warner Bros ni redes) -->
         <div class="cinema-cta-rail">
-          <div class="rail-line" aria-hidden="true"></div>
-
           <button type="button" class="cinema-cta-row" (click)="abrirSobre()" [disabled]="procesando()">
             <span class="cinema-cta-label">
               {{ procesando() ? 'Generando lote...' : 'Generar lote (5 tickets)' }}

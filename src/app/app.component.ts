@@ -8,6 +8,7 @@ import { environment } from '../environments/environment';
 import { CartasService } from './cartas/cartas.service';
 import { MatrixRainComponent } from './shared/matrix-rain.component';
 import { NotificationService } from './shared/notification.service';
+import { TokenClaims, toTokenClaims } from './shared/token-claims';
 
 @Component({
   selector: 'app-root',
@@ -47,11 +48,16 @@ export class AppComponent implements OnInit {
   menuPerfilAbierto = false;
   modalPerfilAbierto = false;
   tokenPreview = '';
+  tokenClaims: TokenClaims | null = null;
   copiadoTenant = false;
   copiadoToken = false;
 
   get brokersOnlineCount(): number {
     return this.activeBrokerIds.length;
+  }
+
+  get inicial(): string {
+    return (this.usuario || 'P').charAt(0).toUpperCase();
   }
 
   @HostListener('window:matrix:brokers', ['$event'])
@@ -82,6 +88,21 @@ export class AppComponent implements OnInit {
     const idx = this.tabs.indexOf(this.currentTab);
     const nextIdx = (idx + 1) % this.tabs.length;
     this.irATab(this.tabs[nextIdx]);
+  }
+
+  abrirModalPerfil(): void {
+    this.modalPerfilAbierto = true;
+    this.menuPerfilAbierto = false;
+    this.obtenerTokenPreview();
+  }
+
+  cerrarModalPerfil(): void {
+    this.modalPerfilAbierto = false;
+  }
+
+  iniciarSesion(): void {
+    this.modalPerfilAbierto = false;
+    this.router.navigate(['/login']);
   }
 
   @HostListener('window:keydown', ['$event'])
@@ -174,11 +195,8 @@ export class AppComponent implements OnInit {
     });
   }
 
-  cerrarModalPerfil(): void {
-    this.modalPerfilAbierto = false;
-  }
-
   logout(): void {
+    this.modalPerfilAbierto = false;
     this.menuPerfilAbierto = false;
     this.msal.logoutRedirect();
   }
@@ -195,5 +213,28 @@ export class AppComponent implements OnInit {
     this.autenticado = false;
     this.usuario = 'Patricio';
     this.email = 'patricio@duocuc.cl';
+  }
+
+  private obtenerTokenPreview(): void {
+    const account = this.msal.instance.getActiveAccount() ?? this.msal.instance.getAllAccounts()[0];
+    if (!account) {
+      this.tokenPreview = 'Sin sesión Microsoft Entra ID activa (Modo Standalone / Demo)';
+      this.tokenClaims = null;
+      return;
+    }
+
+    this.msal.instance
+      .acquireTokenSilent({
+        account,
+        scopes: environment.azure.apiScopes
+      })
+      .then((result) => {
+        this.tokenPreview = result.accessToken;
+        this.tokenClaims = toTokenClaims(result.accessToken);
+      })
+      .catch(() => {
+        this.tokenPreview = 'Token silencioso no disponible (inicia sesión nuevamente)';
+        this.tokenClaims = null;
+      });
   }
 }
