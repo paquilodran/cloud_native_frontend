@@ -32,6 +32,7 @@ interface BandColorState {
     <canvas
       #rainCanvas
       class="matrix-rain-canvas"
+      [class.matrix-rain-canvas--critical]="activeBrokerIds.length === 0"
       aria-hidden="true"
     ></canvas>
   `,
@@ -44,8 +45,12 @@ interface BandColorState {
         height: 100vh;
         z-index: 0;
         pointer-events: none;
-        opacity: 0.35;
+        opacity: 0.42;
         display: block;
+        transition: opacity 400ms ease;
+      }
+      .matrix-rain-canvas--critical {
+        opacity: 0.62;
       }
     `,
   ],

@@ -304,8 +304,11 @@ export class HomeComponent implements OnInit, OnDestroy {
     return ['ZION-01', 'NEBUCHADNEZZAR-02', 'CONSTRUCT-03'][id - 1] ?? `NODE-0${id}`;
   }
 
+  private manualOfflineBrokers = new Set<number>();
+
   private emitBrokerState(): void {
     if (typeof window !== 'undefined') {
+      sessionStorage.setItem('matrix_offline_brokers', JSON.stringify([...this.manualOfflineBrokers]));
       window.dispatchEvent(new CustomEvent('matrix:brokers', { detail: [...this.activeBrokerIds] }));
     }
   }
@@ -314,6 +317,7 @@ export class HomeComponent implements OnInit, OnDestroy {
     const estaOnline = this.activeBrokerIds.includes(brokerId);
 
     if (estaOnline) {
+      this.manualOfflineBrokers.add(brokerId);
       this.activeBrokerIds = this.activeBrokerIds.filter((id) => id !== brokerId);
       this.brokersOnlineCount = this.activeBrokerIds.length;
       this.brokerCaidoId = brokerId;
@@ -326,6 +330,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         'KAFKA'
       );
     } else {
+      this.manualOfflineBrokers.delete(brokerId);
       this.activeBrokerIds = [...this.activeBrokerIds, brokerId].sort((a, b) => a - b);
       this.brokersOnlineCount = this.activeBrokerIds.length;
       if (this.brokerCaidoId === brokerId) {
@@ -358,6 +363,20 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    if (typeof window !== 'undefined') {
+      try {
+        const saved = JSON.parse(sessionStorage.getItem('matrix_offline_brokers') || '[]');
+        if (Array.isArray(saved)) {
+          this.manualOfflineBrokers = new Set<number>(saved);
+          this.activeBrokerIds = [1, 2, 3].filter((id) => !this.manualOfflineBrokers.has(id));
+          this.brokersOnlineCount = this.activeBrokerIds.length;
+          this.emitBrokerState();
+        }
+      } catch {
+        // ignore storage errors
+      }
+    }
+
     this.route.queryParams.subscribe((params) => {
       const tab = params['tab'];
       if (tab === 'inicio') {
@@ -626,14 +645,20 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.kafkaService.getClusterOverview().subscribe({
       next: (res) => {
         if (res && res.brokersCount !== undefined) {
-          this.brokersOnlineCount = res.brokersCount;
-          if (Array.isArray(res.nodes)) {
-            this.activeBrokerIds = res.nodes.map((n: any) => n.id);
-            this.emitBrokerState();
-          }
+          const realIds: number[] = Array.isArray(res.nodes) ? res.nodes.map((n: any) => n.id) : [];
+          this.activeBrokerIds = realIds.filter((id) => !this.manualOfflineBrokers.has(id));
+          this.brokersOnlineCount = this.activeBrokerIds.length;
+          this.emitBrokerState();
         }
       },
-      error: () => {}
+      error: () => {
+        // Si todos los brokers reales están caídos y el admin client no puede conectar, marcar 0/3 (todo rojo)
+        if (this.manualOfflineBrokers.size === 3) {
+          this.activeBrokerIds = [];
+          this.brokersOnlineCount = 0;
+          this.emitBrokerState();
+        }
+      }
     });
 
     this.cargarEventosKafka();
