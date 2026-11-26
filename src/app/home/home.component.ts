@@ -291,7 +291,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   brokerNombre(id: number): string {
-    return ["Bulbasaur", "Charmander", "Squirtle"][id - 1] ?? `Broker ${id}`;
+    return ['ZION-01', 'NEBUCHADNEZZAR-02', 'CONSTRUCT-03'][id - 1] ?? `NODE-0${id}`;
   }
 
   private emitBrokerState(): void {
@@ -379,20 +379,20 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   curarDlqJoy(): void {
     if (this.dlqMessages.length === 0) {
-      this.mostrarToast('No hay mensajes en la Dead Letter Queue para curar.', 'info', 'Centro Pokémon');
+      this.mostrarToast('No hay mensajes en la Dead Letter Queue para recuperar.', 'info', 'RabbitMQ DLQ');
       return;
     }
     this.isHealingAnim = true;
     setTimeout(() => {
       this.vaciarDlq();
       this.isHealingAnim = false;
-      this.mostrarToast('¡La Enfermera Joy usó Revivir Máximo! Mensajes reinyectados al clúster.', 'success', 'Centro Pokémon');
+      this.mostrarToast('Mensajes de la Dead Letter Queue reinyectados al clúster AMQP.', 'success', 'RabbitMQ DLQ');
     }, 800);
   }
 
   emitirRafaga(): void {
     this.enviarRafagaBatch(5);
-    this.mostrarToast('¡Ráfaga x5 emitida! 5 eventos analíticos enviados a través de las particiones P0, P1 y P2.', 'success', 'Gimnasio Kafka');
+    this.mostrarToast('Ráfaga x5 emitida: 5 eventos distribuidos entre las particiones P0, P1 y P2.', 'success', 'Clúster Kafka');
   }
 
   seleccionarTab(tab: HomeTab): void {

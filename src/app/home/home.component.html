@@ -10,13 +10,13 @@
   </div>
   <div class="missions-actions">
     <button type="button" class="m-btn m-btn-sm" (click)="seleccionarTab('mochila')">
-      ▶ 1. CATÁLOGO
+      ▶ 1. TICKETS MATRIX
     </button>
     <button type="button" class="m-btn m-btn-sm" (click)="seleccionarTab('kafka'); emitirRafaga()">
       ⚡ 2. RÁFAGA KAFKA x5
     </button>
     <button type="button" class="m-btn m-btn-sm m-btn-danger" (click)="seleccionarTab('kafka'); simularCaosBroker(1)">
-      ⬢ 3. TOGGLE BROKER 1
+      ⬢ 3. APAGAR NODE-01 (ROJO)
     </button>
     <button type="button" class="m-btn m-btn-sm" (click)="seleccionarTab('rabbitmq'); curarDlqJoy()">
       ↻ 4. CURAR DLQ
@@ -87,7 +87,7 @@
         <div class="broker-head">
           <div>
             <span class="m-mono broker-band">BANDA IZQUIERDA // P0 LEADER</span>
-            <h3 class="broker-name">KAFKA BROKER 1</h3>
+            <h3 class="broker-name">NODE-01 // ZION</h3>
           </div>
           <span class="m-badge" [class.m-badge-danger]="!activeBrokerIds.includes(1)">
             {{ activeBrokerIds.includes(1) ? 'ONLINE :29092' : 'NODE OFFLINE' }}
@@ -127,7 +127,7 @@
         <div class="broker-head">
           <div>
             <span class="m-mono broker-band">BANDA CENTRAL // P1 LEADER</span>
-            <h3 class="broker-name">KAFKA BROKER 2</h3>
+            <h3 class="broker-name">NODE-02 // NEBUCHADNEZZAR</h3>
           </div>
           <span class="m-badge" [class.m-badge-danger]="!activeBrokerIds.includes(2)">
             {{ activeBrokerIds.includes(2) ? 'ONLINE :29093' : 'NODE OFFLINE' }}
@@ -167,7 +167,7 @@
         <div class="broker-head">
           <div>
             <span class="m-mono broker-band">BANDA DERECHA // P2 LEADER</span>
-            <h3 class="broker-name">KAFKA BROKER 3</h3>
+            <h3 class="broker-name">NODE-03 // CONSTRUCT</h3>
           </div>
           <span class="m-badge" [class.m-badge-danger]="!activeBrokerIds.includes(3)">
             {{ activeBrokerIds.includes(3) ? 'ONLINE :29094' : 'NODE OFFLINE' }}

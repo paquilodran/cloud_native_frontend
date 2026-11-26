@@ -1,227 +1,384 @@
-.vault-wrap {
+.vault-stack {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 20px;
 }
 
-/* Hero estilo "Enter the MATRIX" */
-.vault-hero {
-  padding: 28px;
-  display: grid;
-  grid-template-columns: 1.5fr 1fr;
-  gap: 24px;
-  align-items: center;
-  background:
-    radial-gradient(circle at 80% 35%, rgba(0, 255, 65, 0.14), transparent 55%),
-    rgba(0, 16, 7, 0.84);
+/* ========================================================================== */
+/* HERO CINEMATOGRÁFICO CALCADO DE LA REFERENCIA "Enter the MATRIX"          */
+/* ========================================================================== */
+.matrix-cinema-hero {
+  position: relative;
+  min-height: 460px;
+  border: 1px solid rgba(0, 255, 65, 0.35);
+  border-radius: 4px;
+  overflow: hidden;
+  background-color: #000000;
+  background-image: url('/matrix-hero.jpg');
+  background-size: cover;
+  background-position: right center;
+  display: flex;
+  align-items: stretch;
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.85), 0 0 24px rgba(0, 255, 65, 0.14);
 }
 
-.vault-eyebrow {
-  font-size: 12px;
-  color: var(--m-green);
-  margin-bottom: 10px;
+.hero-bg-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(0, 6, 2, 0.92) 0%,
+    rgba(0, 12, 5, 0.72) 45%,
+    rgba(0, 10, 4, 0.22) 100%
+  );
+  pointer-events: none;
 }
 
-.vault-title {
+.hero-lens-flare {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 63%;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(0, 255, 128, 0.35) 28%,
+    rgba(200, 255, 225, 0.85) 54%,
+    rgba(0, 255, 128, 0.3) 80%,
+    transparent 100%
+  );
+  box-shadow: 0 0 18px rgba(0, 255, 128, 0.55);
+  pointer-events: none;
+}
+
+.cinema-hero-content {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  padding: 28px 36px;
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  margin-bottom: 12px;
+  justify-content: space-between;
+  gap: 28px;
 }
 
-.vault-title-sub {
-  font-size: 22px;
-  font-weight: 300;
-  letter-spacing: 0.06em;
-  color: #D7FFE0;
-}
-
-.vault-title-main {
-  font-size: 42px;
-  line-height: 1.05;
-  color: #FFFFFF;
-  text-shadow: 0 0 22px rgba(0, 255, 65, 0.35);
-}
-
-.vault-lead {
-  color: var(--m-text);
-  font-size: 14px;
-  max-width: 560px;
-  margin-bottom: 18px;
-}
-
-.vault-ctas {
+.cinema-top-brand {
   display: flex;
   align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.vault-processing {
-  font-size: 12px;
-  color: var(--m-green);
-}
-
-.vault-hero-right {
-  display: grid;
   gap: 10px;
 }
 
-.vault-stat-box {
-  padding: 12px 14px;
-  border: 1px solid rgba(0, 255, 65, 0.25);
-  background: rgba(0, 8, 3, 0.72);
+.cinema-shield {
+  width: 30px;
+  height: 30px;
+  border: 1.5px solid #FFFFFF;
+  color: #FFFFFF;
+  font-family: var(--font-mono);
+  font-size: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 3px;
+}
+
+.cinema-studio {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  color: #E8FFED;
+}
+
+.cinema-title-block {
+  max-width: 540px;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 22px;
 }
 
-.stat-label {
-  font-size: 11px;
-  color: var(--m-text-muted);
+.cinema-heading {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.02;
 }
 
-.stat-val {
-  font-size: 15px;
+.cinema-enter {
+  font-weight: 300;
+  font-size: clamp(28px, 3.6vw, 42px);
+  letter-spacing: 0.04em;
+  color: #E8FFED;
+}
+
+.cinema-matrix {
+  font-weight: 300;
+  font-size: clamp(48px, 7vw, 84px);
+  letter-spacing: 0.14em;
+  color: #FFFFFF;
+  text-shadow: 0 0 28px rgba(0, 255, 65, 0.28);
+}
+
+/* Línea vertical + botones circulares estilo "Watch trailer" / "Buy tickets" */
+.cinema-cta-rail {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+  padding-left: 8px;
+}
+
+.rail-line {
+  position: absolute;
+  left: 244px;
+  top: -12px;
+  bottom: -24px;
+  width: 1px;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.55) 40%,
+    rgba(0, 255, 65, 0.45) 100%
+  );
+  pointer-events: none;
+}
+
+.cinema-cta-row {
+  position: relative;
+  z-index: 1;
+  width: 256px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 14px;
+  background: transparent;
+  border: 0;
+  padding: 4px 0;
+  color: #FFFFFF;
+  cursor: pointer;
+  transition: transform 0.18s ease, color 0.18s ease;
+}
+
+.cinema-cta-row:hover:not(:disabled) {
   color: #00FF41;
+  transform: translateX(3px);
 }
 
-/* Filtros */
-.vault-filters {
-  padding: 16px;
+.cinema-cta-row:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.cinema-cta-label {
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+}
+
+.cinema-cta-circle {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1.5px solid #FFFFFF;
+  background: rgba(0, 0, 0, 0.65);
+  color: #FFFFFF;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.cinema-cta-row:hover:not(:disabled) .cinema-cta-circle {
+  border-color: #00FF41;
+  background: #00FF41;
+  color: #000000;
+  box-shadow: 0 0 16px rgba(0, 255, 65, 0.65);
+}
+
+.cinema-bottom-meta {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  font-size: 12px;
+  color: #98C9A3;
+}
+
+/* ========================================================================== */
+/* FILTROS Y GRID DE TICKETS MATRIX                                           */
+/* ========================================================================== */
+.filter-panel {
+  padding: 16px 18px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
 }
 
-.filters-top {
+.filter-top {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: 14px;
   flex-wrap: wrap;
 }
 
-.filters-info {
+.filter-heading {
   display: flex;
-  align-items: center;
+  align-items: baseline;
   gap: 12px;
 }
 
-.filters-label {
-  font-size: 13px;
+.filter-title {
+  font-size: 14px;
   color: #00FF41;
 }
 
-.filters-count {
-  font-size: 12px;
-  color: var(--m-text-muted);
+.filter-count {
+  font-size: 13px;
+  color: #98C9A3;
 }
 
-.filters-search {
+.filter-search {
   flex: 1;
   min-width: 240px;
-  max-width: 420px;
+  max-width: 440px;
 }
 
-.filters-chips {
+.filter-chips {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
 }
 
-/* Grid de cartas */
-.matrix-cards-grid {
+.tickets-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   gap: 16px;
 }
 
-.matrix-card {
+.ticket-card {
   display: flex;
   flex-direction: column;
   overflow: hidden;
   transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
 }
 
-.matrix-card:hover {
+.ticket-card:hover {
   transform: translateY(-3px);
-  border-color: var(--m-green);
-  box-shadow: 0 0 20px rgba(0, 255, 65, 0.28);
+  border-color: #00FF41;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7), 0 0 16px rgba(0, 255, 65, 0.25);
 }
 
-.matrix-card.card-holo {
-  border-color: rgba(0, 255, 65, 0.75);
-  box-shadow: 0 0 18px rgba(0, 255, 65, 0.22);
+.ticket-vip {
+  border-color: rgba(255, 179, 0, 0.65);
 }
 
-.card-head {
+.ticket-head {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 7px 10px;
-  background: rgba(0, 10, 4, 0.9);
-  border-bottom: 1px solid rgba(0, 255, 65, 0.22);
+  padding: 8px 12px;
+  background: rgba(0, 10, 4, 0.92);
+  border-bottom: 1px solid rgba(0, 255, 65, 0.2);
   font-size: 11px;
 }
 
-.card-rarity {
+.ticket-code {
   color: #00FF41;
 }
 
-.card-hp {
-  color: var(--m-text-muted);
+.ticket-tier {
+  color: #98C9A3;
 }
 
-.card-media {
+.ticket-tier.is-vip,
+.pack-tier.is-vip {
+  color: #FFD166;
+}
+
+.ticket-visual {
   position: relative;
-  background: rgba(0, 4, 2, 0.85);
-  padding: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 196px;
+  padding: 20px 16px 14px;
+  background: linear-gradient(145deg, rgba(0, 22, 10, 0.92), rgba(0, 8, 3, 0.96));
   cursor: pointer;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
 }
 
-.card-img {
-  height: 176px;
-  width: auto;
-  object-fit: contain;
-  border-radius: 4px;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.75);
-}
-
-.card-scan-overlay {
+.ticket-matrix-grid {
   position: absolute;
   inset: 0;
+  background-image:
+    linear-gradient(rgba(0, 255, 65, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 255, 65, 0.06) 1px, transparent 1px);
+  background-size: 18px 18px;
   pointer-events: none;
-  background: repeating-linear-gradient(
-    to bottom,
-    rgba(0, 255, 65, 0.03) 0px,
-    rgba(0, 255, 65, 0.03) 1px,
-    transparent 1px,
-    transparent 3px
-  );
 }
 
-.card-body {
+.ticket-emblem {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.emblem-sector {
+  font-size: 11px;
+  color: #00FF41;
+  letter-spacing: 0.14em;
+}
+
+.emblem-title {
+  font-weight: 300;
+  font-size: 20px;
+  letter-spacing: 0.14em;
+  color: #FFFFFF;
+}
+
+.emblem-seq {
+  font-size: 11px;
+  color: #88C597;
+}
+
+.ticket-barcode {
+  position: relative;
+  z-index: 1;
+  height: 18px;
+  background: repeating-linear-gradient(
+    90deg,
+    rgba(0, 255, 65, 0.55) 0px,
+    rgba(0, 255, 65, 0.55) 2px,
+    transparent 2px,
+    transparent 5px,
+    rgba(0, 255, 65, 0.35) 5px,
+    rgba(0, 255, 65, 0.35) 6px,
+    transparent 6px,
+    transparent 10px
+  );
+  opacity: 0.7;
+}
+
+.ticket-body {
   padding: 12px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  border-top: 1px solid rgba(0, 255, 65, 0.2);
+  gap: 10px;
+  border-top: 1px dashed rgba(0, 255, 65, 0.3);
 }
 
-.card-title-row {
+.ticket-info-row {
   display: flex;
-  align-items: center;
   justify-content: space-between;
+  align-items: center;
   gap: 8px;
 }
 
-.card-name {
-  font-size: 15px;
+.ticket-name {
+  font-size: 13px;
   font-weight: 600;
   color: #E8FFED;
   white-space: nowrap;
@@ -229,60 +386,52 @@
   text-overflow: ellipsis;
 }
 
-.card-type-dot {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  padding: 1px 6px;
-  border: 1px solid;
-  border-radius: 2px;
-  background: rgba(0, 0, 0, 0.45);
-}
-
-.card-price-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.card-price {
-  font-size: 15px;
+.ticket-price {
+  font-size: 14px;
   color: #00FF41;
+  flex-shrink: 0;
 }
 
-.card-buy-btn {
-  width: 100%;
+.ticket-actions {
+  display: flex;
+  gap: 8px;
 }
 
-.vault-pager {
+.ticket-buy-btn {
+  flex: 1;
+}
+
+.pager-bar {
   padding: 12px 16px;
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  gap: 10px;
+  align-items: center;
+  gap: 12px;
 }
 
-.vault-empty {
+.pager-info {
+  font-size: 13px;
+  color: #D7FFE0;
+}
+
+.empty-box {
   padding: 36px 20px;
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
 }
 
 /* Modales */
-.modal-sm {
-  max-width: 480px;
-}
-
-.modal-head {
+.modal-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   gap: 12px;
   padding-bottom: 12px;
-  margin-bottom: 14px;
   border-bottom: 1px solid rgba(0, 255, 65, 0.25);
+  margin-bottom: 16px;
 }
 
 .modal-title {
@@ -291,19 +440,23 @@
 
 .modal-sub {
   font-size: 13px;
-  color: var(--m-text-muted);
+  color: #98C9A3;
   margin-top: 4px;
+}
+
+.modal-sm {
+  max-width: 480px;
 }
 
 .pack-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(115px, 1fr));
-  gap: 10px;
-  margin-bottom: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 12px;
+  margin-bottom: 18px;
 }
 
-.pack-item {
-  padding: 10px;
+.pack-card {
+  padding: 14px 10px;
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -311,75 +464,68 @@
   gap: 6px;
 }
 
-.pack-img {
-  height: 120px;
-  object-fit: contain;
+.pack-code {
+  font-size: 11px;
+  color: #00FF41;
 }
 
 .pack-name {
   font-size: 13px;
-  color: #E8FFED;
+  color: #FFFFFF;
 }
 
-.pack-meta {
+.pack-tier {
   font-size: 11px;
+  color: #98C9A3;
 }
 
-.detail-layout {
-  display: flex;
-  gap: 18px;
-  align-items: center;
-  margin-bottom: 16px;
-  flex-wrap: wrap;
+.pack-price {
+  font-size: 13px;
+  color: #00FF41;
 }
 
-.detail-img {
-  height: 200px;
-  border-radius: 4px;
-}
-
-.detail-info {
+.detail-meta {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 18px;
 }
 
-.detail-row {
-  font-size: 13px;
-  color: var(--m-text);
+.detail-name {
+  font-size: 20px;
+  color: #FFFFFF;
+}
+
+.detail-line {
+  font-size: 14px;
+  color: #C4F2CE;
 }
 
 .detail-price {
   font-size: 20px;
   color: #00FF41;
-  margin-top: 6px;
 }
 
-.modal-foot {
+.modal-footer {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
 }
 
-.modal-empty {
-  text-align: center;
-  color: var(--m-text-muted);
-  padding: 24px 0;
-}
-
-.orders-table-wrap {
+.table-wrap {
   max-height: 380px;
   overflow-y: auto;
 }
 
-.matrix-table {
+.m-table {
   width: 100%;
   border-collapse: collapse;
   text-align: left;
   font-size: 14px;
 }
 
-.matrix-table th {
+.m-table th {
   font-family: var(--font-mono);
   font-size: 12px;
   color: #00FF41;
@@ -387,24 +533,43 @@
   border-bottom: 1px solid rgba(0, 255, 65, 0.35);
 }
 
-.matrix-table td {
+.m-table td {
   padding: 10px 8px;
-  border-bottom: 1px solid rgba(0, 255, 65, 0.14);
-  color: var(--m-text);
+  border-bottom: 1px solid rgba(0, 255, 65, 0.12);
+  color: #D7FFE0;
+}
+
+.price-col {
+  color: #00FF41;
+}
+
+.empty-msg {
+  text-align: center;
+  padding: 24px;
+  color: #98C9A3;
 }
 
 @media (max-width: 768px) {
-  .vault-hero {
+  .matrix-cinema-hero {
+    min-height: 390px;
+    background-position: 68% center;
+  }
+
+  .cinema-hero-content {
+    padding: 20px 18px;
+  }
+
+  .rail-line {
+    display: none;
+  }
+
+  .cinema-cta-row {
+    width: auto;
+    justify-content: flex-start;
+    flex-direction: row-reverse;
+  }
+
+  .tickets-grid {
     grid-template-columns: 1fr;
-    padding: 18px;
-  }
-
-  .vault-title-main {
-    font-size: 30px;
-  }
-
-  .matrix-cards-grid {
-    grid-template-columns: repeat(auto-fill, minmax(156px, 1fr));
-    gap: 12px;
   }
 }

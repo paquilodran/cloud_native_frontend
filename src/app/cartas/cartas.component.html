@@ -1,213 +1,156 @@
 <!-- ========================================================================= -->
-<!-- PANTALLA 1: CATÁLOGO / ÓRDENES (ESTILO "ENTER THE MATRIX")                -->
+<!-- PANTALLA 1: ENTER THE MATRIX — HERO CINEMATOGRÁFICO & TICKETS             -->
 <!-- ========================================================================= -->
-<div class="vault-wrap">
+<div class="vault-stack">
 
-  <!-- Hero cinematográfico inspirado en "Enter the MATRIX" -->
-  <section class="m-panel vault-hero" aria-label="Bóveda principal">
-    <div class="vault-hero-left">
-      <div class="m-mono vault-eyebrow">SYSTEM ACCESS // BASE_SET_102 // POSTGRESQL 16</div>
-      <h1 class="vault-title">
-        <span class="vault-title-sub">Enter the</span>
-        <span class="vault-title-main m-display">MATRIX VAULT</span>
-      </h1>
-      <p class="vault-lead">
-        Catálogo conectado en tiempo real. Abre un sobre de 5 cartas o compra cualquier carta en 1 clic: cada orden persiste en PostgreSQL y dispara eventos hacia RabbitMQ y Apache Kafka.
-      </p>
+  <!-- HERO CINEMATOGRÁFICO CALCADO DE LA REFERENCIA "Enter the MATRIX" -->
+  <section class="matrix-cinema-hero" aria-label="Enter the Matrix">
+    <div class="hero-bg-overlay" aria-hidden="true"></div>
+    <div class="hero-lens-flare" aria-hidden="true"></div>
 
-      <div class="vault-ctas">
-        <button
-          type="button"
-          class="m-cta-circle"
-          (click)="abrirSobre()"
-          [disabled]="procesando()"
-        >
-          <span>Abrir sobre (5 cartas)</span>
-          <span class="m-icon-ring" aria-hidden="true">▶</span>
-        </button>
-
-        <button
-          type="button"
-          class="m-cta-circle"
-          (click)="toggleHistorial()"
-        >
-          <span>Historial de órdenes ({{ ordenes().length }})</span>
-          <span class="m-icon-ring" aria-hidden="true">⬢</span>
-        </button>
-
-        @if (procesando()) {
-          <span class="m-mono vault-processing">PROCESANDO TRANSACCIÓN...</span>
-        }
+    <div class="cinema-hero-content">
+      <div class="cinema-top-brand">
+        <span class="cinema-shield" aria-hidden="true">M</span>
+        <span class="cinema-studio">MATRIX CLOUD // PRODUCTION</span>
       </div>
-    </div>
 
-    <div class="vault-hero-right">
-      <div class="vault-stat-box">
-        <span class="m-mono stat-label">ENTRENADOR / OPERADOR</span>
-        <strong class="m-mono stat-val">{{ autenticado ? entrenador : 'MODO DEMO ACTIVO' }}</strong>
+      <div class="cinema-title-block">
+        <h1 class="cinema-heading">
+          <span class="cinema-enter">Enter the</span>
+          <span class="cinema-matrix">MATRIX</span>
+        </h1>
+
+        <!-- Línea vertical con los 2 CTAs circulares exactamente como la referencia -->
+        <div class="cinema-cta-rail">
+          <div class="rail-line" aria-hidden="true"></div>
+
+          <button type="button" class="cinema-cta-row" (click)="abrirSobre()" [disabled]="procesando()">
+            <span class="cinema-cta-label">
+              {{ procesando() ? 'Generando lote...' : 'Generar lote (5 tickets)' }}
+            </span>
+            <span class="cinema-cta-circle" aria-hidden="true">▶</span>
+          </button>
+
+          <button type="button" class="cinema-cta-row" (click)="toggleHistorial()">
+            <span class="cinema-cta-label">Mis tickets ({{ ordenes().length }})</span>
+            <span class="cinema-cta-circle" aria-hidden="true">❖</span>
+          </button>
+        </div>
       </div>
-      <div class="vault-stat-box">
-        <span class="m-mono stat-label">CATÁLOGO DISPONIBLE</span>
-        <strong class="m-mono stat-val">{{ cartas().length }} CARTAS SYNC</strong>
-      </div>
-      <div class="vault-stat-box">
-        <span class="m-mono stat-label">PIPELINE DE EVENTOS</span>
-        <strong class="m-mono stat-val">AMQP + KAFKA 3N</strong>
+
+      <div class="cinema-bottom-meta m-mono">
+        <span>OPERADOR: {{ entrenador }}</span>
+        <span>•</span>
+        <span>PASES DISPONIBLES: {{ cartas().length }}</span>
+        <span>•</span>
+        <span>PIPELINE: PG16 → RABBITMQ → KAFKA</span>
       </div>
     </div>
   </section>
 
-  <!-- Barra de búsqueda y filtros elementales -->
-  <section class="m-panel vault-filters" aria-label="Filtros del catálogo">
-    <div class="filters-top">
-      <div class="filters-info">
-        <span class="m-mono filters-label">ÍNDICE DE CARTAS</span>
-        <span class="m-mono filters-count">{{ filtradas.length }} / {{ cartas().length }} REGISTROS</span>
+  <!-- Barra de búsqueda y filtros por sector Matrix -->
+  <section class="m-panel filter-panel">
+    <div class="filter-top">
+      <div class="filter-heading">
+        <span class="m-mono filter-title">// TICKETS &amp; PASES DE ACCESO</span>
+        <span class="filter-count">{{ filtradas.length }} de {{ cartas().length }} disponibles</span>
       </div>
-      <div class="filters-search">
+      <div class="filter-search">
         <input
           type="text"
           class="m-input"
           [(ngModel)]="busqueda"
           (ngModelChange)="filtrar()"
-          placeholder="Buscar por nombre (Charizard, Blastoise, Pikachu...)"
-          aria-label="Buscar carta por nombre"
-        >
+          placeholder="Buscar ticket por código o referencia..."
+          aria-label="Buscar ticket"
+        />
       </div>
     </div>
 
-    <div class="filters-chips" role="group" aria-label="Filtrar por tipo">
-      <button
-        type="button"
-        class="m-btn m-btn-sm"
-        [class.m-btn-primary]="tipoFiltro === '' && !soloHolo"
-        (click)="filtrarElemento('')"
-      >
-        TODAS ({{ cartas().length }})
+    <div class="filter-chips" role="group" aria-label="Filtrar por sector Matrix">
+      <button type="button" class="m-btn m-btn-sm" [class.m-btn-primary]="tipoFiltro === '' && !soloHolo" (click)="filtrarElemento('')">
+        TODOS ({{ cartas().length }})
       </button>
-      <button
-        type="button"
-        class="m-btn m-btn-sm"
-        [class.m-btn-primary]="tipoFiltro.toLowerCase() === 'grass'"
-        (click)="filtrarElemento('Grass')"
-      >
-        PLANTA
+      <button type="button" class="m-btn m-btn-sm" [class.m-btn-primary]="tipoFiltro.toLowerCase() === 'fire'" (click)="filtrarElemento('Fire')">
+        RED PILL
       </button>
-      <button
-        type="button"
-        class="m-btn m-btn-sm"
-        [class.m-btn-primary]="tipoFiltro.toLowerCase() === 'fire'"
-        (click)="filtrarElemento('Fire')"
-      >
-        FUEGO
+      <button type="button" class="m-btn m-btn-sm" [class.m-btn-primary]="tipoFiltro.toLowerCase() === 'water'" (click)="filtrarElemento('Water')">
+        ZION
       </button>
-      <button
-        type="button"
-        class="m-btn m-btn-sm"
-        [class.m-btn-primary]="tipoFiltro.toLowerCase() === 'water'"
-        (click)="filtrarElemento('Water')"
-      >
-        AGUA
+      <button type="button" class="m-btn m-btn-sm" [class.m-btn-primary]="tipoFiltro.toLowerCase() === 'grass'" (click)="filtrarElemento('Grass')">
+        CONSTRUCT
       </button>
-      <button
-        type="button"
-        class="m-btn m-btn-sm"
-        [class.m-btn-primary]="tipoFiltro.toLowerCase() === 'lightning'"
-        (click)="filtrarElemento('Lightning')"
-      >
-        ELÉCTRICO
+      <button type="button" class="m-btn m-btn-sm" [class.m-btn-primary]="tipoFiltro.toLowerCase() === 'lightning'" (click)="filtrarElemento('Lightning')">
+        NEBUCHADNEZZAR
       </button>
-      <button
-        type="button"
-        class="m-btn m-btn-sm"
-        [class.m-btn-primary]="tipoFiltro.toLowerCase() === 'psychic'"
-        (click)="filtrarElemento('Psychic')"
-      >
-        PSÍQUICO
+      <button type="button" class="m-btn m-btn-sm" [class.m-btn-primary]="tipoFiltro.toLowerCase() === 'psychic'" (click)="filtrarElemento('Psychic')">
+        ORACLE
       </button>
-      <button
-        type="button"
-        class="m-btn m-btn-sm"
-        [class.m-btn-warn]="soloHolo"
-        (click)="toggleSoloHolo()"
-      >
-        {{ soloHolo ? '★ MOSTRAR TODAS' : '★ SOLO HOLO' }}
+      <button type="button" class="m-btn m-btn-sm" [class.m-btn-warn]="soloHolo" (click)="toggleSoloHolo()">
+        {{ soloHolo ? '★ SOLO VIP (ON)' : '★ SOLO VIP' }}
       </button>
     </div>
   </section>
 
-  <!-- Grid de cartas -->
+  <!-- Grid de Tickets Matrix (0% Pokémon) -->
   @if (cargando()) {
-    <div class="m-panel vault-empty">
-      <p class="m-mono">SINCRONIZANDO CATÁLOGO DESDE POSTGRESQL...</p>
+    <div class="m-panel empty-box">
+      <p class="m-mono">CARGANDO TICKETS DESDE POSTGRESQL...</p>
     </div>
   } @else if (paginaItems.length === 0) {
-    <div class="m-panel vault-empty">
-      <p class="m-mono">SIN COINCIDENCIAS PARA LOS FILTROS ACTUALES.</p>
-      <button
-        type="button"
-        class="m-btn m-btn-primary m-btn-sm"
-        (click)="filtrarElemento(''); busqueda = ''; soloHolo = false"
-      >
-        RESTABLECER FILTROS
+    <div class="m-panel empty-box">
+      <p class="m-mono">SIN TICKETS PARA ESTE SECTOR.</p>
+      <button type="button" class="m-btn m-btn-primary" (click)="filtrarElemento(''); busqueda = ''; soloHolo = false">
+        MOSTRAR TODOS
       </button>
     </div>
   } @else {
-    <section class="matrix-cards-grid" aria-label="Listado de cartas">
+    <div class="tickets-grid">
       @for (carta of paginaItems; track carta.id) {
-        <article class="m-panel matrix-card" [class.card-holo]="esHolo(carta.rareza)">
-          <div class="card-head">
-            <span class="m-mono card-rarity">{{ esHolo(carta.rareza) ? '★ HOLO' : 'STD' }}</span>
-            <span class="m-mono card-hp">{{ carta.hp ? 'HP ' + carta.hp : 'TCG' }}</span>
+        <article class="m-panel ticket-card" [class.ticket-vip]="esHolo(carta.rareza)">
+          <div class="ticket-head">
+            <span class="m-mono ticket-code">{{ codigoTicket(carta.id) }}</span>
+            <span class="m-mono ticket-tier" [class.is-vip]="esHolo(carta.rareza)">
+              {{ esHolo(carta.rareza) ? '★ VIP ACCESS' : '● STANDARD' }}
+            </span>
           </div>
 
-          <div class="card-media" (click)="verDetalle(carta)" role="button" tabindex="0" (keydown.enter)="verDetalle(carta)">
-            @if (carta.imagenUrl) {
-              <img
-                [src]="carta.imagenUrl"
-                [alt]="carta.nombre"
-                loading="lazy"
-                class="card-img"
-                (error)="ocultarImagen($event)"
-              >
-            }
-            <div class="card-scan-overlay" aria-hidden="true"></div>
+          <!-- Arte geométrico / boleto digital Matrix -->
+          <div class="ticket-visual" (click)="verDetalle(carta)" role="button" tabindex="0" (keydown.enter)="verDetalle(carta)">
+            <div class="ticket-matrix-grid" aria-hidden="true"></div>
+            <div class="ticket-emblem">
+              <span class="m-mono emblem-sector">{{ sectorMatrix(carta.tipo) }}</span>
+              <span class="emblem-title">MATRIX PASS</span>
+              <span class="m-mono emblem-seq">AUTH // 0x{{ (carta.id * 7919).toString(16).slice(0, 6).toUpperCase() }}</span>
+            </div>
+            <div class="ticket-barcode" aria-hidden="true"></div>
           </div>
 
-          <div class="card-body">
-            <div class="card-title-row">
-              <h3 class="card-name">{{ carta.nombre }}</h3>
-              <span class="card-type-dot" [style.border-color]="colorTipo(carta.tipo)" [style.color]="colorTipo(carta.tipo)">
-                {{ carta.tipo }}
-              </span>
+          <div class="ticket-body">
+            <div class="ticket-info-row">
+              <h3 class="ticket-name">{{ tituloTicket(carta) }}</h3>
+              <span class="m-mono ticket-price">{{ formatPrecio(carta.precio) }}</span>
             </div>
 
-            <div class="card-price-row">
-              <span class="m-mono card-price">{{ formatPokedollars(carta.precio) }}</span>
+            <div class="ticket-actions">
+              <button type="button" class="m-btn m-btn-primary ticket-buy-btn" (click)="comprarRapido(carta)" [disabled]="procesando()">
+                ▶ COMPRAR TICKET
+              </button>
               <button type="button" class="m-btn m-btn-sm" (click)="verDetalle(carta)">
-                VER
+                DETALLE
               </button>
             </div>
-
-            <button
-              type="button"
-              class="m-btn m-btn-primary card-buy-btn"
-              (click)="comprarRapido(carta)"
-              [disabled]="procesando()"
-            >
-              ▶ COMPRAR 1 CLIC
-            </button>
           </div>
         </article>
       }
-    </section>
+    </div>
 
-    <!-- Paginación -->
-    <div class="m-panel vault-pager">
+    <!-- Paginador -->
+    <div class="m-panel pager-bar">
       <button type="button" class="m-btn m-btn-sm" (click)="cambiarPagina(-1)" [disabled]="pagina === 1">
         ◄ ANTERIOR
       </button>
-      <span class="m-mono">PÁGINA {{ pagina }} / {{ totalPaginas }}</span>
+      <span class="m-mono pager-info">PÁGINA {{ pagina }} / {{ totalPaginas }}</span>
       <button type="button" class="m-btn m-btn-sm" (click)="cambiarPagina(1)" [disabled]="pagina === totalPaginas">
         SIGUIENTE ►
       </button>
@@ -215,31 +158,32 @@
   }
 </div>
 
-<!-- MODAL: APERTURA DE SOBRE (5 CARTAS) -->
+<!-- MODAL: LOTE DE 5 TICKETS GENERADOS -->
 @if (sobreAbierto()) {
-  <div class="m-modal-backdrop" (click)="cerrarModales()" role="dialog" aria-modal="true" aria-label="Sobre abierto">
-    <div class="m-modal-dialog" (click)="$event.stopPropagation()">
-      <div class="modal-head">
+  <div class="m-modal-backdrop" (click)="cerrarModales()">
+    <div class="m-modal-dialog" (click)="$event.stopPropagation()" role="dialog" aria-modal="true" aria-label="Lote de tickets generado">
+      <div class="modal-header">
         <div>
-          <h2 class="m-display modal-title">BOOSTER DECODIFICADO</h2>
-          <p class="modal-sub">5 cartas registradas en PostgreSQL y emitidas a Apache Kafka.</p>
+          <h2 class="m-display modal-title">LOTE GENERADO // 5 TICKETS MATRIX</h2>
+          <p class="modal-sub">Órdenes persistidas en PostgreSQL y transmitidas por RabbitMQ y Kafka.</p>
         </div>
-        <button type="button" class="m-btn m-btn-sm" (click)="cerrarModales()" aria-label="Cerrar">×</button>
+        <button type="button" class="m-btn m-btn-sm" (click)="cerrarModales()" aria-label="Cerrar">✕</button>
       </div>
 
       <div class="pack-grid">
         @for (c of sobreAbierto(); track $index) {
-          <div class="m-panel pack-item" [class.card-holo]="esHolo(c.rareza)">
-            @if (c.imagenUrl) {
-              <img [src]="c.imagenUrl" [alt]="c.nombre" class="pack-img" (error)="ocultarImagen($event)">
-            }
-            <strong class="pack-name">{{ c.nombre }}</strong>
-            <span class="m-mono pack-meta" [style.color]="colorTipo(c.tipo)">{{ c.tipo }}</span>
+          <div class="m-panel pack-card" [class.ticket-vip]="esHolo(c.rareza)">
+            <span class="m-mono pack-code">{{ codigoTicket(c.id) }}</span>
+            <p class="m-mono pack-name">{{ sectorMatrix(c.tipo) }}</p>
+            <span class="m-mono pack-tier" [class.is-vip]="esHolo(c.rareza)">
+              {{ esHolo(c.rareza) ? '★ VIP' : '● STD' }}
+            </span>
+            <span class="m-mono pack-price">{{ formatPrecio(c.precio) }}</span>
           </div>
         }
       </div>
 
-      <div class="modal-foot">
+      <div class="modal-footer">
         <button type="button" class="m-btn m-btn-primary" (click)="cerrarModales()">
           CONFIRMAR Y CONTINUAR
         </button>
@@ -248,29 +192,25 @@
   </div>
 }
 
-<!-- MODAL: DETALLE DE CARTA -->
+<!-- MODAL: DETALLE DE TICKET -->
 @if (cartaDetalle()) {
-  <div class="m-modal-backdrop" (click)="cerrarModales()" role="dialog" aria-modal="true" aria-label="Detalle de carta">
-    <div class="m-modal-dialog modal-sm" (click)="$event.stopPropagation()">
-      <div class="modal-head">
-        <h2 class="m-display modal-title">{{ cartaDetalle()!.nombre }}</h2>
-        <button type="button" class="m-btn m-btn-sm" (click)="cerrarModales()" aria-label="Cerrar">×</button>
+  <div class="m-modal-backdrop" (click)="cerrarModales()">
+    <div class="m-modal-dialog modal-sm" (click)="$event.stopPropagation()" role="dialog" aria-modal="true" aria-label="Detalle del ticket">
+      <div class="modal-header">
+        <h2 class="m-display modal-title">INSPECCIÓN DE TICKET</h2>
+        <button type="button" class="m-btn m-btn-sm" (click)="cerrarModales()" aria-label="Cerrar">✕</button>
       </div>
 
-      <div class="detail-layout">
-        @if (cartaDetalle()!.imagenUrl) {
-          <img [src]="cartaDetalle()!.imagenUrl" [alt]="cartaDetalle()!.nombre" class="detail-img">
-        }
-        <div class="detail-info">
-          <div class="m-mono detail-row">TIPO: <strong [style.color]="colorTipo(cartaDetalle()!.tipo)">{{ cartaDetalle()!.tipo }}</strong></div>
-          <div class="m-mono detail-row">RAREZA: <strong>{{ cartaDetalle()!.rareza }}</strong></div>
-          <div class="m-mono detail-row">HP: <strong>{{ cartaDetalle()!.hp || 'N/A' }}</strong></div>
-          <div class="m-mono detail-price">{{ formatPokedollars(cartaDetalle()!.precio) }}</div>
-        </div>
+      <div class="detail-meta">
+        <span class="m-badge">{{ codigoTicket(cartaDetalle()!.id) }}</span>
+        <h3 class="detail-name">{{ tituloTicket(cartaDetalle()!) }}</h3>
+        <p class="detail-line">Sector asignado: <strong>{{ sectorMatrix(cartaDetalle()!.tipo) }}</strong></p>
+        <p class="detail-line">Nivel de acceso: <strong>{{ esHolo(cartaDetalle()!.rareza) ? 'VIP CONSTRUCT' : 'STANDARD ACCESS' }}</strong></p>
+        <p class="m-mono detail-price">{{ formatPrecio(cartaDetalle()!.precio) }}</p>
       </div>
 
-      <div class="modal-foot">
-        <button type="button" class="m-btn" (click)="cerrarModales()">CERRAR</button>
+      <div class="modal-footer">
+        <button type="button" class="m-btn" (click)="cerrarModales()">CANCELAR</button>
         <button type="button" class="m-btn m-btn-primary" (click)="comprar(cartaDetalle()!)" [disabled]="procesando()">
           {{ procesando() ? 'PROCESANDO...' : 'CONFIRMAR COMPRA' }}
         </button>
@@ -281,23 +221,22 @@
 
 <!-- MODAL: HISTORIAL DE ÓRDENES -->
 @if (historialAbierto()) {
-  <div class="m-modal-backdrop" (click)="toggleHistorial()" role="dialog" aria-modal="true" aria-label="Historial de órdenes">
-    <div class="m-modal-dialog" (click)="$event.stopPropagation()">
-      <div class="modal-head">
-        <h2 class="m-display modal-title">REGISTRO DE ÓRDENES // POSTGRESQL</h2>
-        <button type="button" class="m-btn m-btn-sm" (click)="toggleHistorial()" aria-label="Cerrar">×</button>
+  <div class="m-modal-backdrop" (click)="toggleHistorial()">
+    <div class="m-modal-dialog" (click)="$event.stopPropagation()" role="dialog" aria-modal="true" aria-label="Historial de tickets">
+      <div class="modal-header">
+        <h2 class="m-display modal-title">HISTORIAL DE TICKETS // POSTGRESQL</h2>
+        <button type="button" class="m-btn m-btn-sm" (click)="toggleHistorial()" aria-label="Cerrar">✕</button>
       </div>
 
       @if (ordenes().length === 0) {
-        <p class="modal-empty">Aún no hay órdenes registradas. Abre un sobre o compra una carta para generar tráfico.</p>
+        <p class="empty-msg">No hay tickets emitidos aún. Genera un lote o adquiere un pase.</p>
       } @else {
-        <div class="orders-table-wrap">
-          <table class="matrix-table">
+        <div class="table-wrap">
+          <table class="m-table">
             <thead>
               <tr>
-                <th>ID</th>
-                <th>CARTA</th>
-                <th>TIPO</th>
+                <th>ORDEN</th>
+                <th>SECTOR</th>
                 <th>TOTAL</th>
                 <th>ESTADO</th>
               </tr>
@@ -306,9 +245,8 @@
               @for (o of ordenes(); track o.id) {
                 <tr>
                   <td class="m-mono">#{{ o.id }}</td>
-                  <td>{{ o.cartaNombre }}</td>
-                  <td class="m-mono">{{ o.tipo }}</td>
-                  <td class="m-mono">{{ formatPokedollars(o.total) }}</td>
+                  <td class="m-mono">{{ sectorMatrix(o.tipo) }}</td>
+                  <td class="m-mono price-col">{{ formatPrecio(o.total) }}</td>
                   <td><span class="m-badge">{{ o.estado }}</span></td>
                 </tr>
               }

@@ -1,50 +1,60 @@
-<!-- Lluvia de código Matrix global (montada una sola vez, persiste entre pestañas) -->
-<app-matrix-rain [activeBrokerIds]="activeBrokerIds"></app-matrix-rain>
-
 @if (esLogin) {
+  <app-matrix-rain [activeBrokerIds]="activeBrokerIds" />
   <div class="matrix-shell">
     <router-outlet />
   </div>
 } @else {
+  <!-- Lluvia de código Matrix global (persiste entre las 4 pestañas) -->
+  <app-matrix-rain [activeBrokerIds]="activeBrokerIds" />
+
   <div class="matrix-shell">
-    <!-- Header minimalista fijo -->
+    <!-- Header minimalista fijo estilo "Enter the MATRIX" -->
     <header class="matrix-header" role="banner">
       <div class="matrix-header-inner">
-        <div class="matrix-brand" (click)="irATab('mochila')" role="button" tabindex="0" aria-label="Ir al inicio">
-          <span class="m-dot" [class.m-dot-warn]="brokersOnlineCount === 2" [class.m-dot-danger]="brokersOnlineCount < 2"></span>
+        <div class="matrix-brand" (click)="irATab('mochila')" role="button" tabindex="0" (keydown.enter)="irATab('mochila')">
+          <span class="matrix-logo-mark" aria-hidden="true">M</span>
           <div class="matrix-brand-text">
-            <span class="matrix-logo m-display">MATRIX <strong>VAULT</strong></span>
-            <span class="matrix-sub m-mono">CLOUD NATIVE // 44.195.35.138</span>
+            <span class="matrix-brand-title">MATRIX CLOUD</span>
+            <span class="matrix-brand-sub m-mono">DISTRIBUTED STREAMING // AWS EC2</span>
           </div>
         </div>
 
-        <!-- 4 Pestañas claras con atajos 1-4 -->
+        <!-- 4 Pestañas principales (atajos 1-4) -->
         <nav class="matrix-nav" aria-label="Navegación principal">
-          <button type="button" class="matrix-nav-btn" [class.active]="currentTab === 'mochila'" (click)="irATab('mochila')">
-            <span class="m-key">1</span> CATÁLOGO / ÓRDENES
+          <button type="button" class="matrix-nav-tab" [class.active]="currentTab === 'mochila'" (click)="irATab('mochila')">
+            <span class="tab-key">1</span>
+            <span>INICIO / TICKETS</span>
           </button>
-          <button type="button" class="matrix-nav-btn" [class.active]="currentTab === 'kafka'" (click)="irATab('kafka')">
-            <span class="m-key">2</span> CLÚSTER KAFKA
-            <span class="m-pill" [class.warn]="brokersOnlineCount === 2" [class.danger]="brokersOnlineCount < 2">{{ brokersOnlineCount }}/3</span>
+          <button type="button" class="matrix-nav-tab" [class.active]="currentTab === 'kafka'" (click)="irATab('kafka')">
+            <span class="tab-key">2</span>
+            <span>CLÚSTER KAFKA</span>
           </button>
-          <button type="button" class="matrix-nav-btn" [class.active]="currentTab === 'rabbitmq'" (click)="irATab('rabbitmq')">
-            <span class="m-key">3</span> RABBITMQ
+          <button type="button" class="matrix-nav-tab" [class.active]="currentTab === 'rabbitmq'" (click)="irATab('rabbitmq')">
+            <span class="tab-key">3</span>
+            <span>RABBITMQ</span>
           </button>
-          <button type="button" class="matrix-nav-btn" [class.active]="currentTab === 'entrenador'" (click)="irATab('entrenador')">
-            <span class="m-key">4</span> SISTEMA AWS / JWT
+          <button type="button" class="matrix-nav-tab" [class.active]="currentTab === 'entrenador'" (click)="irATab('entrenador')">
+            <span class="tab-key">4</span>
+            <span>SISTEMA AWS / JWT</span>
           </button>
         </nav>
 
         <!-- Telemetría global y saldo -->
-        <div class="matrix-status-bar">
-          <div class="m-badge" [class.m-badge-warn]="brokersOnlineCount === 2" [class.m-badge-danger]="brokersOnlineCount < 2" title="Estado del clúster Apache Kafka">
+        <div class="matrix-header-meta">
+          <button type="button" class="matrix-status-pill"
+                  [class.warn]="brokersOnlineCount === 2"
+                  [class.danger]="brokersOnlineCount < 2"
+                  (click)="irATab('kafka')"
+                  title="Estado de los 3 brokers Kafka">
             <span class="m-dot" [class.m-dot-warn]="brokersOnlineCount === 2" [class.m-dot-danger]="brokersOnlineCount < 2"></span>
-            ISR {{ brokersOnlineCount }}/3
-          </div>
+            <span class="m-mono">{{ brokersOnlineCount }}/3 ISR</span>
+          </button>
 
           <div class="matrix-wallet">
-            <span class="m-mono wallet-amount">{{ formatPokedollars(balance) }}</span>
-            <button type="button" class="m-btn m-btn-sm" (click)="recargarBalance()" title="Recargar saldo">+50K</button>
+            <span class="m-mono wallet-amount">{{ formatCredits(balance) }}</span>
+            <button type="button" class="m-btn m-btn-sm" (click)="recargarBalance()" title="Recargar crédito">
+              +50K
+            </button>
           </div>
         </div>
       </div>
@@ -52,16 +62,18 @@
 
     <!-- Contenido principal por encima del canvas -->
     <main class="matrix-main" role="main">
-      <router-outlet></router-outlet>
+      <router-outlet />
     </main>
   </div>
 
   <!-- Notificaciones flotantes (Toasts) -->
-  <div class="matrix-toast-container" aria-live="polite">
+  <div class="matrix-toast-stack" role="status" aria-live="polite">
     @for (toast of notificationService.toasts$ | async; track toast.id) {
-      <div class="matrix-toast" [class.success]="toast.type === 'success'" [class.error]="toast.type === 'error'" [class.info]="toast.type === 'info'">
-        <span class="matrix-toast-msg">{{ toast.message }}</span>
-        <button type="button" class="m-btn m-btn-sm" (click)="notificationService.dismissToast(toast.id)" aria-label="Cerrar notificación">×</button>
+      <div class="matrix-toast" [class.toast-error]="toast.type === 'error'" [class.toast-info]="toast.type === 'info'">
+        <span class="toast-msg">{{ toast.message }}</span>
+        <button type="button" class="toast-close" (click)="notificationService.dismissToast(toast.id)" aria-label="Cerrar notificación">
+          ✕
+        </button>
       </div>
     }
   </div>

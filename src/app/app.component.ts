@@ -8,7 +8,6 @@ import { environment } from '../environments/environment';
 import { CartasService } from './cartas/cartas.service';
 import { MatrixRainComponent } from './shared/matrix-rain.component';
 import { NotificationService } from './shared/notification.service';
-import { formatPokedollars } from './shared/pokemon-sprites';
 
 @Component({
   selector: 'app-root',
@@ -24,7 +23,9 @@ export class AppComponent implements OnInit {
   private readonly cartasService = inject(CartasService);
   readonly notificationService = inject(NotificationService);
 
-  readonly formatPokedollars = formatPokedollars;
+  formatCredits(amount: number): string {
+    return '$ ' + amount.toLocaleString('es-CL');
+  }
 
   // Estado visual global para lluvia Matrix y navegación
   activeBrokerIds: number[] = [1, 2, 3];
@@ -63,7 +64,7 @@ export class AppComponent implements OnInit {
 
   recargarBalance(): void {
     this.balance += 50000;
-    this.notificationService.showToast('Crédito recargado: +₽ 50.000 disponibles en la bóveda.', 'success');
+    this.notificationService.showToast('Crédito recargado: +$ 50.000 asignados al terminal.', 'success');
   }
 
   irATab(tab: string): void {

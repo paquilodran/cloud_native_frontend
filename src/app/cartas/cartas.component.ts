@@ -36,6 +36,33 @@ export class CartasComponent implements OnInit {
   readonly oakSprite = OAK_SPRITE;
   readonly formatPokedollars = formatPokedollars;
 
+  /** Mapeo visual 100% Matrix para los registros del backend (sin tocar servicios ni API). */
+  sectorMatrix(tipo: string | undefined | null): string {
+    const map: Record<string, string> = {
+      Fire: 'RED PILL',
+      Water: 'ZION',
+      Grass: 'CONSTRUCT',
+      Lightning: 'NEBUCHADNEZZAR',
+      Psychic: 'ORACLE',
+      Fighting: 'SENTINEL',
+      Colorless: 'MAINFRAME'
+    };
+    return (tipo && map[tipo]) || 'MAINFRAME';
+  }
+
+  codigoTicket(id: number): string {
+    return `MTX-${String(id).padStart(4, '0')}`;
+  }
+
+  tituloTicket(carta: Carta): string {
+    const sector = this.sectorMatrix(carta.tipo);
+    return esHolo(carta.rareza) ? `VIP PASS // ${sector}` : `ACCESS PASS // ${sector}`;
+  }
+
+  formatPrecio(monto: number): string {
+    return '$ ' + (monto || 0).toLocaleString('es-CL');
+  }
+
   busqueda = '';
   tipoFiltro = '';
   rarezaFiltro = '';
