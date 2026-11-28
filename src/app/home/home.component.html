@@ -57,9 +57,9 @@
 <!-- ========================================================================= -->
 @if (tabActiva === 'mensajeria' || tabActiva === 'kafka' || tabActiva === 'rabbitmq') {
 
-  <!-- ESCENA DE MORFEO: ELEGIR PÍLDORA ROJA O AZUL (SIN NOMBRAR KAFKA/RABBIT) -->
+  <!-- ESCENA DE MORFEO: DISEÑO EXACTO FIGMA (SIN BORDE EXTERIOR, TARJETAS 01/02 + OVERLAY CARGA) -->
   @if (subTabMensajeria === 'elegir') {
-    <section class="morpheus-stage m-panel" aria-label="Elige una píldora">
+    <section class="morpheus-stage" [class.morpheus-stage--blurred]="pildoraCargando !== null" aria-label="Elige tu realidad">
       <div class="morpheus-header">
         <span class="m-mono morpheus-kicker">// PROTOCOLO DE DECISIÓN</span>
         <h2 class="morpheus-title">ELIGE TU REALIDAD</h2>
@@ -67,40 +67,94 @@
       </div>
 
       <div class="morpheus-arena">
-        <!-- PÍLDORA ROJA 3D GIRATORIA (IZQUIERDA → APACHE KAFKA) -->
+        <!-- TARJETA 01: PÍLDORA ROJA (IZQUIERDA → APACHE KAFKA) -->
         <button type="button" class="pill-choice pill-choice--red" (click)="elegirPildora('kafka')" aria-label="Elegir píldora roja">
+          <span class="m-mono pill-index pill-index--red">01 // DECISIÓN</span>
+
           <div class="pill-3d-scene" aria-hidden="true">
             <div class="pill-3d pill-3d--red">
-              <div class="pill-half pill-half--top"></div>
-              <div class="pill-half pill-half--bottom"></div>
+              <div class="pill-half pill-half--left"></div>
+              <div class="pill-half pill-half--right"></div>
               <div class="pill-gloss"></div>
             </div>
             <div class="pill-shadow pill-shadow--red"></div>
           </div>
+
           <span class="m-mono pill-label pill-label--red">PÍLDORA ROJA</span>
-          <span class="pill-hint">Ver qué tan profundo llega el flujo en tiempo real</span>
+          <span class="pill-headline">Explorar el flujo en tiempo real</span>
+
+          <span class="pill-cta pill-cta--red m-mono">▶ ELEGIR PÍLDORA ROJA</span>
+          <span class="pill-consequence">Experiencia dinámica · datos en vivo</span>
         </button>
 
-        <!-- PERSONAJE CENTRAL: MORFEO OFRECIENDO AMBAS MANOS -->
+        <!-- PERSONAJE CENTRAL: MORFEO -->
         <div class="morpheus-figure" aria-hidden="true">
           <img src="/morpheus-pills.png" alt="Morfeo ofreciendo la píldora roja y la píldora azul" class="morpheus-img" />
         </div>
 
-        <!-- PÍLDORA AZUL 3D GIRATORIA (DERECHA → RABBITMQ) -->
+        <!-- TARJETA 02: PÍLDORA AZUL (DERECHA → RABBITMQ) -->
         <button type="button" class="pill-choice pill-choice--blue" (click)="elegirPildora('rabbitmq')" aria-label="Elegir píldora azul">
+          <span class="m-mono pill-index pill-index--blue">02 // DECISIÓN</span>
+
           <div class="pill-3d-scene" aria-hidden="true">
             <div class="pill-3d pill-3d--blue">
-              <div class="pill-half pill-half--top"></div>
-              <div class="pill-half pill-half--bottom"></div>
+              <div class="pill-half pill-half--left"></div>
+              <div class="pill-half pill-half--right"></div>
               <div class="pill-gloss"></div>
             </div>
             <div class="pill-shadow pill-shadow--blue"></div>
           </div>
+
           <span class="m-mono pill-label pill-label--blue">PÍLDORA AZUL</span>
-          <span class="pill-hint">Permanecer en la cola segura sin perder ningún mensaje</span>
+          <span class="pill-headline">Mantener el modo seguro</span>
+
+          <span class="pill-cta pill-cta--blue m-mono">❖ ELEGIR PÍLDORA AZUL</span>
+          <span class="pill-consequence">Experiencia estable · sin interrupciones</span>
         </button>
       </div>
     </section>
+
+    <!-- OVERLAY DE CONFIRMACIÓN Y CARGA AL ELEGIR PÍLDORA -->
+    @if (pildoraCargando) {
+      <div class="pill-confirm-backdrop" role="dialog" aria-modal="true" aria-live="polite">
+        <div
+          class="pill-confirm-card"
+          [class.pill-confirm-card--red]="pildoraCargando === 'kafka'"
+          [class.pill-confirm-card--blue]="pildoraCargando === 'rabbitmq'"
+        >
+          <span class="m-mono confirm-tag">
+            DECISIÓN REGISTRADA // {{ pildoraCargando === 'kafka' ? '01' : '02' }}
+          </span>
+
+          <div class="confirm-pill-wrap" aria-hidden="true">
+            <div class="confirm-pill" [class.confirm-pill--red]="pildoraCargando === 'kafka'" [class.confirm-pill--blue]="pildoraCargando === 'rabbitmq'"></div>
+          </div>
+
+          <h3 class="confirm-title">
+            {{ pildoraCargando === 'kafka' ? 'Has elegido la píldora roja' : 'Has elegido la píldora azul' }}
+          </h3>
+          <p class="confirm-sub">Inicializando entorno...</p>
+
+          <div class="confirm-progress-track">
+            <div
+              class="confirm-progress-fill"
+              [class.fill-red]="pildoraCargando === 'kafka'"
+              [class.fill-blue]="pildoraCargando === 'rabbitmq'"
+              [style.width.%]="progresoCargaPildora"
+            ></div>
+          </div>
+
+          <div class="confirm-progress-meta m-mono">
+            <span>ENRUTANDO SESIÓN</span>
+            <span>{{ progresoCargaPildora }}%</span>
+          </div>
+
+          <button type="button" class="confirm-back-btn m-mono" (click)="cancelarEleccionPildora()">
+            ◄ VOLVER A ELEGIR
+          </button>
+        </div>
+      </div>
+    }
   }
 
   <!-- SUB-VISTA ELEGIDA: KAFKA (PÍLDORA ROJA) O RABBITMQ (PÍLDORA AZUL) -->

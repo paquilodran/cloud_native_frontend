@@ -833,3 +833,313 @@
     animation: none !important;
   }
 }
+
+/* ========================================================================== */
+/* AJUSTES FINALES ESCENA MORFEO (SEGÚN CAPTURAS FIGMA + OVERLAY DE CARGA)    */
+/* ========================================================================== */
+.morpheus-stage {
+  background: radial-gradient(circle at 50% 48%, rgba(0, 22, 10, 0.45) 0%, rgba(0, 0, 0, 0.72) 70%) !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 20px 12px 32px !important;
+  transition: filter 0.3s ease;
+}
+
+.morpheus-stage--blurred {
+  filter: blur(6px) brightness(0.45);
+  pointer-events: none;
+}
+
+.morpheus-kicker {
+  font-size: 11px !important;
+  color: #7FA88B !important;
+  letter-spacing: 0.16em !important;
+}
+
+.morpheus-title {
+  letter-spacing: 0.08em !important;
+  text-shadow: none !important;
+}
+
+.morpheus-quote {
+  font-style: normal !important;
+  color: #DDE8DF !important;
+  background: rgba(0, 0, 0, 0.75);
+  padding: 6px 18px;
+  border-radius: 2px;
+  font-size: 15px !important;
+}
+
+.morpheus-arena {
+  max-width: 1240px !important;
+  grid-template-columns: 1fr 1.15fr 1fr !important;
+  gap: 24px !important;
+}
+
+.morpheus-arena:hover .pill-choice:not(:hover) {
+  opacity: 0.62;
+}
+
+.morpheus-img {
+  max-width: 390px !important;
+}
+
+.pill-choice {
+  position: relative;
+  padding: 22px 22px 24px !important;
+  background: rgba(2, 10, 6, 0.86) !important;
+  border-radius: 2px !important;
+  gap: 12px !important;
+  text-align: center;
+}
+
+.pill-choice--red {
+  border: 1px solid rgba(255, 23, 68, 0.55) !important;
+}
+
+.pill-choice--blue {
+  border: 1px solid rgba(0, 176, 255, 0.55) !important;
+}
+
+.pill-index {
+  align-self: flex-start;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  margin-bottom: 4px;
+}
+
+.pill-index--red { color: rgba(255, 92, 119, 0.85); }
+.pill-index--blue { color: rgba(79, 195, 247, 0.85); }
+
+/* Cápsula 3D horizontal inclinada como en Figma */
+.pill-3d-scene {
+  width: 136px !important;
+  height: 92px !important;
+}
+
+.pill-3d {
+  width: 96px !important;
+  height: 44px !important;
+  animation: pillSpinHoriz3D 5.5s linear infinite !important;
+}
+
+.pill-half--left {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 50%;
+  border-radius: 999px 0 0 999px;
+  border-right: 1.5px solid rgba(255, 255, 255, 0.25);
+}
+
+.pill-half--right {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 50%;
+  border-radius: 0 999px 999px 0;
+  background: rgba(0, 0, 0, 0.16);
+}
+
+.pill-gloss {
+  top: 7px !important;
+  left: 14px !important;
+  width: 62px !important;
+  height: 9px !important;
+  background: linear-gradient(to right, rgba(255, 255, 255, 0.82), rgba(255, 255, 255, 0.08)) !important;
+}
+
+@keyframes pillSpinHoriz3D {
+  0% {
+    transform: translateY(0px) rotateZ(-8deg) rotateX(14deg) rotateY(0deg);
+  }
+  50% {
+    transform: translateY(-6px) rotateZ(-8deg) rotateX(14deg) rotateY(180deg);
+  }
+  100% {
+    transform: translateY(0px) rotateZ(-8deg) rotateX(14deg) rotateY(360deg);
+  }
+}
+
+.pill-headline {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  font-weight: 400;
+  color: #DDE8DF;
+  margin-bottom: 6px;
+}
+
+.pill-cta {
+  width: 100%;
+  padding: 11px 14px;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  border-radius: 2px;
+  transition: all 0.2s ease;
+}
+
+.pill-cta--red {
+  border: 1px solid rgba(255, 23, 68, 0.72);
+  color: #FF8A9E;
+  background: rgba(255, 23, 68, 0.06);
+}
+
+.pill-choice--red:hover .pill-cta--red {
+  background: #FF1744;
+  color: #FFFFFF;
+  box-shadow: 0 0 18px rgba(255, 23, 68, 0.55);
+}
+
+.pill-cta--blue {
+  border: 1px solid rgba(0, 176, 255, 0.72);
+  color: #74D8FF;
+  background: rgba(0, 176, 255, 0.06);
+}
+
+.pill-choice--blue:hover .pill-cta--blue {
+  background: #00B0FF;
+  color: #000000;
+  box-shadow: 0 0 18px rgba(0, 176, 255, 0.55);
+}
+
+.pill-consequence {
+  font-size: 12px;
+  color: #93B59B;
+  margin-top: 2px;
+}
+
+/* ========================================================================== */
+/* OVERLAY DE CONFIRMACIÓN + BARRA DE CARGA (CAPTURA 2 DE FIGMA)              */
+/* ========================================================================== */
+.pill-confirm-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9000;
+  background: rgba(0, 4, 2, 0.72);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.pill-confirm-card {
+  width: 100%;
+  max-width: 560px;
+  padding: 36px 36px 28px;
+  background: rgba(8, 6, 8, 0.96);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 2px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 14px;
+}
+
+.pill-confirm-card--red {
+  border-color: rgba(255, 23, 68, 0.75);
+  background: radial-gradient(circle at 50% 25%, rgba(56, 6, 16, 0.94), rgba(8, 2, 4, 0.98));
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.85), 0 0 40px rgba(255, 23, 68, 0.22);
+}
+
+.pill-confirm-card--blue {
+  border-color: rgba(0, 176, 255, 0.75);
+  background: radial-gradient(circle at 50% 25%, rgba(6, 28, 56, 0.94), rgba(2, 6, 12, 0.98));
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.85), 0 0 40px rgba(0, 176, 255, 0.22);
+}
+
+.confirm-tag {
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  color: #FF7A90;
+}
+
+.pill-confirm-card--blue .confirm-tag {
+  color: #74D8FF;
+}
+
+.confirm-pill-wrap {
+  padding: 8px 0;
+}
+
+.confirm-pill {
+  width: 64px;
+  height: 26px;
+  border-radius: 999px;
+  transform: rotate(-8deg);
+}
+
+.confirm-pill--red {
+  background: linear-gradient(135deg, #FF6B81, #FF1744);
+  box-shadow: 0 0 24px rgba(255, 23, 68, 0.85);
+}
+
+.confirm-pill--blue {
+  background: linear-gradient(135deg, #74D8FF, #0091EA);
+  box-shadow: 0 0 24px rgba(0, 176, 255, 0.85);
+}
+
+.confirm-title {
+  font-family: 'Outfit', 'Inter', sans-serif;
+  font-weight: 400;
+  font-size: clamp(22px, 3.2vw, 30px);
+  color: #FFFFFF;
+}
+
+.confirm-sub {
+  font-size: 14px;
+  color: #B4C8BA;
+  margin-bottom: 6px;
+}
+
+.confirm-progress-track {
+  width: 100%;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.14);
+  overflow: hidden;
+  border-radius: 2px;
+}
+
+.confirm-progress-fill {
+  height: 100%;
+  transition: width 110ms linear;
+}
+
+.confirm-progress-fill.fill-red {
+  background: #FF1744;
+  box-shadow: 0 0 12px #FF1744;
+}
+
+.confirm-progress-fill.fill-blue {
+  background: #00B0FF;
+  box-shadow: 0 0 12px #00B0FF;
+}
+
+.confirm-progress-meta {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #93B59B;
+  letter-spacing: 0.1em;
+}
+
+.confirm-back-btn {
+  margin-top: 10px;
+  background: transparent;
+  border: 0;
+  color: #DDE8DF;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  padding: 6px 12px;
+  transition: color 0.18s ease;
+}
+
+.confirm-back-btn:hover {
+  color: #FFFFFF;
+  text-decoration: underline;
+}

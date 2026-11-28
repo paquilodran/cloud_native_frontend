@@ -60,18 +60,52 @@ export class HomeComponent implements OnInit, OnDestroy {
   // Navegación principal ordenada en 4 vistas
   tabActiva: HomeTab = 'inicio';
   subTabMensajeria: 'elegir' | 'kafka' | 'rabbitmq' = 'elegir';
+  pildoraCargando: 'kafka' | 'rabbitmq' | null = null;
+  progresoCargaPildora = 0;
+  private cargaPildoraTimer: any = null;
   pingLatencia = 'HTTP/2 200 OK • Latencia: 23ms (AWS us-east-1)';
   isHealingAnim = false;
 
   elegirPildora(destino: 'kafka' | 'rabbitmq'): void {
+    if (this.pildoraCargando) return;
     this.tabActiva = 'mensajeria';
-    this.subTabMensajeria = destino;
+    this.pildoraCargando = destino;
+    this.progresoCargaPildora = 12;
+
+    if (this.cargaPildoraTimer) {
+      clearInterval(this.cargaPildoraTimer);
+    }
+
+    this.cargaPildoraTimer = setInterval(() => {
+      this.progresoCargaPildora = Math.min(100, this.progresoCargaPildora + 14);
+      if (this.progresoCargaPildora >= 100) {
+        clearInterval(this.cargaPildoraTimer);
+        this.cargaPildoraTimer = null;
+        setTimeout(() => {
+          if (this.pildoraCargando === destino) {
+            this.subTabMensajeria = destino;
+            this.pildoraCargando = null;
+            this.progresoCargaPildora = 0;
+          }
+        }, 180);
+      }
+    }, 110);
+  }
+
+  cancelarEleccionPildora(): void {
+    if (this.cargaPildoraTimer) {
+      clearInterval(this.cargaPildoraTimer);
+      this.cargaPildoraTimer = null;
+    }
+    this.pildoraCargando = null;
+    this.progresoCargaPildora = 0;
+    this.subTabMensajeria = 'elegir';
   }
 
   @HostListener('window:matrix:reset-choice')
   volverAMorfeo(): void {
+    this.cancelarEleccionPildora();
     this.tabActiva = 'mensajeria';
-    this.subTabMensajeria = 'elegir';
   }
 
   // RabbitMQ Controls & State
