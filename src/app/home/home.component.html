@@ -57,163 +57,162 @@
 <!-- ========================================================================= -->
 @if (tabActiva === 'mensajeria' || tabActiva === 'kafka' || tabActiva === 'rabbitmq') {
 
-  <!-- ESCENA INMERSIVA DE MORFEO: ATMÓSFERA REACTIVA, PARALLAX 3D Y CÁPSULAS REALISTAS -->
+  <!-- ESCENA UNIFICADA DE MANOS + PÍLDORAS (TODO EN UN SOLO PLANO, SIN TARJETAS ENCIMA) -->
   @if (subTabMensajeria === 'elegir') {
     <section
-      class="morpheus-stage"
-      [class.morpheus-stage--blurred]="pildoraCargando !== null"
-      [class.morpheus-stage--hover-red]="hoverPildora === 'red'"
-      [class.morpheus-stage--hover-blue]="hoverPildora === 'blue'"
+      class="hands-cinema-stage"
+      [class.hands-stage--blurred]="pildoraCargando !== null"
+      [class.hands-stage--hover-red]="hoverPildora === 'red'"
+      [class.hands-stage--hover-blue]="hoverPildora === 'blue'"
+      [class.hands-stage--zoom-red]="pildoraCargando === 'kafka'"
+      [class.hands-stage--zoom-blue]="pildoraCargando === 'rabbitmq'"
+      [style.--mx.%]="mousePctX"
+      [style.--my.%]="mousePctY"
       (mousemove)="onMorpheusMouseMove($event)"
       (mouseleave)="onMorpheusMouseLeave()"
       aria-label="Elige tu realidad"
     >
-      <!-- Luz volumétrica reactiva + Morfeo gigante full-height sin recuadro detrás de las tarjetas -->
-      <div class="morpheus-ambient-glow" aria-hidden="true"></div>
-      <div class="morpheus-vignette" aria-hidden="true"></div>
+      <!-- Atmósfera reactiva + luz volumétrica que sigue el cursor + scanlines + viñeta -->
+      <div class="hands-ambient-glow" aria-hidden="true"></div>
+      <div class="hands-cursor-light" aria-hidden="true"></div>
+      <div class="hands-scanlines" aria-hidden="true"></div>
+      <div class="hands-vignette" aria-hidden="true"></div>
 
-      <div
-        class="morpheus-hero-backdrop"
-        [style.transform]="'translate3d(' + (parallaxX * -0.45) + 'px,' + (parallaxY * -0.35) + 'px,0)'"
-        aria-hidden="true"
-      >
-        <div class="morpheus-halo"></div>
-        <img src="/morpheus-cinema.jpg" alt="Morfeo sosteniendo la píldora roja y la píldora azul en sus manos" class="morpheus-full-img" />
-        <!-- Destellos vivos sobre cada mano para destacar las pastillas reales -->
-        <span class="hand-glow hand-glow--red"></span>
-        <span class="hand-glow hand-glow--blue"></span>
+      <!-- Encabezado integrado en el espacio oscuro superior (nada encima de las manos) -->
+      <header class="hands-header">
+        <span class="m-mono hands-kicker">// PROTOCOLO DE DECISIÓN</span>
+        <h2 class="hands-title">ELIGE TU REALIDAD</h2>
+        <p class="hands-quote">“Recuerda: lo único que te ofrezco es la verdad, nada más.”</p>
+      </header>
+
+      <!-- Escena 16:9 unificada: las manos + retículas holográficas + partículas directo sobre cada píldora -->
+      <div class="hands-stage-viewport">
+        <div
+          class="hands-canvas-wrap"
+          [style.transform]="'perspective(1200px) rotateY(' + (parallaxX * 0.24) + 'deg) rotateX(' + (parallaxY * -0.22) + 'deg) translate3d(' + (parallaxX * -0.5) + 'px,' + (parallaxY * -0.35) + 'px,0)'"
+        >
+          <img
+            src="/morpheus-hands.jpg"
+            alt="Manos abiertas sosteniendo la píldora roja y la píldora azul"
+            class="hands-main-img"
+          />
+
+          <!-- Atenuación selectiva lateral para enfocar la mano elegida -->
+          <div class="hands-split-veil hands-split-veil--left" aria-hidden="true"></div>
+          <div class="hands-split-veil hands-split-veil--right" aria-hidden="true"></div>
+
+          <!-- HOTSPOT 01: PÍLDORA ROJA (PALMA IZQUIERDA → APACHE KAFKA) -->
+          <button
+            type="button"
+            class="palm-hotspot palm-hotspot--red"
+            (mouseenter)="hoverPildora = 'red'"
+            (mouseleave)="hoverPildora = null"
+            (focus)="hoverPildora = 'red'"
+            (blur)="hoverPildora = null"
+            (click)="elegirPildora('kafka')"
+            aria-label="Elegir píldora roja: explorar el flujo en tiempo real"
+          >
+            <span class="palm-aura palm-aura--red" aria-hidden="true"></span>
+            <span class="palm-ripple palm-ripple--1" aria-hidden="true"></span>
+            <span class="palm-ripple palm-ripple--2" aria-hidden="true"></span>
+
+            <!-- Retícula HUD holográfica multi-anillo -->
+            <svg viewBox="0 0 180 180" class="palm-reticle palm-reticle--red" aria-hidden="true">
+              <circle cx="90" cy="90" r="82" class="reticle-ring-outer" />
+              <circle cx="90" cy="90" r="64" class="reticle-ring-mid" />
+              <circle cx="90" cy="90" r="44" class="reticle-ring-inner" />
+              <path d="M 90 4 L 90 18 M 90 162 L 90 176 M 4 90 L 18 90 M 162 90 L 176 90" class="reticle-ticks" />
+            </svg>
+
+            <!-- Partículas de energía elevándose desde la cápsula roja -->
+            <span class="palm-particles" aria-hidden="true">
+              <i class="p-spark p1"></i>
+              <i class="p-spark p2"></i>
+              <i class="p-spark p3"></i>
+              <i class="p-spark p4"></i>
+              <i class="p-spark p5"></i>
+              <i class="p-spark p6"></i>
+            </span>
+
+            <span class="palm-lock-tag m-mono" aria-hidden="true">01 // TARGET LOCK</span>
+            <span class="palm-tether palm-tether--red" aria-hidden="true"></span>
+          </button>
+
+          <!-- HOTSPOT 02: PÍLDORA AZUL (PALMA DERECHA → RABBITMQ) -->
+          <button
+            type="button"
+            class="palm-hotspot palm-hotspot--blue"
+            (mouseenter)="hoverPildora = 'blue'"
+            (mouseleave)="hoverPildora = null"
+            (focus)="hoverPildora = 'blue'"
+            (blur)="hoverPildora = null"
+            (click)="elegirPildora('rabbitmq')"
+            aria-label="Elegir píldora azul: mantener el modo seguro"
+          >
+            <span class="palm-aura palm-aura--blue" aria-hidden="true"></span>
+            <span class="palm-ripple palm-ripple--1" aria-hidden="true"></span>
+            <span class="palm-ripple palm-ripple--2" aria-hidden="true"></span>
+
+            <!-- Retícula HUD holográfica multi-anillo -->
+            <svg viewBox="0 0 180 180" class="palm-reticle palm-reticle--blue" aria-hidden="true">
+              <circle cx="90" cy="90" r="82" class="reticle-ring-outer" />
+              <circle cx="90" cy="90" r="64" class="reticle-ring-mid" />
+              <circle cx="90" cy="90" r="44" class="reticle-ring-inner" />
+              <path d="M 90 4 L 90 18 M 90 162 L 90 176 M 4 90 L 18 90 M 162 90 L 176 90" class="reticle-ticks" />
+            </svg>
+
+            <!-- Partículas de energía elevándose desde la cápsula azul -->
+            <span class="palm-particles" aria-hidden="true">
+              <i class="p-spark p1"></i>
+              <i class="p-spark p2"></i>
+              <i class="p-spark p3"></i>
+              <i class="p-spark p4"></i>
+              <i class="p-spark p5"></i>
+              <i class="p-spark p6"></i>
+            </span>
+
+            <span class="palm-lock-tag m-mono" aria-hidden="true">02 // TARGET LOCK</span>
+            <span class="palm-tether palm-tether--blue" aria-hidden="true"></span>
+          </button>
+        </div>
       </div>
 
-      <div class="morpheus-header">
-        <span class="m-mono morpheus-kicker">// PROTOCOLO DE DECISIÓN</span>
-        <h2 class="morpheus-title">ELIGE TU REALIDAD</h2>
-        <p class="morpheus-quote">“Recuerda: lo único que te ofrezco es la verdad, nada más.”</p>
-      </div>
-
-      <div class="morpheus-arena morpheus-arena--wings">
-        <!-- TARJETA 01: PÍLDORA ROJA (IZQUIERDA → APACHE KAFKA) -->
+      <!-- Barra de decisión unificada en la base oscura (alineada bajo cada mano, sin tarjetas tapando la escena) -->
+      <div class="hands-decision-dock">
         <button
           type="button"
-          class="pill-choice pill-choice--red"
+          class="dock-choice dock-choice--red"
           (mouseenter)="hoverPildora = 'red'"
           (mouseleave)="hoverPildora = null"
           (focus)="hoverPildora = 'red'"
           (blur)="hoverPildora = null"
           (click)="elegirPildora('kafka')"
-          aria-label="Elegir píldora roja"
         >
-          <span class="hud-corner hud-tl" aria-hidden="true"></span>
-          <span class="hud-corner hud-br" aria-hidden="true"></span>
-          <span class="m-mono pill-index pill-index--red">01 // DECISIÓN</span>
-
-          <!-- Cápsula Roja 3D fotorrealista con anillos orbitales -->
-          <div class="pill-orb-stage" aria-hidden="true">
-            <div class="pill-orbit pill-orbit--red-1"></div>
-            <div class="pill-orbit pill-orbit--red-2"></div>
-            <svg viewBox="0 0 140 76" class="pill-svg pill-svg--red">
-              <defs>
-                <linearGradient id="redCapL" x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" stop-color="#FF9EB0" />
-                  <stop offset="28%" stop-color="#FF244E" />
-                  <stop offset="78%" stop-color="#B00024" />
-                  <stop offset="100%" stop-color="#580010" />
-                </linearGradient>
-                <linearGradient id="redCapR" x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" stop-color="#FF748D" />
-                  <stop offset="32%" stop-color="#D90429" />
-                  <stop offset="82%" stop-color="#7A0018" />
-                  <stop offset="100%" stop-color="#3A000A" />
-                </linearGradient>
-                <linearGradient id="pillSpec" x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.92" />
-                  <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0" />
-                </linearGradient>
-              </defs>
-              <g transform="rotate(-11 70 38)">
-                <!-- Mitad izquierda -->
-                <path d="M 38 14 L 72 14 L 72 62 L 38 62 A 24 24 0 0 1 38 14 Z" fill="url(#redCapL)" />
-                <!-- Mitad derecha (encaje cápsula) -->
-                <path d="M 70 15.5 L 102 15.5 A 22.5 22.5 0 0 1 102 60.5 L 70 60.5 Z" fill="url(#redCapR)" />
-                <!-- Unión biselada central -->
-                <line x1="71" y1="14" x2="71" y2="62" stroke="rgba(255,255,255,0.38)" stroke-width="1.4" />
-                <line x1="72.5" y1="14.5" x2="72.5" y2="61.5" stroke="rgba(40,0,10,0.65)" stroke-width="1.4" />
-                <!-- Reflejo cristalino curvo superior -->
-                <rect x="28" y="19" width="84" height="9" rx="4.5" fill="url(#pillSpec)" opacity="0.88" />
-                <!-- Punto de brillo especular -->
-                <ellipse cx="42" cy="23" rx="10" ry="3.2" fill="#FFFFFF" opacity="0.82" />
-                <!-- Luz de rebote inferior (rim light) -->
-                <path d="M 36 56 Q 70 60 104 55" stroke="#FF8FA3" stroke-width="2" fill="none" opacity="0.55" stroke-linecap="round" />
-              </g>
-            </svg>
-            <div class="pill-shadow pill-shadow--red"></div>
-          </div>
-
-          <span class="m-mono pill-label pill-label--red">PÍLDORA ROJA</span>
-          <span class="pill-headline">Explorar el flujo en tiempo real</span>
-
-          <span class="pill-cta pill-cta--red m-mono">▶ ELEGIR PÍLDORA ROJA</span>
-          <span class="pill-consequence">Experiencia dinámica · datos en vivo</span>
+          <span class="m-mono dock-index">01 // PÍLDORA ROJA</span>
+          <span class="dock-headline">Explorar el flujo en tiempo real</span>
+          <span class="dock-cta dock-cta--red m-mono">▶ ELEGIR PÍLDORA ROJA</span>
+          <span class="dock-meta">Experiencia dinámica · datos en vivo</span>
         </button>
 
-        <!-- Espacio central libre para que Morfeo y sus manos con las pastillas dominen la pantalla -->
-        <div class="morpheus-center-spacer" aria-hidden="true"></div>
+        <div class="dock-center-hint m-mono" aria-hidden="true">
+          <span class="dock-divider-line"></span>
+          <span>SELECCIONA UNA PÍLDORA</span>
+          <span class="dock-divider-line"></span>
+        </div>
 
-        <!-- TARJETA 02: PÍLDORA AZUL (DERECHA → RABBITMQ) -->
         <button
           type="button"
-          class="pill-choice pill-choice--blue"
+          class="dock-choice dock-choice--blue"
           (mouseenter)="hoverPildora = 'blue'"
           (mouseleave)="hoverPildora = null"
           (focus)="hoverPildora = 'blue'"
           (blur)="hoverPildora = null"
           (click)="elegirPildora('rabbitmq')"
-          aria-label="Elegir píldora azul"
         >
-          <span class="hud-corner hud-tl" aria-hidden="true"></span>
-          <span class="hud-corner hud-br" aria-hidden="true"></span>
-          <span class="m-mono pill-index pill-index--blue">02 // DECISIÓN</span>
-
-          <!-- Cápsula Azul 3D fotorrealista con anillos orbitales -->
-          <div class="pill-orb-stage" aria-hidden="true">
-            <div class="pill-orbit pill-orbit--blue-1"></div>
-            <div class="pill-orbit pill-orbit--blue-2"></div>
-            <svg viewBox="0 0 140 76" class="pill-svg pill-svg--blue">
-              <defs>
-                <linearGradient id="blueCapL" x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" stop-color="#A6ECFF" />
-                  <stop offset="28%" stop-color="#00B4FF" />
-                  <stop offset="78%" stop-color="#0052A3" />
-                  <stop offset="100%" stop-color="#001D47" />
-                </linearGradient>
-                <linearGradient id="blueCapR" x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" stop-color="#76DAFF" />
-                  <stop offset="32%" stop-color="#0086D6" />
-                  <stop offset="82%" stop-color="#003875" />
-                  <stop offset="100%" stop-color="#001330" />
-                </linearGradient>
-                <linearGradient id="pillSpecBlue" x1="0%" y1="0%" x2="0%" y2="100%">
-                  <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.92" />
-                  <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0" />
-                </linearGradient>
-              </defs>
-              <g transform="rotate(11 70 38)">
-                <path d="M 38 14 L 72 14 L 72 62 L 38 62 A 24 24 0 0 1 38 14 Z" fill="url(#blueCapL)" />
-                <path d="M 70 15.5 L 102 15.5 A 22.5 22.5 0 0 1 102 60.5 L 70 60.5 Z" fill="url(#blueCapR)" />
-                <line x1="71" y1="14" x2="71" y2="62" stroke="rgba(255,255,255,0.4)" stroke-width="1.4" />
-                <line x1="72.5" y1="14.5" x2="72.5" y2="61.5" stroke="rgba(0,15,40,0.65)" stroke-width="1.4" />
-                <rect x="28" y="19" width="84" height="9" rx="4.5" fill="url(#pillSpecBlue)" opacity="0.88" />
-                <ellipse cx="42" cy="23" rx="10" ry="3.2" fill="#FFFFFF" opacity="0.82" />
-                <path d="M 36 56 Q 70 60 104 55" stroke="#8CE4FF" stroke-width="2" fill="none" opacity="0.55" stroke-linecap="round" />
-              </g>
-            </svg>
-            <div class="pill-shadow pill-shadow--blue"></div>
-          </div>
-
-          <span class="m-mono pill-label pill-label--blue">PÍLDORA AZUL</span>
-          <span class="pill-headline">Mantener el modo seguro</span>
-
-          <span class="pill-cta pill-cta--blue m-mono">❖ ELEGIR PÍLDORA AZUL</span>
-          <span class="pill-consequence">Experiencia estable · sin interrupciones</span>
+          <span class="m-mono dock-index">02 // PÍLDORA AZUL</span>
+          <span class="dock-headline">Mantener el modo seguro</span>
+          <span class="dock-cta dock-cta--blue m-mono">❖ ELEGIR PÍLDORA AZUL</span>
+          <span class="dock-meta">Experiencia estable · sin interrupciones</span>
         </button>
       </div>
     </section>

@@ -1351,7 +1351,7 @@
 }
 
 /* ========================================================================== */
-/* MORFEO GIGANTE FULL-SCREEN SIN RECUADROS + MANOS Y PASTILLAS EN PRIMER PLANO */
+/* ESCENA UNIFICADA DE MANOS + PÍLDORAS (TODO EN UN SOLO PLANO, SIN TARJETAS) */
 /* ========================================================================== */
 .mensajeria-padded {
   max-width: 1380px;
@@ -1359,115 +1359,633 @@
   padding: 20px 20px 48px;
 }
 
-.morpheus-stage {
+.hands-cinema-stage {
+  position: relative;
   width: 100%;
-  min-height: calc(100vh - 64px) !important;
-  padding: 28px 36px 40px !important;
-  justify-content: flex-start !important;
-  gap: 18px !important;
+  min-height: calc(100vh - 64px);
+  background: #000000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 28px 34px;
+  overflow: hidden;
+  transition: filter 0.35s ease;
 }
 
-/* Capa de Morfeo ocupando casi toda la página, sin bordes ni recortes */
-.morpheus-hero-backdrop {
+.hands-stage--blurred {
+  filter: blur(7px) brightness(0.42);
+  pointer-events: none;
+}
+
+/* Capas atmosféricas unificadas */
+.hands-ambient-glow {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  background: radial-gradient(ellipse 68% 54% at 50% 54%, rgba(0, 255, 65, 0.08) 0%, transparent 72%);
+  transition: background 0.55s ease;
+}
+
+.hands-stage--hover-red .hands-ambient-glow {
+  background:
+    radial-gradient(circle at 36% 54%, rgba(255, 23, 68, 0.28) 0%, transparent 44%),
+    radial-gradient(ellipse 75% 60% at 50% 54%, rgba(255, 23, 68, 0.1) 0%, transparent 72%);
+}
+
+.hands-stage--hover-blue .hands-ambient-glow {
+  background:
+    radial-gradient(circle at 64% 54%, rgba(0, 176, 255, 0.28) 0%, transparent 44%),
+    radial-gradient(ellipse 75% 60% at 50% 54%, rgba(0, 176, 255, 0.1) 0%, transparent 72%);
+}
+
+/* Foco óptico dinámico que sigue el cursor */
+.hands-cursor-light {
   position: absolute;
   inset: 0;
-  z-index: 1;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
   pointer-events: none;
-  transition: transform 0.24s ease-out;
-  will-change: transform;
+  z-index: 2;
+  background: radial-gradient(
+    360px circle at var(--mx, 50%) var(--my, 50%),
+    rgba(0, 255, 65, 0.08),
+    transparent 65%
+  );
+  transition: background 0.2s ease;
 }
 
-.morpheus-full-img {
-  height: min(86vh, 780px);
-  width: auto;
-  max-width: 92vw;
-  object-fit: contain;
-  object-position: center bottom;
-  mix-blend-mode: screen;
-  filter: contrast(1.14) brightness(1.06);
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 12%, #000 84%, transparent 100%);
-  mask-image: linear-gradient(to bottom, transparent 0%, #000 12%, #000 84%, transparent 100%);
-  user-select: none;
+.hands-stage--hover-red .hands-cursor-light {
+  background: radial-gradient(
+    420px circle at var(--mx, 35%) var(--my, 54%),
+    rgba(255, 23, 68, 0.16),
+    transparent 65%
+  );
 }
 
-/* Destellos vivos sobre las manos de Morfeo para resaltar las pastillas */
-.hand-glow {
+.hands-stage--hover-blue .hands-cursor-light {
+  background: radial-gradient(
+    420px circle at var(--mx, 65%) var(--my, 54%),
+    rgba(0, 176, 255, 0.16),
+    transparent 65%
+  );
+}
+
+.hands-scanlines {
   position: absolute;
-  bottom: 24%;
-  width: 92px;
-  height: 92px;
+  inset: 0;
+  pointer-events: none;
+  z-index: 4;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0) 0px,
+    rgba(255, 255, 255, 0) 3px,
+    rgba(0, 0, 0, 0.16) 4px
+  );
+  opacity: 0.45;
+}
+
+.hands-vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 4;
+  background: radial-gradient(ellipse at 50% 52%, transparent 52%, rgba(0, 0, 0, 0.85) 100%);
+}
+
+/* Encabezado integrado en el espacio negro superior */
+.hands-header {
+  position: relative;
+  z-index: 5;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.hands-kicker {
+  font-size: 11px;
+  color: #7FA88B;
+  letter-spacing: 0.2em;
+}
+
+.hands-title {
+  font-family: 'Outfit', 'Inter', sans-serif;
+  font-weight: 300;
+  font-size: clamp(28px, 4vw, 46px);
+  letter-spacing: 0.1em;
+  color: #FFFFFF;
+}
+
+.hands-quote {
+  font-size: 15px;
+  color: #CFE2D4;
+  max-width: 640px;
+}
+
+/* Contenedor 16:9 bloqueado para que las retículas coincidan 100% con cada píldora en cualquier resolución */
+.hands-stage-viewport {
+  position: relative;
+  z-index: 3;
+  width: 100%;
+  max-width: 1220px;
+  margin: -18px auto -28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hands-canvas-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  max-height: 62vh;
+  transition: transform 0.28s ease-out;
+  will-change: transform;
+  transform-origin: 50% 54%;
+}
+
+.hands-stage--zoom-red .hands-canvas-wrap {
+  transform-origin: 35% 54%;
+  transform: scale(1.16) !important;
+  transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.hands-stage--zoom-blue .hands-canvas-wrap {
+  transform-origin: 65% 54%;
+  transform: scale(1.16) !important;
+  transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.hands-main-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  mix-blend-mode: screen;
+  filter: contrast(1.08) brightness(1.04);
+  -webkit-mask-image: radial-gradient(ellipse 84% 86% at 50% 52%, #000000 58%, transparent 98%);
+  mask-image: radial-gradient(ellipse 84% 86% at 50% 52%, #000000 58%, transparent 98%);
+  user-select: none;
+  pointer-events: none;
+}
+
+/* Atenuación selectiva de la mano contraria al pasar el cursor */
+.hands-split-veil {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50%;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.45s ease;
+}
+
+.hands-split-veil--left {
+  left: 0;
+  background: radial-gradient(circle at 65% 54%, rgba(0, 0, 0, 0.72), rgba(0, 0, 0, 0.52));
+}
+
+.hands-split-veil--right {
+  right: 0;
+  background: radial-gradient(circle at 35% 54%, rgba(0, 0, 0, 0.72), rgba(0, 0, 0, 0.52));
+}
+
+.hands-stage--hover-blue .hands-split-veil--left {
+  opacity: 1;
+}
+
+.hands-stage--hover-red .hands-split-veil--right {
+  opacity: 1;
+}
+
+/* Hotspots holográficos anclados directamente a la píldora roja (35%, 54%) y azul (65%, 54%) */
+.palm-hotspot {
+  position: absolute;
+  top: 54%;
+  width: clamp(132px, 16vw, 210px);
+  height: clamp(132px, 16vw, 210px);
+  transform: translate(-50%, -50%);
+  background: transparent;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  z-index: 6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  outline: none;
+}
+
+.palm-hotspot--red {
+  left: 35%;
+}
+
+.palm-hotspot--blue {
+  left: 65%;
+}
+
+/* Aura volumétrica alrededor de la pastilla en la palma */
+.palm-aura {
+  position: absolute;
+  inset: 14%;
   border-radius: 50%;
   filter: blur(22px);
-  pointer-events: none;
-  animation: handPulse 2.8s ease-in-out infinite;
-}
-
-.hand-glow--red {
-  left: calc(50% - 148px);
-  background: radial-gradient(circle, rgba(255, 23, 68, 0.78) 0%, rgba(255, 23, 68, 0.15) 55%, transparent 72%);
-}
-
-.hand-glow--blue {
-  left: calc(50% + 56px);
-  background: radial-gradient(circle, rgba(0, 176, 255, 0.78) 0%, rgba(0, 176, 255, 0.15) 55%, transparent 72%);
-}
-
-.morpheus-stage--hover-red .hand-glow--red {
-  transform: scale(1.45);
-  opacity: 1;
-}
-
-.morpheus-stage--hover-blue .hand-glow--blue {
-  transform: scale(1.45);
-  opacity: 1;
-}
-
-@keyframes handPulse {
-  0%, 100% { opacity: 0.65; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.18); }
-}
-
-/* Las 2 tarjetas en los costados dejando todo el centro abierto para Morfeo */
-.morpheus-arena--wings {
-  width: 100% !important;
-  max-width: 1440px !important;
-  margin: auto 0;
-  grid-template-columns: 330px 1fr 330px !important;
-  align-items: center !important;
-  gap: 24px !important;
-}
-
-.morpheus-center-spacer {
-  min-height: 360px;
+  opacity: 0.55;
+  transition: opacity 0.35s ease, transform 0.35s ease;
   pointer-events: none;
 }
 
-.morpheus-arena--wings .pill-choice {
-  background: rgba(2, 10, 6, 0.72) !important;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+.palm-aura--red {
+  background: radial-gradient(circle, rgba(255, 23, 68, 0.85) 0%, rgba(255, 23, 68, 0.15) 55%, transparent 74%);
 }
 
-@media (max-width: 1080px) {
-  .morpheus-arena--wings {
-    grid-template-columns: 1fr !important;
-    max-width: 440px !important;
+.palm-aura--blue {
+  background: radial-gradient(circle, rgba(0, 176, 255, 0.85) 0%, rgba(0, 176, 255, 0.15) 55%, transparent 74%);
+}
+
+.hands-stage--hover-red .palm-aura--red,
+.palm-hotspot--red:focus-visible .palm-aura--red {
+  opacity: 1;
+  transform: scale(1.38);
+}
+
+.hands-stage--hover-blue .palm-aura--blue,
+.palm-hotspot--blue:focus-visible .palm-aura--blue {
+  opacity: 1;
+  transform: scale(1.38);
+}
+
+/* Ondas expansivas concéntricas */
+.palm-ripple {
+  position: absolute;
+  inset: 18%;
+  border-radius: 50%;
+  border: 1px solid currentColor;
+  opacity: 0;
+  pointer-events: none;
+  animation: palmRipple 3.2s cubic-bezier(0.2, 0.7, 0.3, 1) infinite;
+}
+
+.palm-ripple--2 {
+  animation-delay: 1.6s;
+}
+
+.palm-hotspot--red .palm-ripple {
+  color: rgba(255, 70, 104, 0.7);
+}
+
+.palm-hotspot--blue .palm-ripple {
+  color: rgba(56, 200, 255, 0.7);
+}
+
+@keyframes palmRipple {
+  0% { transform: scale(0.55); opacity: 0.75; }
+  100% { transform: scale(1.42); opacity: 0; }
+}
+
+/* Retícula HUD SVG giratoria multi-capa */
+.palm-reticle {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+  opacity: 0.42;
+  transition: opacity 0.35s ease, transform 0.35s ease, filter 0.35s ease;
+}
+
+.palm-reticle circle,
+.palm-reticle path {
+  fill: none;
+  vector-effect: non-scaling-stroke;
+}
+
+.palm-reticle--red {
+  stroke: #FF3358;
+  filter: drop-shadow(0 0 8px rgba(255, 23, 68, 0.55));
+}
+
+.palm-reticle--blue {
+  stroke: #00C2FF;
+  filter: drop-shadow(0 0 8px rgba(0, 176, 255, 0.55));
+}
+
+.reticle-ring-outer {
+  stroke-width: 1.2;
+  stroke-dasharray: 18 10 4 10;
+  transform-origin: 90px 90px;
+  animation: reticleSpinCW 18s linear infinite;
+}
+
+.reticle-ring-mid {
+  stroke-width: 1.5;
+  stroke-dasharray: 62 38;
+  opacity: 0.72;
+  transform-origin: 90px 90px;
+  animation: reticleSpinCCW 11s linear infinite;
+}
+
+.reticle-ring-inner {
+  stroke-width: 1;
+  stroke-dasharray: 6 8;
+  opacity: 0.55;
+  transform-origin: 90px 90px;
+  animation: reticleSpinCW 8s linear infinite;
+}
+
+.reticle-ticks {
+  stroke-width: 1.6;
+  opacity: 0.85;
+}
+
+.hands-stage--hover-red .palm-reticle--red,
+.palm-hotspot--red:focus-visible .palm-reticle--red {
+  opacity: 1;
+  transform: scale(1.08);
+  filter: drop-shadow(0 0 18px rgba(255, 23, 68, 0.95));
+}
+
+.hands-stage--hover-blue .palm-reticle--blue,
+.palm-hotspot--blue:focus-visible .palm-reticle--blue {
+  opacity: 1;
+  transform: scale(1.08);
+  filter: drop-shadow(0 0 18px rgba(0, 176, 255, 0.95));
+}
+
+.hands-stage--hover-red .palm-reticle--red .reticle-ring-mid,
+.hands-stage--hover-blue .palm-reticle--blue .reticle-ring-mid {
+  animation-duration: 3.5s;
+}
+
+@keyframes reticleSpinCW {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes reticleSpinCCW {
+  from { transform: rotate(360deg); }
+  to { transform: rotate(0deg); }
+}
+
+/* Partículas luminosas elevándose desde cada píldora */
+.palm-particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.p-spark {
+  position: absolute;
+  bottom: 46%;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  opacity: 0;
+  animation: sparkRise 2.8s ease-out infinite;
+}
+
+.palm-hotspot--red .p-spark {
+  background: #FF6B84;
+  box-shadow: 0 0 10px #FF1744, 0 0 18px #FF1744;
+}
+
+.palm-hotspot--blue .p-spark {
+  background: #8CE4FF;
+  box-shadow: 0 0 10px #00B0FF, 0 0 18px #00B0FF;
+}
+
+.p1 { left: 42%; animation-delay: 0s; }
+.p2 { left: 50%; animation-delay: 0.5s; }
+.p3 { left: 58%; animation-delay: 1.0s; }
+.p4 { left: 46%; animation-delay: 1.5s; }
+.p5 { left: 54%; animation-delay: 2.0s; }
+.p6 { left: 48%; animation-delay: 2.4s; }
+
+@keyframes sparkRise {
+  0% { transform: translateY(0) scale(0.7); opacity: 0; }
+  20% { opacity: 0.95; }
+  100% { transform: translateY(-68px) scale(0.2); opacity: 0; }
+}
+
+/* Etiqueta flotante de fijación de objetivo al hacer hover */
+.palm-lock-tag {
+  position: absolute;
+  top: -18px;
+  left: 50%;
+  transform: translateX(-50%) translateY(6px);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  white-space: nowrap;
+  padding: 3px 9px;
+  border-radius: 2px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.28s ease, transform 0.28s ease;
+}
+
+.palm-hotspot--red .palm-lock-tag {
+  color: #FF8A9E;
+  background: rgba(24, 2, 8, 0.85);
+  border: 1px solid rgba(255, 23, 68, 0.65);
+}
+
+.palm-hotspot--blue .palm-lock-tag {
+  color: #8CE4FF;
+  background: rgba(2, 14, 28, 0.85);
+  border: 1px solid rgba(0, 176, 255, 0.65);
+}
+
+.hands-stage--hover-red .palm-hotspot--red .palm-lock-tag,
+.palm-hotspot--red:focus-visible .palm-lock-tag,
+.hands-stage--hover-blue .palm-hotspot--blue .palm-lock-tag,
+.palm-hotspot--blue:focus-visible .palm-lock-tag {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Línea HUD conectora que baja desde cada palma hacia su acción en la base */
+.palm-tether {
+  position: absolute;
+  top: calc(100% - 10px);
+  left: 50%;
+  width: 1px;
+  height: 76px;
+  transform: translateX(-50%) scaleY(0.35);
+  transform-origin: top center;
+  opacity: 0.22;
+  transition: opacity 0.35s ease, transform 0.35s ease;
+  pointer-events: none;
+}
+
+.palm-tether--red {
+  background: linear-gradient(to bottom, #FF1744, rgba(255, 23, 68, 0));
+}
+
+.palm-tether--blue {
+  background: linear-gradient(to bottom, #00B0FF, rgba(0, 176, 255, 0));
+}
+
+.hands-stage--hover-red .palm-tether--red,
+.hands-stage--hover-blue .palm-tether--blue {
+  opacity: 0.95;
+  transform: translateX(-50%) scaleY(1);
+}
+
+/* Barra de decisión unificada en la base oscura (sin cajas tapando las manos) */
+.hands-decision-dock {
+  position: relative;
+  z-index: 6;
+  width: 100%;
+  max-width: 1120px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 28px;
+  padding-top: 8px;
+}
+
+.dock-choice {
+  background: transparent;
+  border: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  padding: 18px 20px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+  cursor: pointer;
+  color: #DDE8DF;
+  transition: opacity 0.3s ease, border-color 0.3s ease, transform 0.25s ease;
+}
+
+.dock-choice--red {
+  border-top-color: rgba(255, 23, 68, 0.45);
+}
+
+.dock-choice--blue {
+  border-top-color: rgba(0, 176, 255, 0.45);
+}
+
+.hands-stage--hover-red .dock-choice--blue,
+.hands-stage--hover-blue .dock-choice--red {
+  opacity: 0.42;
+}
+
+.hands-stage--hover-red .dock-choice--red {
+  border-top-color: #FF1744;
+  transform: translateY(-3px);
+}
+
+.hands-stage--hover-blue .dock-choice--blue {
+  border-top-color: #00B0FF;
+  transform: translateY(-3px);
+}
+
+.dock-index {
+  font-size: 11px;
+  letter-spacing: 0.18em;
+}
+
+.dock-choice--red .dock-index { color: #FF5C77; }
+.dock-choice--blue .dock-index { color: #4FC3F7; }
+
+.dock-headline {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  color: #EAF4EC;
+}
+
+.dock-cta {
+  margin-top: 4px;
+  width: 100%;
+  max-width: 280px;
+  padding: 11px 18px;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  border-radius: 2px;
+  transition: all 0.22s ease;
+}
+
+.dock-cta--red {
+  border: 1px solid rgba(255, 23, 68, 0.72);
+  color: #FF8A9E;
+  background: rgba(255, 23, 68, 0.08);
+}
+
+.hands-stage--hover-red .dock-cta--red,
+.dock-choice--red:hover .dock-cta--red {
+  background: #FF1744;
+  color: #FFFFFF;
+  box-shadow: 0 0 24px rgba(255, 23, 68, 0.65);
+}
+
+.dock-cta--blue {
+  border: 1px solid rgba(0, 176, 255, 0.72);
+  color: #74D8FF;
+  background: rgba(0, 176, 255, 0.08);
+}
+
+.hands-stage--hover-blue .dock-cta--blue,
+.dock-choice--blue:hover .dock-cta--blue {
+  background: #00B0FF;
+  color: #000000;
+  box-shadow: 0 0 24px rgba(0, 176, 255, 0.65);
+}
+
+.dock-meta {
+  font-size: 12px;
+  color: #87A890;
+}
+
+.dock-center-hint {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  color: rgba(147, 181, 155, 0.6);
+  white-space: nowrap;
+}
+
+.dock-divider-line {
+  width: 1px;
+  height: 22px;
+  background: linear-gradient(to bottom, transparent, rgba(0, 255, 65, 0.35), transparent);
+}
+
+@media (max-width: 860px) {
+  .hands-cinema-stage {
+    padding: 18px 16px 28px;
   }
 
-  .morpheus-center-spacer {
-    min-height: 240px;
-    order: -1;
+  .hands-stage-viewport {
+    margin: 6px auto;
   }
 
-  .morpheus-full-img {
-    height: 54vh;
-    opacity: 0.75;
-  }
-
-  .hand-glow {
+  .palm-tether,
+  .dock-center-hint {
     display: none;
+  }
+
+  .hands-decision-dock {
+    grid-template-columns: 1fr;
+    gap: 16px;
+    max-width: 420px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .palm-ripple,
+  .reticle-ring-outer,
+  .reticle-ring-mid,
+  .reticle-ring-inner,
+  .p-spark {
+    animation: none !important;
+  }
+
+  .hands-canvas-wrap {
+    transform: none !important;
   }
 }
