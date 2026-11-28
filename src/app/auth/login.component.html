@@ -1,31 +1,29 @@
 <main class="login">
-  <section class="panel">
-    <div class="logo">
-      <span class="mark">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-          <path d="M7 17a5 5 0 0 1-.7-9.95A6 6 0 0 1 17.8 10H18a4 4 0 0 1 0 8H7Z" stroke="#2563EB" stroke-width="1.8"/>
-        </svg>
-      </span>
-      PokéVault TCG
-    </div>
-    <h1>Gestión de cartas</h1>
-    <p class="muted">Cloud Native</p>
+  <section class="panel" aria-label="Acceso al sistema Matrix">
+    <span class="hud-corner hud-tl" aria-hidden="true"></span>
+    <span class="hud-corner hud-br" aria-hidden="true"></span>
+
+    <div class="kicker m-mono">// PROTOCOLO DE ACCESO · DSY1107</div>
+    <h1 class="login-title m-mono">ENTER THE MATRIX</h1>
+    <p class="muted m-mono">SISTEMA CLOUD NATIVE · ENTRA ID</p>
 
     @if (yaAutenticado) {
-      <p class="auth-ok"><i class="dot dot-ok"></i> Autenticación activa · JWT activo</p>
-      <button type="button" class="btn btn-primary big" (click)="irACartas()">Ir a cartas</button>
+      <p class="auth-ok m-mono"><i class="dot dot-ok"></i> SESIÓN ACTIVA · JWT VERIFICADO</p>
+      <button type="button" class="matrix-login-btn m-mono" (click)="irACartas()">
+        ENTRAR A LA MATRIX ▶
+      </button>
     } @else {
-      <button type="button" class="btn btn-primary big" (click)="login()" [disabled]="!configurado">
-        <span class="ms">
+      <button type="button" class="matrix-login-btn m-mono" (click)="login()" [disabled]="!configurado">
+        <span class="ms" aria-hidden="true">
           <span class="sq s1"></span><span class="sq s2"></span><span class="sq s3"></span><span class="sq s4"></span>
         </span>
-        Continuar con Microsoft
+        CONTINUAR CON MICROSOFT
       </button>
-      <p class="tiny">Autenticación segura con Microsoft Entra ID</p>
+      <p class="tiny m-mono">Autenticación segura con Microsoft Entra ID (OAuth 2.0 / OIDC)</p>
     }
 
     @if (!configurado) {
-      <p class="warn tiny">Falta Tenant ID y Client IDs en environment.ts</p>
+      <p class="warn tiny m-mono">Falta Tenant ID y Client IDs en environment.ts</p>
     }
   </section>
 </main>
