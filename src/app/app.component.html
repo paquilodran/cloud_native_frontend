@@ -68,8 +68,8 @@
       </div>
     </header>
 
-    <!-- Contenido principal (full-bleed en Inicio para mostrar la imagen completa de Matrix) -->
-    <main class="matrix-main" [class.matrix-main--fullbleed]="currentTab === 'inicio'" role="main">
+    <!-- Contenido principal (full-bleed en Inicio y en La Elección para escenas cinematográficas completas) -->
+    <main class="matrix-main" [class.matrix-main--fullbleed]="currentTab === 'inicio' || currentTab === 'mensajeria'" role="main">
       <router-outlet />
     </main>
   </div>

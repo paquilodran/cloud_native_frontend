@@ -1349,3 +1349,125 @@
     transform: none !important;
   }
 }
+
+/* ========================================================================== */
+/* MORFEO GIGANTE FULL-SCREEN SIN RECUADROS + MANOS Y PASTILLAS EN PRIMER PLANO */
+/* ========================================================================== */
+.mensajeria-padded {
+  max-width: 1380px;
+  margin: 0 auto;
+  padding: 20px 20px 48px;
+}
+
+.morpheus-stage {
+  width: 100%;
+  min-height: calc(100vh - 64px) !important;
+  padding: 28px 36px 40px !important;
+  justify-content: flex-start !important;
+  gap: 18px !important;
+}
+
+/* Capa de Morfeo ocupando casi toda la página, sin bordes ni recortes */
+.morpheus-hero-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  pointer-events: none;
+  transition: transform 0.24s ease-out;
+  will-change: transform;
+}
+
+.morpheus-full-img {
+  height: min(86vh, 780px);
+  width: auto;
+  max-width: 92vw;
+  object-fit: contain;
+  object-position: center bottom;
+  mix-blend-mode: screen;
+  filter: contrast(1.14) brightness(1.06);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 12%, #000 84%, transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 12%, #000 84%, transparent 100%);
+  user-select: none;
+}
+
+/* Destellos vivos sobre las manos de Morfeo para resaltar las pastillas */
+.hand-glow {
+  position: absolute;
+  bottom: 24%;
+  width: 92px;
+  height: 92px;
+  border-radius: 50%;
+  filter: blur(22px);
+  pointer-events: none;
+  animation: handPulse 2.8s ease-in-out infinite;
+}
+
+.hand-glow--red {
+  left: calc(50% - 148px);
+  background: radial-gradient(circle, rgba(255, 23, 68, 0.78) 0%, rgba(255, 23, 68, 0.15) 55%, transparent 72%);
+}
+
+.hand-glow--blue {
+  left: calc(50% + 56px);
+  background: radial-gradient(circle, rgba(0, 176, 255, 0.78) 0%, rgba(0, 176, 255, 0.15) 55%, transparent 72%);
+}
+
+.morpheus-stage--hover-red .hand-glow--red {
+  transform: scale(1.45);
+  opacity: 1;
+}
+
+.morpheus-stage--hover-blue .hand-glow--blue {
+  transform: scale(1.45);
+  opacity: 1;
+}
+
+@keyframes handPulse {
+  0%, 100% { opacity: 0.65; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.18); }
+}
+
+/* Las 2 tarjetas en los costados dejando todo el centro abierto para Morfeo */
+.morpheus-arena--wings {
+  width: 100% !important;
+  max-width: 1440px !important;
+  margin: auto 0;
+  grid-template-columns: 330px 1fr 330px !important;
+  align-items: center !important;
+  gap: 24px !important;
+}
+
+.morpheus-center-spacer {
+  min-height: 360px;
+  pointer-events: none;
+}
+
+.morpheus-arena--wings .pill-choice {
+  background: rgba(2, 10, 6, 0.72) !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+@media (max-width: 1080px) {
+  .morpheus-arena--wings {
+    grid-template-columns: 1fr !important;
+    max-width: 440px !important;
+  }
+
+  .morpheus-center-spacer {
+    min-height: 240px;
+    order: -1;
+  }
+
+  .morpheus-full-img {
+    height: 54vh;
+    opacity: 0.75;
+  }
+
+  .hand-glow {
+    display: none;
+  }
+}

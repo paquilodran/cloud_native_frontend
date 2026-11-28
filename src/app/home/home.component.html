@@ -68,9 +68,21 @@
       (mouseleave)="onMorpheusMouseLeave()"
       aria-label="Elige tu realidad"
     >
-      <!-- Luz volumétrica reactiva + partículas ambientales -->
+      <!-- Luz volumétrica reactiva + Morfeo gigante full-height sin recuadro detrás de las tarjetas -->
       <div class="morpheus-ambient-glow" aria-hidden="true"></div>
       <div class="morpheus-vignette" aria-hidden="true"></div>
+
+      <div
+        class="morpheus-hero-backdrop"
+        [style.transform]="'translate3d(' + (parallaxX * -0.45) + 'px,' + (parallaxY * -0.35) + 'px,0)'"
+        aria-hidden="true"
+      >
+        <div class="morpheus-halo"></div>
+        <img src="/morpheus-cinema.jpg" alt="Morfeo sosteniendo la píldora roja y la píldora azul en sus manos" class="morpheus-full-img" />
+        <!-- Destellos vivos sobre cada mano para destacar las pastillas reales -->
+        <span class="hand-glow hand-glow--red"></span>
+        <span class="hand-glow hand-glow--blue"></span>
+      </div>
 
       <div class="morpheus-header">
         <span class="m-mono morpheus-kicker">// PROTOCOLO DE DECISIÓN</span>
@@ -78,7 +90,7 @@
         <p class="morpheus-quote">“Recuerda: lo único que te ofrezco es la verdad, nada más.”</p>
       </div>
 
-      <div class="morpheus-arena">
+      <div class="morpheus-arena morpheus-arena--wings">
         <!-- TARJETA 01: PÍLDORA ROJA (IZQUIERDA → APACHE KAFKA) -->
         <button
           type="button"
@@ -143,15 +155,8 @@
           <span class="pill-consequence">Experiencia dinámica · datos en vivo</span>
         </button>
 
-        <!-- PERSONAJE CENTRAL: MORFEO CON PARALLAX 3D Y FUSIÓN SIN BORDES -->
-        <div
-          class="morpheus-figure"
-          [style.transform]="'translate3d(' + (parallaxX * -0.55) + 'px,' + (parallaxY * -0.45) + 'px,0)'"
-          aria-hidden="true"
-        >
-          <div class="morpheus-halo"></div>
-          <img src="/morpheus-cinema.jpg" alt="Morfeo ofreciendo la píldora roja y la píldora azul" class="morpheus-img" />
-        </div>
+        <!-- Espacio central libre para que Morfeo y sus manos con las pastillas dominen la pantalla -->
+        <div class="morpheus-center-spacer" aria-hidden="true"></div>
 
         <!-- TARJETA 02: PÍLDORA AZUL (DERECHA → RABBITMQ) -->
         <button
@@ -258,7 +263,7 @@
 
   <!-- SUB-VISTA ELEGIDA: KAFKA (PÍLDORA ROJA) O RABBITMQ (PÍLDORA AZUL) -->
   @if (subTabMensajeria !== 'elegir') {
-  <div class="section-stack">
+  <div class="section-stack mensajeria-padded">
 
     <!-- Barra discreta para volver con Morfeo + acceso a UI oficial -->
     <div class="m-panel subtabs-bar">
