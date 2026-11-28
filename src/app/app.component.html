@@ -31,7 +31,7 @@
           </button>
           <button type="button" role="tab" class="matrix-nav-tab" [class.active]="currentTab === 'mensajeria'" [attr.aria-selected]="currentTab === 'mensajeria'" (click)="irATab('mensajeria')">
             <span class="tab-key">3</span>
-            <span>KAFKA &amp; RABBITMQ</span>
+            <span>LA ELECCIÓN</span>
           </button>
           <button type="button" role="tab" class="matrix-nav-tab" [class.active]="currentTab === 'sistema'" [attr.aria-selected]="currentTab === 'sistema'" (click)="irATab('sistema')">
             <span class="tab-key">4</span>
@@ -47,9 +47,9 @@
                   (click)="irATab('mensajeria')"
                   role="status"
                   aria-live="polite"
-                  title="Estado de los 3 brokers Kafka">
+                  title="Estado de nodos del clúster">
             <span class="m-dot" [class.m-dot-warn]="brokersOnlineCount === 2" [class.m-dot-danger]="brokersOnlineCount < 2"></span>
-            <span class="m-mono">{{ brokersOnlineCount }}/3 ISR</span>
+            <span class="m-mono">{{ brokersOnlineCount }}/3 NODOS</span>
           </button>
 
           <div class="matrix-wallet">

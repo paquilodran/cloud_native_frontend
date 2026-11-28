@@ -23,7 +23,7 @@
           </button>
 
           <button type="button" class="fmh-cta" (click)="seleccionarTab('mensajeria')">
-            <span class="fmh-cta-label">Clúster Kafka &amp; RabbitMQ</span>
+            <span class="fmh-cta-label">Elegir píldora</span>
             <span class="fmh-circle" aria-hidden="true">❖</span>
           </button>
         </div>
@@ -37,10 +37,8 @@
         <span class="arch-arrow">→</span>
         <span class="arch-node">3. POSTGRESQL 16</span>
         <span class="arch-arrow">→</span>
-        <span class="arch-node">4. RABBITMQ (2 NODOS + DLQ)</span>
-        <span class="arch-arrow">→</span>
         <span class="arch-node" [class.arch-warn]="brokersOnlineCount === 2" [class.arch-danger]="brokersOnlineCount < 2">
-          5. KAFKA ({{ brokersOnlineCount }}/3 ISR)
+          4. LA ELECCIÓN ({{ brokersOnlineCount }}/3 NODOS)
         </span>
       </footer>
     </div>
@@ -55,39 +53,77 @@
 }
 
 <!-- ========================================================================= -->
-<!-- VISTA 3: KAFKA & RABBITMQ (MENSAJERÍA Y STREAMING UNIFICADOS)             -->
+<!-- VISTA 3: LA ELECCIÓN DE MORFEO (PÍLDORA ROJA vs PÍLDORA AZUL 3D)          -->
 <!-- ========================================================================= -->
 @if (tabActiva === 'mensajeria' || tabActiva === 'kafka' || tabActiva === 'rabbitmq') {
+
+  <!-- ESCENA DE MORFEO: ELEGIR PÍLDORA ROJA O AZUL (SIN NOMBRAR KAFKA/RABBIT) -->
+  @if (subTabMensajeria === 'elegir') {
+    <section class="morpheus-stage m-panel" aria-label="Elige una píldora">
+      <div class="morpheus-header">
+        <span class="m-mono morpheus-kicker">// PROTOCOLO DE DECISIÓN</span>
+        <h2 class="morpheus-title">ELIGE TU REALIDAD</h2>
+        <p class="morpheus-quote">“Recuerda: lo único que te ofrezco es la verdad, nada más.”</p>
+      </div>
+
+      <div class="morpheus-arena">
+        <!-- PÍLDORA ROJA 3D GIRATORIA (IZQUIERDA → APACHE KAFKA) -->
+        <button type="button" class="pill-choice pill-choice--red" (click)="elegirPildora('kafka')" aria-label="Elegir píldora roja">
+          <div class="pill-3d-scene" aria-hidden="true">
+            <div class="pill-3d pill-3d--red">
+              <div class="pill-half pill-half--top"></div>
+              <div class="pill-half pill-half--bottom"></div>
+              <div class="pill-gloss"></div>
+            </div>
+            <div class="pill-shadow pill-shadow--red"></div>
+          </div>
+          <span class="m-mono pill-label pill-label--red">PÍLDORA ROJA</span>
+          <span class="pill-hint">Ver qué tan profundo llega el flujo en tiempo real</span>
+        </button>
+
+        <!-- PERSONAJE CENTRAL: MORFEO OFRECIENDO AMBAS MANOS -->
+        <div class="morpheus-figure" aria-hidden="true">
+          <img src="/morpheus-pills.png" alt="Morfeo ofreciendo la píldora roja y la píldora azul" class="morpheus-img" />
+        </div>
+
+        <!-- PÍLDORA AZUL 3D GIRATORIA (DERECHA → RABBITMQ) -->
+        <button type="button" class="pill-choice pill-choice--blue" (click)="elegirPildora('rabbitmq')" aria-label="Elegir píldora azul">
+          <div class="pill-3d-scene" aria-hidden="true">
+            <div class="pill-3d pill-3d--blue">
+              <div class="pill-half pill-half--top"></div>
+              <div class="pill-half pill-half--bottom"></div>
+              <div class="pill-gloss"></div>
+            </div>
+            <div class="pill-shadow pill-shadow--blue"></div>
+          </div>
+          <span class="m-mono pill-label pill-label--blue">PÍLDORA AZUL</span>
+          <span class="pill-hint">Permanecer en la cola segura sin perder ningún mensaje</span>
+        </button>
+      </div>
+    </section>
+  }
+
+  <!-- SUB-VISTA ELEGIDA: KAFKA (PÍLDORA ROJA) O RABBITMQ (PÍLDORA AZUL) -->
+  @if (subTabMensajeria !== 'elegir') {
   <div class="section-stack">
 
-    <!-- Sub-selector limpio: Kafka vs RabbitMQ + Links oficiales -->
+    <!-- Barra discreta para volver con Morfeo + acceso a UI oficial -->
     <div class="m-panel subtabs-bar">
-      <div class="subtabs-group" role="tablist" aria-label="Módulos de mensajería">
-        <button
-          type="button"
-          role="tab"
-          class="m-btn"
-          [class.m-btn-primary]="subTabMensajeria === 'kafka'"
-          [attr.aria-selected]="subTabMensajeria === 'kafka'"
-          (click)="subTabMensajeria = 'kafka'"
-        >
-          ⚡ APACHE KAFKA ({{ brokersOnlineCount }}/3 ISR)
+      <div class="subtabs-group">
+        <button type="button" class="m-btn m-btn-sm" (click)="volverAMorfeo()">
+          ◄ VOLVER CON MORFEO (CAMBIAR PÍLDORA)
         </button>
-        <button
-          type="button"
-          role="tab"
-          class="m-btn"
-          [class.m-btn-primary]="subTabMensajeria === 'rabbitmq'"
-          [attr.aria-selected]="subTabMensajeria === 'rabbitmq'"
-          (click)="subTabMensajeria = 'rabbitmq'"
-        >
-          ↻ RABBITMQ (DLQ: {{ dlqMessages.length }})
-        </button>
+        <span class="m-badge" [class.m-badge-danger]="subTabMensajeria === 'kafka'">
+          {{ subTabMensajeria === 'kafka' ? '● PÍLDORA ROJA ACTIVA' : '● PÍLDORA AZUL ACTIVA' }}
+        </span>
       </div>
 
       <div class="subtabs-links">
-        <a href="http://localhost:8085" target="_blank" rel="noopener" class="m-btn m-btn-sm">KAFKA-UI :8085 ↗</a>
-        <a href="http://localhost:15672" target="_blank" rel="noopener" class="m-btn m-btn-sm">RABBITMQ :15672 ↗</a>
+        @if (subTabMensajeria === 'kafka') {
+          <a href="http://localhost:8085" target="_blank" rel="noopener" class="m-btn m-btn-sm">KAFKA-UI :8085 ↗</a>
+        } @else {
+          <a href="http://localhost:15672" target="_blank" rel="noopener" class="m-btn m-btn-sm">RABBITMQ :15672 ↗</a>
+        }
       </div>
     </div>
 
@@ -302,6 +338,7 @@
       </section>
     }
   </div>
+  }
 }
 
 <!-- ========================================================================= -->
@@ -354,7 +391,7 @@
 
       <div class="sys-kv">
         <span>EC2 Public IP</span>
-        <strong class="m-mono">44.195.35.138</strong>
+        <strong class="m-mono">32.202.215.80</strong>
       </div>
       <div class="sys-kv">
         <span>API Gateway HTTP</span>

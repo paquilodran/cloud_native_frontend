@@ -75,6 +75,9 @@ export class AppComponent implements OnInit {
 
   irATab(tab: string): void {
     this.currentTab = tab;
+    if (tab === 'mensajeria' && typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('matrix:reset-choice'));
+    }
     this.router.navigate(['/'], { queryParams: { tab } });
   }
 

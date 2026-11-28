@@ -1,5 +1,5 @@
 import { DecimalPipe } from '@angular/common';
-import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MsalService } from '@azure/msal-angular';
@@ -59,9 +59,20 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   // Navegación principal ordenada en 4 vistas
   tabActiva: HomeTab = 'inicio';
-  subTabMensajeria: 'kafka' | 'rabbitmq' = 'kafka';
+  subTabMensajeria: 'elegir' | 'kafka' | 'rabbitmq' = 'elegir';
   pingLatencia = 'HTTP/2 200 OK • Latencia: 23ms (AWS us-east-1)';
   isHealingAnim = false;
+
+  elegirPildora(destino: 'kafka' | 'rabbitmq'): void {
+    this.tabActiva = 'mensajeria';
+    this.subTabMensajeria = destino;
+  }
+
+  @HostListener('window:matrix:reset-choice')
+  volverAMorfeo(): void {
+    this.tabActiva = 'mensajeria';
+    this.subTabMensajeria = 'elegir';
+  }
 
   // RabbitMQ Controls & State
   enviandoRabbit = false;
@@ -385,6 +396,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.tabActiva = 'taquilla';
       } else if (tab === 'mensajeria') {
         this.tabActiva = 'mensajeria';
+        this.subTabMensajeria = 'elegir';
       } else if (tab === 'kafka') {
         this.tabActiva = 'mensajeria';
         this.subTabMensajeria = 'kafka';
