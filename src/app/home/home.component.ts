@@ -133,6 +133,12 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.tabActiva = 'mensajeria';
   }
 
+  abrirPerfilModal(): void {
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('matrix:open-profile'));
+    }
+  }
+
   // RabbitMQ Controls & State
   enviandoRabbit = false;
   ultimoEnvioRabbit: string | null = null;

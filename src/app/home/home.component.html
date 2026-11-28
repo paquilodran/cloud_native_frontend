@@ -1,45 +1,72 @@
 <!-- ========================================================================= -->
-<!-- VISTA 1: INICIO — HERO FULL-BLEED "Enter the MATRIX" (IMAGEN COMPLETA)    -->
+<!-- VISTA 1: INICIO — HERO FULL-BLEED "Enter the MATRIX" (INMERSIVO)          -->
 <!-- ========================================================================= -->
 @if (tabActiva === 'inicio') {
-  <section class="full-matrix-hero" aria-label="Enter the Matrix">
-    <!-- Imagen completa sin recortes (contain + fusión oscura con lluvia de código) -->
-    <div class="fmh-photo" aria-hidden="true"></div>
+  <section
+    class="full-matrix-hero"
+    [class.fmh-alert]="brokersOnlineCount < 2"
+    [class.fmh-warn]="brokersOnlineCount === 2"
+    (mousemove)="onMorpheusMouseMove($event)"
+    (mouseleave)="onMorpheusMouseLeave()"
+    aria-label="Enter the Matrix"
+  >
+    <!-- Escena de Neo sin bordes laterales + paralaje 3D sutil con el mouse -->
+    <div
+      class="fmh-photo"
+      [style.transform]="'scale(1.03) translate3d(' + (parallaxX * -0.55) + 'px,' + (parallaxY * -0.4) + 'px,0)'"
+      aria-hidden="true"
+    ></div>
     <div class="fmh-blinds" aria-hidden="true"></div>
-    <div class="fmh-axis" aria-hidden="true"></div>
     <div class="fmh-flare" aria-hidden="true"></div>
 
     <div class="fmh-inner">
       <div class="fmh-center">
+        <span class="fmh-eyebrow m-mono">// CONSOLA DISTRIBUIDA · DSY1107 · AWS EC2</span>
         <div class="fmh-titles">
           <p class="fmh-kicker">Enter the</p>
           <h1 class="fmh-title">MATRIX</h1>
         </div>
 
+        <!-- Acciones con eje vertical alineado exactamente al centro de los círculos -->
         <div class="fmh-actions">
-          <button type="button" class="fmh-cta" (click)="seleccionarTab('taquilla')">
+          <span class="fmh-axis-line" aria-hidden="true"></span>
+
+          <button type="button" class="fmh-cta m-mono" (click)="seleccionarTab('taquilla')">
             <span class="fmh-cta-label">Comprar tickets</span>
             <span class="fmh-circle" aria-hidden="true">▶</span>
           </button>
 
-          <button type="button" class="fmh-cta" (click)="seleccionarTab('mensajeria')">
+          <button type="button" class="fmh-cta m-mono" (click)="seleccionarTab('mensajeria')">
             <span class="fmh-cta-label">Elegir píldora</span>
             <span class="fmh-circle" aria-hidden="true">❖</span>
           </button>
         </div>
       </div>
 
-      <!-- Barra discreta de arquitectura end-to-end al pie del hero -->
+      <!-- Barra interactiva de arquitectura end-to-end con pulso de flujo en vivo -->
       <footer class="fmh-arch-strip m-mono" aria-label="Flujo arquitectónico en vivo">
-        <span class="arch-node">1. ENTRA ID (JWT)</span>
-        <span class="arch-arrow">→</span>
-        <span class="arch-node">2. API GATEWAY AWS</span>
-        <span class="arch-arrow">→</span>
-        <span class="arch-node">3. POSTGRESQL 16</span>
-        <span class="arch-arrow">→</span>
-        <span class="arch-node" [class.arch-warn]="brokersOnlineCount === 2" [class.arch-danger]="brokersOnlineCount < 2">
+        <button type="button" class="arch-node-btn" (click)="abrirPerfilModal()" title="Abrir perfil y JWT de Entra ID">
+          1. ENTRA ID (JWT)
+        </button>
+        <span class="arch-arrow arch-arrow--1" aria-hidden="true">→</span>
+        <button type="button" class="arch-node-btn" (click)="seleccionarTab('sistema')" title="Ver infraestructura AWS y perfil">
+          2. API GATEWAY AWS
+        </button>
+        <span class="arch-arrow arch-arrow--2" aria-hidden="true">→</span>
+        <button type="button" class="arch-node-btn" (click)="seleccionarTab('taquilla')" title="Ir a Taquilla y órdenes PostgreSQL">
+          3. POSTGRESQL 16
+        </button>
+        <span class="arch-arrow arch-arrow--3" aria-hidden="true">→</span>
+        <button
+          type="button"
+          class="arch-node-btn"
+          [class.arch-warn]="brokersOnlineCount === 2"
+          [class.arch-danger]="brokersOnlineCount < 2"
+          (click)="seleccionarTab('mensajeria')"
+          title="Ir a La Elección (Kafka / RabbitMQ)"
+        >
           4. LA ELECCIÓN ({{ brokersOnlineCount }}/3 NODOS)
-        </span>
+        </button>
       </footer>
     </div>
   </section>

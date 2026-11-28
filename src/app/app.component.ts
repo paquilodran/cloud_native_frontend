@@ -93,6 +93,7 @@ export class AppComponent implements OnInit {
     this.irATab(this.tabs[nextIdx]);
   }
 
+  @HostListener('window:matrix:open-profile')
   abrirModalPerfil(): void {
     this.modalPerfilAbierto = true;
     this.menuPerfilAbierto = false;
