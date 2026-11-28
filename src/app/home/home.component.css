@@ -1083,15 +1083,19 @@
 }
 
 .confirm-title {
-  font-family: 'Outfit', 'Inter', sans-serif;
+  font-family: var(--font-mono);
   font-weight: 400;
   font-size: clamp(22px, 3.2vw, 30px);
-  color: #FFFFFF;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #E8FFED;
 }
 
 .confirm-sub {
-  font-size: 14px;
-  color: #B4C8BA;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  color: #98C9A3;
   margin-bottom: 6px;
 }
 
@@ -1363,7 +1367,7 @@
   position: relative;
   width: 100%;
   min-height: calc(100vh - 64px);
-  background: #000000;
+  background: transparent;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1378,26 +1382,27 @@
   pointer-events: none;
 }
 
-/* Capas atmosféricas unificadas */
+/* Capas atmosféricas unificadas por ENCIMA con screen para que jamás aparezca un cuadro negro */
 .hands-ambient-glow {
   position: fixed;
   inset: 0;
   pointer-events: none;
-  z-index: 1;
+  z-index: 4;
+  mix-blend-mode: screen;
   background: radial-gradient(ellipse 68% 54% at 50% 54%, rgba(0, 255, 65, 0.08) 0%, transparent 72%);
   transition: background 0.55s ease;
 }
 
 .hands-stage--hover-red .hands-ambient-glow {
   background:
-    radial-gradient(circle at 36% 54%, rgba(255, 23, 68, 0.28) 0%, transparent 44%),
-    radial-gradient(ellipse 75% 60% at 50% 54%, rgba(255, 23, 68, 0.1) 0%, transparent 72%);
+    radial-gradient(circle at 36% 54%, rgba(255, 23, 68, 0.24) 0%, transparent 46%),
+    radial-gradient(ellipse 75% 60% at 50% 54%, rgba(255, 23, 68, 0.09) 0%, transparent 72%);
 }
 
 .hands-stage--hover-blue .hands-ambient-glow {
   background:
-    radial-gradient(circle at 64% 54%, rgba(0, 176, 255, 0.28) 0%, transparent 44%),
-    radial-gradient(ellipse 75% 60% at 50% 54%, rgba(0, 176, 255, 0.1) 0%, transparent 72%);
+    radial-gradient(circle at 64% 54%, rgba(0, 176, 255, 0.24) 0%, transparent 46%),
+    radial-gradient(ellipse 75% 60% at 50% 54%, rgba(0, 176, 255, 0.09) 0%, transparent 72%);
 }
 
 /* Foco óptico dinámico que sigue el cursor */
@@ -1405,7 +1410,8 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
-  z-index: 2;
+  z-index: 4;
+  mix-blend-mode: screen;
   background: radial-gradient(
     360px circle at var(--mx, 50%) var(--my, 50%),
     rgba(0, 255, 65, 0.08),
@@ -1434,56 +1440,72 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
-  z-index: 4;
+  z-index: 5;
   background: repeating-linear-gradient(
     to bottom,
     rgba(255, 255, 255, 0) 0px,
     rgba(255, 255, 255, 0) 3px,
-    rgba(0, 0, 0, 0.16) 4px
+    rgba(0, 0, 0, 0.14) 4px
   );
-  opacity: 0.45;
+  opacity: 0.4;
 }
 
 .hands-vignette {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  z-index: 4;
-  background: radial-gradient(ellipse at 50% 52%, transparent 52%, rgba(0, 0, 0, 0.85) 100%);
+  z-index: 5;
+  background: radial-gradient(ellipse at 50% 52%, transparent 58%, rgba(0, 0, 0, 0.65) 100%);
 }
 
-/* Encabezado integrado en el espacio negro superior */
+/* Encabezado con tipografía Matrix coherente con toda la aplicación */
 .hands-header {
   position: relative;
-  z-index: 5;
+  z-index: 6;
   text-align: center;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
 }
 
 .hands-kicker {
-  font-size: 11px;
-  color: #7FA88B;
-  letter-spacing: 0.2em;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: #00FF41;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  text-shadow: 0 0 12px rgba(0, 255, 65, 0.45);
 }
 
 .hands-title {
-  font-family: 'Outfit', 'Inter', sans-serif;
-  font-weight: 300;
-  font-size: clamp(28px, 4vw, 46px);
-  letter-spacing: 0.1em;
-  color: #FFFFFF;
+  font-family: var(--font-mono);
+  font-weight: 400;
+  font-size: clamp(28px, 4.2vw, 48px);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: #E8FFED;
+  text-shadow: 0 0 24px rgba(0, 255, 65, 0.36), 0 0 6px rgba(0, 255, 65, 0.2);
+  transition: text-shadow 0.4s ease, color 0.4s ease;
+}
+
+.hands-stage--hover-red .hands-title {
+  text-shadow: 0 0 26px rgba(255, 23, 68, 0.5), 0 0 8px rgba(255, 23, 68, 0.28);
+}
+
+.hands-stage--hover-blue .hands-title {
+  text-shadow: 0 0 26px rgba(0, 176, 255, 0.5), 0 0 8px rgba(0, 176, 255, 0.28);
 }
 
 .hands-quote {
-  font-size: 15px;
-  color: #CFE2D4;
-  max-width: 640px;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  letter-spacing: 0.04em;
+  color: #98C9A3;
+  max-width: 680px;
 }
 
-/* Contenedor 16:9 bloqueado para que las retículas coincidan 100% con cada píldora en cualquier resolución */
+/* Contenedor 16:9 mezclado en screen para fundir el negro 100% con la lluvia Matrix */
 .hands-stage-viewport {
   position: relative;
   z-index: 3;
@@ -1493,6 +1515,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  mix-blend-mode: screen;
 }
 
 .hands-canvas-wrap {
@@ -1522,33 +1545,33 @@
   height: 100%;
   object-fit: contain;
   display: block;
-  mix-blend-mode: screen;
-  filter: contrast(1.08) brightness(1.04);
-  -webkit-mask-image: radial-gradient(ellipse 84% 86% at 50% 52%, #000000 58%, transparent 98%);
-  mask-image: radial-gradient(ellipse 84% 86% at 50% 52%, #000000 58%, transparent 98%);
+  filter: contrast(1.1) brightness(1.03);
+  -webkit-mask-image: radial-gradient(ellipse 68% 68% at 50% 52%, #000000 38%, rgba(0, 0, 0, 0.85) 58%, transparent 88%);
+  mask-image: radial-gradient(ellipse 68% 68% at 50% 52%, #000000 38%, rgba(0, 0, 0, 0.85) 58%, transparent 88%);
   user-select: none;
   pointer-events: none;
 }
 
-/* Atenuación selectiva de la mano contraria al pasar el cursor */
+/* Atenuación circular difusa (sin bordes rectangulares) sobre la mano contraria */
 .hands-split-veil {
   position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 50%;
+  top: 8%;
+  height: 84%;
+  width: 48%;
+  border-radius: 50%;
   pointer-events: none;
   opacity: 0;
   transition: opacity 0.45s ease;
 }
 
 .hands-split-veil--left {
-  left: 0;
-  background: radial-gradient(circle at 65% 54%, rgba(0, 0, 0, 0.72), rgba(0, 0, 0, 0.52));
+  left: 8%;
+  background: radial-gradient(circle at 50% 52%, rgba(0, 0, 0, 0.78) 0%, rgba(0, 0, 0, 0.38) 48%, transparent 74%);
 }
 
 .hands-split-veil--right {
-  right: 0;
-  background: radial-gradient(circle at 35% 54%, rgba(0, 0, 0, 0.72), rgba(0, 0, 0, 0.52));
+  right: 8%;
+  background: radial-gradient(circle at 50% 52%, rgba(0, 0, 0, 0.78) 0%, rgba(0, 0, 0, 0.38) 48%, transparent 74%);
 }
 
 .hands-stage--hover-blue .hands-split-veil--left {
@@ -1891,9 +1914,10 @@
 .dock-choice--blue .dock-index { color: #4FC3F7; }
 
 .dock-headline {
-  font-family: var(--font-sans);
-  font-size: 16px;
-  color: #EAF4EC;
+  font-family: var(--font-mono);
+  font-size: 15px;
+  letter-spacing: 0.05em;
+  color: #D7FFE0;
 }
 
 .dock-cta {
@@ -1902,7 +1926,7 @@
   max-width: 280px;
   padding: 11px 18px;
   font-size: 12px;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.14em;
   border-radius: 2px;
   transition: all 0.22s ease;
 }
@@ -1934,8 +1958,11 @@
 }
 
 .dock-meta {
-  font-size: 12px;
-  color: #87A890;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #7FA88B;
 }
 
 .dock-center-hint {
