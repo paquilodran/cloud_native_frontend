@@ -62,9 +62,28 @@ export class HomeComponent implements OnInit, OnDestroy {
   subTabMensajeria: 'elegir' | 'kafka' | 'rabbitmq' = 'elegir';
   pildoraCargando: 'kafka' | 'rabbitmq' | null = null;
   progresoCargaPildora = 0;
+  hoverPildora: 'red' | 'blue' | null = null;
+  parallaxX = 0;
+  parallaxY = 0;
   private cargaPildoraTimer: any = null;
   pingLatencia = 'HTTP/2 200 OK • Latencia: 23ms (AWS us-east-1)';
   isHealingAnim = false;
+
+  onMorpheusMouseMove(event: MouseEvent): void {
+    const target = event.currentTarget as HTMLElement | null;
+    if (!target) return;
+    const rect = target.getBoundingClientRect();
+    const nx = (event.clientX - rect.left) / rect.width - 0.5;
+    const ny = (event.clientY - rect.top) / rect.height - 0.5;
+    this.parallaxX = Math.round(nx * 18 * 10) / 10;
+    this.parallaxY = Math.round(ny * 12 * 10) / 10;
+  }
+
+  onMorpheusMouseLeave(): void {
+    this.parallaxX = 0;
+    this.parallaxY = 0;
+    this.hoverPildora = null;
+  }
 
   elegirPildora(destino: 'kafka' | 'rabbitmq'): void {
     if (this.pildoraCargando) return;

@@ -57,9 +57,21 @@
 <!-- ========================================================================= -->
 @if (tabActiva === 'mensajeria' || tabActiva === 'kafka' || tabActiva === 'rabbitmq') {
 
-  <!-- ESCENA DE MORFEO: DISEÑO EXACTO FIGMA (SIN BORDE EXTERIOR, TARJETAS 01/02 + OVERLAY CARGA) -->
+  <!-- ESCENA INMERSIVA DE MORFEO: ATMÓSFERA REACTIVA, PARALLAX 3D Y CÁPSULAS REALISTAS -->
   @if (subTabMensajeria === 'elegir') {
-    <section class="morpheus-stage" [class.morpheus-stage--blurred]="pildoraCargando !== null" aria-label="Elige tu realidad">
+    <section
+      class="morpheus-stage"
+      [class.morpheus-stage--blurred]="pildoraCargando !== null"
+      [class.morpheus-stage--hover-red]="hoverPildora === 'red'"
+      [class.morpheus-stage--hover-blue]="hoverPildora === 'blue'"
+      (mousemove)="onMorpheusMouseMove($event)"
+      (mouseleave)="onMorpheusMouseLeave()"
+      aria-label="Elige tu realidad"
+    >
+      <!-- Luz volumétrica reactiva + partículas ambientales -->
+      <div class="morpheus-ambient-glow" aria-hidden="true"></div>
+      <div class="morpheus-vignette" aria-hidden="true"></div>
+
       <div class="morpheus-header">
         <span class="m-mono morpheus-kicker">// PROTOCOLO DE DECISIÓN</span>
         <h2 class="morpheus-title">ELIGE TU REALIDAD</h2>
@@ -68,15 +80,59 @@
 
       <div class="morpheus-arena">
         <!-- TARJETA 01: PÍLDORA ROJA (IZQUIERDA → APACHE KAFKA) -->
-        <button type="button" class="pill-choice pill-choice--red" (click)="elegirPildora('kafka')" aria-label="Elegir píldora roja">
+        <button
+          type="button"
+          class="pill-choice pill-choice--red"
+          (mouseenter)="hoverPildora = 'red'"
+          (mouseleave)="hoverPildora = null"
+          (focus)="hoverPildora = 'red'"
+          (blur)="hoverPildora = null"
+          (click)="elegirPildora('kafka')"
+          aria-label="Elegir píldora roja"
+        >
+          <span class="hud-corner hud-tl" aria-hidden="true"></span>
+          <span class="hud-corner hud-br" aria-hidden="true"></span>
           <span class="m-mono pill-index pill-index--red">01 // DECISIÓN</span>
 
-          <div class="pill-3d-scene" aria-hidden="true">
-            <div class="pill-3d pill-3d--red">
-              <div class="pill-half pill-half--left"></div>
-              <div class="pill-half pill-half--right"></div>
-              <div class="pill-gloss"></div>
-            </div>
+          <!-- Cápsula Roja 3D fotorrealista con anillos orbitales -->
+          <div class="pill-orb-stage" aria-hidden="true">
+            <div class="pill-orbit pill-orbit--red-1"></div>
+            <div class="pill-orbit pill-orbit--red-2"></div>
+            <svg viewBox="0 0 140 76" class="pill-svg pill-svg--red">
+              <defs>
+                <linearGradient id="redCapL" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="#FF9EB0" />
+                  <stop offset="28%" stop-color="#FF244E" />
+                  <stop offset="78%" stop-color="#B00024" />
+                  <stop offset="100%" stop-color="#580010" />
+                </linearGradient>
+                <linearGradient id="redCapR" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="#FF748D" />
+                  <stop offset="32%" stop-color="#D90429" />
+                  <stop offset="82%" stop-color="#7A0018" />
+                  <stop offset="100%" stop-color="#3A000A" />
+                </linearGradient>
+                <linearGradient id="pillSpec" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.92" />
+                  <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0" />
+                </linearGradient>
+              </defs>
+              <g transform="rotate(-11 70 38)">
+                <!-- Mitad izquierda -->
+                <path d="M 38 14 L 72 14 L 72 62 L 38 62 A 24 24 0 0 1 38 14 Z" fill="url(#redCapL)" />
+                <!-- Mitad derecha (encaje cápsula) -->
+                <path d="M 70 15.5 L 102 15.5 A 22.5 22.5 0 0 1 102 60.5 L 70 60.5 Z" fill="url(#redCapR)" />
+                <!-- Unión biselada central -->
+                <line x1="71" y1="14" x2="71" y2="62" stroke="rgba(255,255,255,0.38)" stroke-width="1.4" />
+                <line x1="72.5" y1="14.5" x2="72.5" y2="61.5" stroke="rgba(40,0,10,0.65)" stroke-width="1.4" />
+                <!-- Reflejo cristalino curvo superior -->
+                <rect x="28" y="19" width="84" height="9" rx="4.5" fill="url(#pillSpec)" opacity="0.88" />
+                <!-- Punto de brillo especular -->
+                <ellipse cx="42" cy="23" rx="10" ry="3.2" fill="#FFFFFF" opacity="0.82" />
+                <!-- Luz de rebote inferior (rim light) -->
+                <path d="M 36 56 Q 70 60 104 55" stroke="#FF8FA3" stroke-width="2" fill="none" opacity="0.55" stroke-linecap="round" />
+              </g>
+            </svg>
             <div class="pill-shadow pill-shadow--red"></div>
           </div>
 
@@ -87,21 +143,64 @@
           <span class="pill-consequence">Experiencia dinámica · datos en vivo</span>
         </button>
 
-        <!-- PERSONAJE CENTRAL: MORFEO -->
-        <div class="morpheus-figure" aria-hidden="true">
-          <img src="/morpheus-pills.png" alt="Morfeo ofreciendo la píldora roja y la píldora azul" class="morpheus-img" />
+        <!-- PERSONAJE CENTRAL: MORFEO CON PARALLAX 3D Y FUSIÓN SIN BORDES -->
+        <div
+          class="morpheus-figure"
+          [style.transform]="'translate3d(' + (parallaxX * -0.55) + 'px,' + (parallaxY * -0.45) + 'px,0)'"
+          aria-hidden="true"
+        >
+          <div class="morpheus-halo"></div>
+          <img src="/morpheus-cinema.jpg" alt="Morfeo ofreciendo la píldora roja y la píldora azul" class="morpheus-img" />
         </div>
 
         <!-- TARJETA 02: PÍLDORA AZUL (DERECHA → RABBITMQ) -->
-        <button type="button" class="pill-choice pill-choice--blue" (click)="elegirPildora('rabbitmq')" aria-label="Elegir píldora azul">
+        <button
+          type="button"
+          class="pill-choice pill-choice--blue"
+          (mouseenter)="hoverPildora = 'blue'"
+          (mouseleave)="hoverPildora = null"
+          (focus)="hoverPildora = 'blue'"
+          (blur)="hoverPildora = null"
+          (click)="elegirPildora('rabbitmq')"
+          aria-label="Elegir píldora azul"
+        >
+          <span class="hud-corner hud-tl" aria-hidden="true"></span>
+          <span class="hud-corner hud-br" aria-hidden="true"></span>
           <span class="m-mono pill-index pill-index--blue">02 // DECISIÓN</span>
 
-          <div class="pill-3d-scene" aria-hidden="true">
-            <div class="pill-3d pill-3d--blue">
-              <div class="pill-half pill-half--left"></div>
-              <div class="pill-half pill-half--right"></div>
-              <div class="pill-gloss"></div>
-            </div>
+          <!-- Cápsula Azul 3D fotorrealista con anillos orbitales -->
+          <div class="pill-orb-stage" aria-hidden="true">
+            <div class="pill-orbit pill-orbit--blue-1"></div>
+            <div class="pill-orbit pill-orbit--blue-2"></div>
+            <svg viewBox="0 0 140 76" class="pill-svg pill-svg--blue">
+              <defs>
+                <linearGradient id="blueCapL" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="#A6ECFF" />
+                  <stop offset="28%" stop-color="#00B4FF" />
+                  <stop offset="78%" stop-color="#0052A3" />
+                  <stop offset="100%" stop-color="#001D47" />
+                </linearGradient>
+                <linearGradient id="blueCapR" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="#76DAFF" />
+                  <stop offset="32%" stop-color="#0086D6" />
+                  <stop offset="82%" stop-color="#003875" />
+                  <stop offset="100%" stop-color="#001330" />
+                </linearGradient>
+                <linearGradient id="pillSpecBlue" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.92" />
+                  <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0" />
+                </linearGradient>
+              </defs>
+              <g transform="rotate(11 70 38)">
+                <path d="M 38 14 L 72 14 L 72 62 L 38 62 A 24 24 0 0 1 38 14 Z" fill="url(#blueCapL)" />
+                <path d="M 70 15.5 L 102 15.5 A 22.5 22.5 0 0 1 102 60.5 L 70 60.5 Z" fill="url(#blueCapR)" />
+                <line x1="71" y1="14" x2="71" y2="62" stroke="rgba(255,255,255,0.4)" stroke-width="1.4" />
+                <line x1="72.5" y1="14.5" x2="72.5" y2="61.5" stroke="rgba(0,15,40,0.65)" stroke-width="1.4" />
+                <rect x="28" y="19" width="84" height="9" rx="4.5" fill="url(#pillSpecBlue)" opacity="0.88" />
+                <ellipse cx="42" cy="23" rx="10" ry="3.2" fill="#FFFFFF" opacity="0.82" />
+                <path d="M 36 56 Q 70 60 104 55" stroke="#8CE4FF" stroke-width="2" fill="none" opacity="0.55" stroke-linecap="round" />
+              </g>
+            </svg>
             <div class="pill-shadow pill-shadow--blue"></div>
           </div>
 
